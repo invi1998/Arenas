@@ -6,6 +6,8 @@
 #include "Character/ArenasCharacter.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -16,6 +18,13 @@ class ARENAS_API AArenasPlayerCharacter : public AArenasCharacter
 
 public:
 	AArenasPlayerCharacter();
+
+	// 该函数是官方推荐用于初始化输入映射设置时需要重写的函数
+	// 这是因为当客户端重启时该函数会被调用，这是在多人游戏中首次在客户端生成实际角色的时机
+	// 此时角色已经准备好在BeginPlay中与输入进行绑定
+	virtual void PawnClientRestart() override;
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
@@ -23,5 +32,11 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* JumpInputAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* GameplayInputMappingContext;
 	
 };
