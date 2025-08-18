@@ -6,6 +6,7 @@
 #include "Character/ArenasCharacter.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
@@ -35,8 +36,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* JumpInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* LookInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* GameplayInputMappingContext;
+
+	void HandleLookInput(const FInputActionValue& Value);
 	
 };

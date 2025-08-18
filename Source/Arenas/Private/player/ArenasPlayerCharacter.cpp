@@ -13,8 +13,11 @@
 // Sets default values
 AArenasPlayerCharacter::AArenasPlayerCharacter()
 {
+	bUseControllerRotationYaw = false;		// 让角色不跟随控制器的旋转
+	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
+	CameraBoom->bUsePawnControlRotation = true; // 让弹簧臂组件使用控制器的旋转
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	// 这里我需要指定插槽，如果不这样做，相机实际会附着在相机臂的根部，而不是末端插槽上，我们需要指定该插槽，以便使用弹簧臂组件的插槽名
@@ -42,12 +45,20 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	if (EnhancedInputComponent)
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::Jump);
+		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleLookInput);
 	}
 	
+}
+
+void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)
+{
+	FVector2D LookDirection = Value.Get<FVector2D>();
+
+	AddControllerPitchInput(LookDirection.Y);
+	AddControllerYawInput(LookDirection.X);
 }
 	
 
