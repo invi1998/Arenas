@@ -1,19 +1,19 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Ace of Arenas. (invi1998 All Rights Reserved)
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Character/ArenasCharacter.h"
-#include "PlayerArenasCharacter.generated.h"
+#include "ArenasPlayerCharacter.generated.h"
 
 UCLASS()
-class ARENAS_API APlayerArenasCharacter : public AArenasCharacter
+class ARENAS_API AArenasPlayerCharacter : public AArenasCharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	APlayerArenasCharacter();
+	AArenasPlayerCharacter();
 
 protected:
 	// Called when the game starts or when spawned

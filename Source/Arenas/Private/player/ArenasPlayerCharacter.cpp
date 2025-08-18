@@ -1,31 +1,31 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Ace of Arenas. (invi1998 All Rights Reserved)
 
 
-#include "PlayerArenasCharacter.h"
+#include "ArenasPlayerCharacter.h"
 
 
 // Sets default values
-APlayerArenasCharacter::APlayerArenasCharacter()
+AArenasPlayerCharacter::AArenasPlayerCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void APlayerArenasCharacter::BeginPlay()
+void AArenasPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void APlayerArenasCharacter::Tick(float DeltaTime)
+void AArenasPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void APlayerArenasCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
