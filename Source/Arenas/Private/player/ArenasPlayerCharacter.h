@@ -39,10 +39,18 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* MoveInputAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* GameplayInputMappingContext;
 
 	void HandleLookInput(const FInputActionValue& Value);
+	void HandleMoveInput(const FInputActionValue& Value);
+
+	FVector GetLookForwardDir() const;
+	FVector GetLookRightDir() const;
+	FVector GetMoveForwardDir() const;
 	
 };
