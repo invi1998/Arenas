@@ -272,3 +272,7 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# 第三方资产
+/Content/ParagonCrunch
+
