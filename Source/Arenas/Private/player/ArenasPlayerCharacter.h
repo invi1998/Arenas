@@ -6,23 +6,22 @@
 #include "Character/ArenasCharacter.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+class UCameraComponent;
+class USpringArmComponent;
+
 UCLASS()
 class ARENAS_API AArenasPlayerCharacter : public AArenasCharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AArenasPlayerCharacter();
+	
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category = "View")
+	USpringArmComponent* CameraBoom;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(VisibleDefaultsOnly, Category = "View")
+	UCameraComponent* FollowCamera;
+	
 };
