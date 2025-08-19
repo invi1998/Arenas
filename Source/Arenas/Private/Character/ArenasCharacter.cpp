@@ -21,6 +21,17 @@ AArenasCharacter::AArenasCharacter()
 	ArenasAttributeSet = CreateDefaultSubobject<UArenasAttributeSet>(TEXT("ArenasAttributeSet"));
 }
 
+void AArenasCharacter::ServerSideInit()
+{
+	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
+	ArenasAbilitySystemComponent->ApplyInitialEffects();
+}
+
+void AArenasCharacter::ClientSideInit()
+{
+	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
+}
+
 void AArenasCharacter::BeginPlay()
 {
 	Super::BeginPlay();
