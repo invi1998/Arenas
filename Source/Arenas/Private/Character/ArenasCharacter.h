@@ -33,7 +33,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/********************************************************************************************/
-	/*									Gameplay Ability										*/
+	/*								 	Gameplay Ability										*/
 	/********************************************************************************************/
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
