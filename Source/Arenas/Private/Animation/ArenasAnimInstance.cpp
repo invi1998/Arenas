@@ -23,8 +23,14 @@ void UArenasAnimInstance::NativeInitializeAnimation()
 
 void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+	if (OwnerPlayerCharacter)
+	{
+		Speed = OwnerPlayerCharacter->GetVelocity().Length();
+	}
 }
 
-void UArenasAnimInstance::NativeUninitializeAnimation()
+void UArenasAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 {
+	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
 }
+

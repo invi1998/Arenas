@@ -18,7 +18,22 @@ class ARENAS_API UArenasAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	virtual void NativeUninitializeAnimation() override;
+	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetSpeed() const { return Speed; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE ACharacter* GetOwnerPlayerCharacter() const { return OwnerPlayerCharacter; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE UCharacterMovementComponent* GetOwnerMovementComponent() const { return OwnerMovementComponent; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsMoving() const { return Speed != 0.0f; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsNotMoving() const { return Speed == 0.0f; }
 	
 protected:
 
@@ -28,5 +43,7 @@ private:
 
 	UPROPERTY()
 	UCharacterMovementComponent* OwnerMovementComponent;
+
+	float Speed;
 	
 };
