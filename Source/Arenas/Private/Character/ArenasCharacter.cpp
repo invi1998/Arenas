@@ -15,8 +15,8 @@ AArenasCharacter::AArenasCharacter()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	ArenasAbilitySystemComponent = CreateDefaultSubobject<UArenasAbilitySystemComponent>(TEXT("ArenasAbilitySystemComponent"));
-	ArenasAbilitySystemComponent->SetIsReplicated(true);
-	ArenasAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	// ArenasAbilitySystemComponent->SetIsReplicated(true);
+	// ArenasAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	ArenasAttributeSet = CreateDefaultSubobject<UArenasAttributeSet>(TEXT("ArenasAttributeSet"));
 }
