@@ -46,6 +46,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE bool IsOnGround() const { return !bIsJumping; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetLookYawOffset() const { return LookRotOffset.Yaw; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetLookPitchOffset() const { return LookRotOffset.Pitch; }
 	
 protected:
 
@@ -65,5 +71,6 @@ private:
 	float YawSpeedSmoothLerpSpeed = 1.f;	// 平滑的身体旋转角速度的插值速度
 	
 	FRotator BodyPrevRot;	// 角色身体的上一个旋转角度
+	FRotator LookRotOffset;	// 角色头部的旋转偏移
 	
 };
