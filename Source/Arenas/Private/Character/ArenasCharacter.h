@@ -43,6 +43,6 @@ private:
 	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;
 
 	UPROPERTY()
-	UArenasAttributeSet* ArenasAttributeSet;
+	UArenasAttributeSet* ArenasAttributeSet;	// 属性集
 	
 };
