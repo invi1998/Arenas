@@ -34,6 +34,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE bool IsNotMoving() const { return Speed == 0.0f; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetYawSpeed() const { return YawSpeed; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetSmoothedYawSpeed() const { return SmoothedYawSpeed; }
 	
 protected:
 
@@ -45,5 +51,12 @@ private:
 	UCharacterMovementComponent* OwnerMovementComponent;
 
 	float Speed;
+	float YawSpeed;
+	float SmoothedYawSpeed;		// 平滑的身体旋转角速度
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	float YawSpeedSmoothLerpSpeed = 1.f;	// 平滑的身体旋转角速度的插值速度
+	
+	FRotator BodyPrevRot;	// 角色身体的上一个旋转角度
 	
 };
