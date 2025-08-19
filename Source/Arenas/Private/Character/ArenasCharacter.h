@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "ArenasCharacter.generated.h"
 
+class UArenasAttributeSet;
+class UArenasAbilitySystemComponent;
+
 UCLASS()
-class ARENAS_API AArenasCharacter : public ACharacter
+class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -25,4 +29,18 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/********************************************************************************************/
+	/*									Gameplay Ability										*/
+	/********************************************************************************************/
+public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+private:
+	UPROPERTY()
+	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;
+
+	UPROPERTY()
+	UArenasAttributeSet* ArenasAttributeSet;
+	
 };

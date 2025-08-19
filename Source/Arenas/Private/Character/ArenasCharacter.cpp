@@ -3,6 +3,9 @@
 
 #include "ArenasCharacter.h"
 
+#include "GAS/ArenasAbilitySystemComponent.h"
+#include "GAS/ArenasAttributeSet.h"
+
 
 // Sets default values
 AArenasCharacter::AArenasCharacter()
@@ -11,7 +14,11 @@ AArenasCharacter::AArenasCharacter()
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	
+	ArenasAbilitySystemComponent = CreateDefaultSubobject<UArenasAbilitySystemComponent>(TEXT("ArenasAbilitySystemComponent"));
+	ArenasAbilitySystemComponent->SetIsReplicated(true);
+	ArenasAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	ArenasAttributeSet = CreateDefaultSubobject<UArenasAttributeSet>(TEXT("ArenasAttributeSet"));
 }
 
 void AArenasCharacter::BeginPlay()
@@ -28,5 +35,10 @@ void AArenasCharacter::Tick(float DeltaTime)
 void AArenasCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+UAbilitySystemComponent* AArenasCharacter::GetAbilitySystemComponent() const
+{
+	return ArenasAbilitySystemComponent;
 }
 
