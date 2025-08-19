@@ -4,6 +4,7 @@
 #include "ArenasAnimInstance.h"
 
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UArenasAnimInstance::NativeInitializeAnimation()
@@ -39,6 +40,12 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// 这里的插值速度可以根据需要进行调整，默认值为1
 		SmoothedYawSpeed = UKismetMathLibrary::FInterpTo(SmoothedYawSpeed, YawSpeed, DeltaSeconds, YawSpeedSmoothLerpSpeed);
 	}
+
+	if (OwnerMovementComponent)
+	{
+		bIsJumping = OwnerMovementComponent->IsFalling();
+	}
+	
 }
 
 void UArenasAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)

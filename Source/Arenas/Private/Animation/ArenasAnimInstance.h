@@ -40,6 +40,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE float GetSmoothedYawSpeed() const { return SmoothedYawSpeed; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsJumping() const { return bIsJumping; }
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool IsOnGround() const { return !bIsJumping; }
 	
 protected:
 
@@ -53,6 +59,7 @@ private:
 	float Speed;
 	float YawSpeed;
 	float SmoothedYawSpeed;		// 平滑的身体旋转角速度
+	bool bIsJumping;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	float YawSpeedSmoothLerpSpeed = 1.f;	// 平滑的身体旋转角速度的插值速度
