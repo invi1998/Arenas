@@ -5,6 +5,8 @@
 
 #include "Interface/PawnUIInterface.h"
 #include "Component/UI/PlayerUIComponent.h"
+#include "ArenasBlueprintFunctionLibrary.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 
 void UArenasUserWidget::NativeOnInitialized()
 {
@@ -18,3 +20,21 @@ void UArenasUserWidget::NativeOnInitialized()
 		}
 	}
 }
+
+void UArenasUserWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	CachedArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(GetOwningPlayerPawn());
+	if (CachedArenasASC)
+	{
+		if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetOwningPlayerPawn()))
+		{
+			if (UPlayerUIComponent* PlayerUIComponent = PawnUIInterface->GetPlayerUIComponent())
+			{
+				PlayerUIComponent->SetAndBoundAttributeDelegate(CachedArenasASC);
+			}
+		}
+	}
+}
+

@@ -3,6 +3,9 @@
 
 #include "GAS/ArenasAbilitySystemComponent.h"
 
+#include "ArenasAttributeSet.h"
+#include "Component/UI/PawnUIComponent.h"
+
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;

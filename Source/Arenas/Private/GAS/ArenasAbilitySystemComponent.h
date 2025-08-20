@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "ArenasAbilitySystemComponent.generated.h"
 
+class IPawnUIInterface;
 /**
  * 
  */
@@ -20,5 +21,7 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialGameplayEffects;
+
+	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 	
 };

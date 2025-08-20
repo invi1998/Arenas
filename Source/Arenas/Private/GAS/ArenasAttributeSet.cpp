@@ -5,10 +5,6 @@
 
 #include "Net/UnrealNetwork.h"
 
-UArenasAttributeSet::UArenasAttributeSet()
-{
-}
-
 void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -20,6 +16,12 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+}
+
+void UArenasAttributeSet::BroadcastAttributeInitialValue(const UPawnUIComponent* InPawnUIComponent) const
+{
+	InPawnUIComponent->OnHealthPercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(GetHealth(), GetMaxHealth()), GetHealth(), GetMaxHealth());
+	InPawnUIComponent->OnManaPercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(GetMana(), GetMaxMana()), GetMana(), GetMaxMana());
 }
 
 void UArenasAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue) const

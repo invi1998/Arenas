@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
+#include "Component/UI/PawnUIComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "ArenasAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -13,6 +15,7 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+class UPawnUIComponent;
 /**
  * 
  */
@@ -22,14 +25,14 @@ class ARENAS_API UArenasAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
-	UArenasAttributeSet();
-
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxMana);
+
+	void BroadcastAttributeInitialValue(const UPawnUIComponent* InPawnUIComponent) const;
 
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_Health)

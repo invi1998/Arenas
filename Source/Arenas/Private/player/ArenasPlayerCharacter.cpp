@@ -27,6 +27,8 @@ AArenasPlayerCharacter::AArenasPlayerCharacter()
 	bUseControllerRotationYaw = false;		// 让角色不跟随控制器的旋转
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 让角色朝向移动方向
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // 设置角色的旋转速率
+
+	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
 	
 }
 
