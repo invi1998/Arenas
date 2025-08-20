@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Widgets/ArenasUserWidget.h"
 
 
@@ -108,6 +109,23 @@ void AArenasCharacter::SpawnOverheadWidgetComponent()
 		{
 			OverheadWidget->InitOverheadWidget(this);
 		}
+
+		// 启动定时器定期更新头顶UI的可见性
+		if (OverheadTimerHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(OverheadTimerHandle);
+		}
+		GetWorld()->GetTimerManager().SetTimer(OverheadTimerHandle, this, &AArenasCharacter::UpdateOverheadWidgetVisibility, OverheadWidgetVisibilityCheckDelay, true);
+	}
+}
+
+void AArenasCharacter::UpdateOverheadWidgetVisibility()
+{
+	APawn* LocalPlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (LocalPlayerPawn)
+	{
+		float DistanceSquared = FVector::DistSquared(GetActorLocation(), LocalPlayerPawn->GetActorLocation());
+		OverheadWidgetComponent->SetHiddenInGame(DistanceSquared > OverheadWidgetVisibilityRangeSquared);
 	}
 }
 

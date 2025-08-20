@@ -10,7 +10,12 @@
 void UPawnUIComponent::OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	Health = OnAttributeChangeData.NewValue;
+	if (MaxHealth <= 0.f)
+	{
+		return;
+	}
 	float HealthPercent = UKismetMathLibrary::SafeDivide(Health, MaxHealth);
+	
 	OnHealthPercentChanged.Broadcast(HealthPercent, Health, MaxHealth);
 }
 
@@ -31,7 +36,12 @@ void UPawnUIComponent::OnManaChanged(const FOnAttributeChangeData& OnAttributeCh
 void UPawnUIComponent::OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	MaxMana = OnAttributeChangeData.NewValue;
+	if (MaxMana <= 0.f)
+	{
+		return;
+	}
 	float ManaPercent = UKismetMathLibrary::SafeDivide(Mana, MaxMana);
+	
 	OnManaPercentChanged.Broadcast(ManaPercent, Mana, MaxMana);
 }
 
@@ -51,17 +61,17 @@ void UPawnUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemComponen
 		}
 
 		ArenasASC = InArenasASC;
+		
+		// 绑定属性变化的委托
+		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
+		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
+		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
+		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 
 		// 广播当前属性值
 		if (const UArenasAttributeSet* AttributeSet = ArenasASC->GetSet<UArenasAttributeSet>())
 		{
 			AttributeSet->BroadcastAttributeInitialValue(this);
 		}
-
-		// 绑定属性变化的委托
-		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
-		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
-		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
-		ArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 	}
 }

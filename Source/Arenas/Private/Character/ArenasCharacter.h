@@ -71,5 +71,14 @@ private:
 	UArenasUserWidget* OverheadWidget;
 
 	void SpawnOverheadWidgetComponent();
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float OverheadWidgetVisibilityCheckDelay = 1.f; // 显示头顶UI的检测时间
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float OverheadWidgetVisibilityRangeSquared = 1000000.f; // 头顶UI的显示范围，单位是平方
+	
+	FTimerHandle OverheadTimerHandle;
+	void UpdateOverheadWidgetVisibility();
 	
 };
