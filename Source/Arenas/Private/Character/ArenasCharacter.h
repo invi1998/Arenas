@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Interface/PawnUIInterface.h"
 #include "ArenasCharacter.generated.h"
 
 class UArenasAttributeSet;
 class UArenasAbilitySystemComponent;
 
 UCLASS()
-class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface
+class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface
 {
 	GENERATED_BODY()
 
@@ -20,6 +21,10 @@ public:
 	AArenasCharacter();
 	void ServerSideInit();
 	void ClientSideInit();
+
+	// Interface IPawnUIInterface Begin
+	virtual UPawnUIComponent* GetPawnUIComponent() const override;
+	// Interface IPawnUIInterface End
 
 protected:
 	// Called when the game starts or when spawned

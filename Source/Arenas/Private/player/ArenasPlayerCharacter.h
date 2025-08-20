@@ -6,6 +6,7 @@
 #include "Character/ArenasCharacter.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+class UPlayerUIComponent;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -26,6 +27,11 @@ public:
 	virtual void PawnClientRestart() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
+	// Interface IPawnUIInterface Begin
+	virtual UPawnUIComponent* GetPawnUIComponent() const override;
+	virtual UPlayerUIComponent* GetPlayerUIComponent() const override;
+	// Interface IPawnUIInterface End
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
@@ -52,5 +58,8 @@ private:
 	FVector GetLookForwardDir() const;
 	FVector GetLookRightDir() const;
 	FVector GetMoveForwardDir() const;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UPlayerUIComponent* PlayerUIComponent;
 	
 };

@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ArenasPlayerController.generated.h"
 
+class UArenasUserWidget;
 class AArenasPlayerCharacter;
 /**
  * 
@@ -25,6 +26,13 @@ public:
 private:
 	UPROPERTY()
 	AArenasPlayerCharacter* ArenasPlayerCharacter;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UArenasUserWidget> PlayerUIWidgetClass;
+
+	UPROPERTY()
+	UArenasUserWidget* PlayerUIWidget;
+
+	void SpawnPlayerUIWidget();
 	
 };

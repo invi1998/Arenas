@@ -4,6 +4,8 @@
 #include "ArenasPlayerController.h"
 
 #include "ArenasPlayerCharacter.h"
+#include "Blueprint/UserWidget.h"
+#include "Widgets/ArenasUserWidget.h"
 
 void AArenasPlayerController::OnPossess(APawn* InPawn)
 {
@@ -23,6 +25,19 @@ void AArenasPlayerController::AcknowledgePossession(class APawn* P)
 	if (ArenasPlayerCharacter)
 	{
 		ArenasPlayerCharacter->ClientSideInit();
+		SpawnPlayerUIWidget();
+	}
+	
+}
+
+void AArenasPlayerController::SpawnPlayerUIWidget()
+{
+	if (!IsLocalPlayerController()) return;
+
+	PlayerUIWidget = CreateWidget<UArenasUserWidget>(this, PlayerUIWidgetClass.Get());
+	if (PlayerUIWidget)
+	{
+		PlayerUIWidget->AddToViewport();
 	}
 	
 }

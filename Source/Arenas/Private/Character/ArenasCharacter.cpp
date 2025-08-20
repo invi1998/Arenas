@@ -32,6 +32,11 @@ void AArenasCharacter::ClientSideInit()
 	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
+UPawnUIComponent* AArenasCharacter::GetPawnUIComponent() const
+{
+	return nullptr;
+}
+
 void AArenasCharacter::BeginPlay()
 {
 	Super::BeginPlay();

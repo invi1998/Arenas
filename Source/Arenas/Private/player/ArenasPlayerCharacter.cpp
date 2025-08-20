@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Component/UI/PlayerUIComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -55,6 +56,16 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleMoveInput);
 	}
 	
+}
+
+UPawnUIComponent* AArenasPlayerCharacter::GetPawnUIComponent() const
+{
+	return PlayerUIComponent;
+}
+
+UPlayerUIComponent* AArenasPlayerCharacter::GetPlayerUIComponent() const
+{
+	return PlayerUIComponent;
 }
 
 void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)
