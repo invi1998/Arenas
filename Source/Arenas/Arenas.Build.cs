@@ -23,6 +23,9 @@ public class Arenas : ModuleRules
 			"GameplayAbilities",
 			"GameplayTasks",
 			"GameplayTags",
+			"UMG",
+			"Slate",
+			"SlateCore",
 		});
 
 		// Uncomment if you are using Slate UI

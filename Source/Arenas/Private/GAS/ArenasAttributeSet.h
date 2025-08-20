@@ -22,22 +22,38 @@ class ARENAS_API UArenasAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	UArenasAttributeSet();
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxMana);
 
 private:
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_Mana)
 	FGameplayAttributeData Mana;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_MaxMana)
 	FGameplayAttributeData MaxMana;
+
+	UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_Mana(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_MaxMana(const FGameplayAttributeData& OldValue) const;
 	
 };
