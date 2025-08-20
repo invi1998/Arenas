@@ -41,5 +41,5 @@ void UArenasAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldValue) con
 
 void UArenasAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldValue) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, Mana, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MaxMana, OldValue);
 }

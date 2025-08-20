@@ -36,6 +36,4 @@ private:
 	float Mana = 0.f;
 	float MaxMana = 0.f;
 
-	UPROPERTY()
-	UArenasAbilitySystemComponent* ArenasASC = nullptr;	// 引用的GAS能力系统组件
 };
