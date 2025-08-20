@@ -8,6 +8,21 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 
+void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
+{
+	UArenasAbilitySystemComponent* OverHeadASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(InActor);
+	if (!OverHeadASC) return;
+	
+	if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(InActor))
+	{
+		if (UPlayerUIComponent* PlayerUIComponent = PawnUIInterface->GetPlayerUIComponent())
+		{
+			BP_OnOverheadWidgetInitialized(PlayerUIComponent);
+			PlayerUIComponent->SetAndBoundAttributeDelegate(OverHeadASC);
+		}
+	}
+}
+
 void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

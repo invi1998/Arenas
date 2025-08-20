@@ -18,6 +18,7 @@ class ARENAS_API UArenasUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	void InitOverheadWidget(AActor* InActor);
 
 protected:
 	// NativeOnInitialized 先执行，NativeConstruct 后执行
@@ -26,6 +27,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI", meta=(DisplayName = "On Owning Player UI Component Initialized"))
 	void BP_OnOwningPlayerUIComponentInitialized(UPlayerUIComponent* InPlayerUIComponent);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", meta=(DisplayName = "On OverHead Created Widget Initialized"))
+	void BP_OnOverheadWidgetInitialized(UPlayerUIComponent* InOverHeadUIComponent);
 
 private:
 	UPROPERTY()

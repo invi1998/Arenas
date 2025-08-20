@@ -8,6 +8,8 @@
 #include "Interface/PawnUIInterface.h"
 #include "ArenasCharacter.generated.h"
 
+class UArenasUserWidget;
+class UWidgetComponent;
 class UArenasAttributeSet;
 class UArenasAbilitySystemComponent;
 
@@ -49,5 +51,21 @@ private:
 
 	UPROPERTY()
 	UArenasAttributeSet* ArenasAttributeSet;	// 属性集
+
+
+	/********************************************************************************************/
+	/*								 		UI													*/
+	/********************************************************************************************/
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category = "UI")
+	UWidgetComponent* OverheadWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UArenasUserWidget> OverheadWidgetClass;
+
+	UPROPERTY()
+	UArenasUserWidget* OverheadWidget;
+
+	void SpawnOverheadWidgetComponent();
 	
 };
