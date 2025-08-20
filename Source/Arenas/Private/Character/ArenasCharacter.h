@@ -23,6 +23,10 @@ public:
 	AArenasCharacter();
 	void ServerSideInit();
 	void ClientSideInit();
+	bool IsLocallyControlledByPlayer() const;
+
+	// 当角色被控制器控制时调用(只会在服务端被调用)
+	virtual void PossessedBy(AController* NewController) override;
 
 	// Interface IPawnUIInterface Begin
 	virtual UPawnUIComponent* GetPawnUIComponent() const override;
