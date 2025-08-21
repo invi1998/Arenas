@@ -30,7 +30,8 @@ AArenasCharacter::AArenasCharacter()
 void AArenasCharacter::ServerSideInit()
 {
 	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
-	ArenasAbilitySystemComponent->ApplyInitialEffects();
+	ArenasAbilitySystemComponent->ApplyInitialEffects();		// 初始化角色属性
+	ArenasAbilitySystemComponent->GiveInitialAbilities();		// 赋予初始技能
 }
 
 void AArenasCharacter::ClientSideInit()
