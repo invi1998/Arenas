@@ -4,7 +4,7 @@
 #include "GAS/ArenasAbilitySystemComponent.h"
 
 #include "ArenasAttributeSet.h"
-#include "Component/UI/PawnUIComponent.h"
+#include "GAS/Abilities/ArenasGameplayAbility.h"
 
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
 {
@@ -21,14 +21,30 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 
-	for (const TSubclassOf<UGameplayAbility>& AbilityClass : Abilities)
+	for (const FArenasAbilitySet& AbilitySet : Abilities)
 	{
-		GiveAbility(FGameplayAbilitySpec(AbilityClass, 0, -1, nullptr));
+		if (AbilitySet.IsValid())
+		{
+			FGameplayAbilitySpec NewAbilitySpec(AbilitySet.AbilityToGrantClass);
+			NewAbilitySpec.SourceObject = GetAvatarActor();
+			NewAbilitySpec.Level = 0;
+			NewAbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);	// 技能输入标签
+
+			GiveAbility(NewAbilitySpec);
+		}
 	}
 
-	for (const TSubclassOf<UGameplayAbility>& AbilityClass : BasicAbilities)
+	for (const FArenasAbilitySet& AbilitySet : BasicAbilities)
 	{
-		GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1, nullptr));
+		if (AbilitySet.IsValid())
+		{
+			FGameplayAbilitySpec NewAbilitySpec(AbilitySet.AbilityToGrantClass);
+			NewAbilitySpec.SourceObject = GetAvatarActor();
+			NewAbilitySpec.Level = 1;
+			NewAbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);	// 技能输入标签
+
+			GiveAbility(NewAbilitySpec);
+		}
 	}
 	
 }

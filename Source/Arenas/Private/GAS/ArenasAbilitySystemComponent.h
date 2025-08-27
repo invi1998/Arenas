@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "Types/ArenaStructTypes.h"
 #include "ArenasAbilitySystemComponent.generated.h"
 
 class IPawnUIInterface;
@@ -26,9 +27,9 @@ private:
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
-	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+	TArray<FArenasAbilitySet> Abilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
-	TArray<TSubclassOf<UGameplayAbility>> BasicAbilities;
+	TArray<FArenasAbilitySet> BasicAbilities;
 	
 };
