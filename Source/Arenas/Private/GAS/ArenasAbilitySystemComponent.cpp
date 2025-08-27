@@ -21,29 +21,21 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 
-	for (const FArenasAbilitySet& AbilitySet : Abilities)
+	for (const TPair<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : Abilities)
 	{
-		if (AbilitySet.IsValid())
+		if (AbilityPair.Value)
 		{
-			FGameplayAbilitySpec NewAbilitySpec(AbilitySet.AbilityToGrantClass);
-			NewAbilitySpec.SourceObject = GetAvatarActor();
-			NewAbilitySpec.Level = 0;
-			NewAbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);	// 技能输入标签
-
-			GiveAbility(NewAbilitySpec);
+			FGameplayAbilitySpec AbilitySpec(AbilityPair.Value, 0, static_cast<int32>(AbilityPair.Key));
+			GiveAbility(AbilitySpec);
 		}
 	}
 
-	for (const FArenasAbilitySet& AbilitySet : BasicAbilities)
+	for (const TPair<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : BasicAbilities)
 	{
-		if (AbilitySet.IsValid())
+		if (AbilityPair.Value)
 		{
-			FGameplayAbilitySpec NewAbilitySpec(AbilitySet.AbilityToGrantClass);
-			NewAbilitySpec.SourceObject = GetAvatarActor();
-			NewAbilitySpec.Level = 1;
-			NewAbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);	// 技能输入标签
-
-			GiveAbility(NewAbilitySpec);
+			FGameplayAbilitySpec AbilitySpec(AbilityPair.Value, 1, static_cast<int32>(AbilityPair.Key));
+			GiveAbility(AbilitySpec);
 		}
 	}
 	

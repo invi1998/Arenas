@@ -8,7 +8,9 @@
 
 UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(nullptr)
 {
-	AbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
+	FGameplayTagContainer TempAbilityTags;
+	TempAbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
+	SetAssetTags(TempAbilityTags);
 	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
 }
 

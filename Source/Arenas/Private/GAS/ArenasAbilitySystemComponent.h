@@ -27,9 +27,9 @@ private:
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
-	TArray<FArenasAbilitySet> Abilities;
+	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> Abilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
-	TArray<FArenasAbilitySet> BasicAbilities;
+	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
 	
 };
