@@ -2,11 +2,19 @@
 
 
 #include "ArenasCombo_GameplayAbility.h"
+
+#include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
+UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(nullptr)
+{
+	AbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
+	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
+}
+
 void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                                   const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                                   const FGameplayEventData* TriggerEventData)
 {
 	// if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	// 等价于
