@@ -22,5 +22,10 @@ namespace ArenasGameplayTags
 	
 	// Gameplay Ability Tags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack);
+
+	// Event
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Change_Combo02);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Change_Combo03);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Change_Combo04);
 	
 }
