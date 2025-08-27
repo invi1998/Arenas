@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Character/ArenasCharacter.h"
+#include "Types/ArenaStructTypes.h"
 #include "ArenasPlayerCharacter.generated.h"
 
 class UPlayerUIComponent;
@@ -25,7 +27,7 @@ public:
 	// 这是因为当客户端重启时该函数会被调用，这是在多人游戏中首次在客户端生成实际角色的时机
 	// 此时角色已经准备好在BeginPlay中与输入进行绑定
 	virtual void PawnClientRestart() override;
-
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	// Interface IPawnUIInterface Begin
@@ -40,6 +42,10 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	UCameraComponent* FollowCamera;
 
+	FVector GetLookForwardDir() const;
+	FVector GetLookRightDir() const;
+	FVector GetMoveForwardDir() const;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* JumpInputAction;
 
@@ -52,13 +58,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* GameplayInputMappingContext;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TMap<EArenasAbilityInputID, UInputAction*> GameplayAbilityInputActions;
+
 	void HandleLookInput(const FInputActionValue& Value);
 	void HandleMoveInput(const FInputActionValue& Value);
-
-	FVector GetLookForwardDir() const;
-	FVector GetLookRightDir() const;
-	FVector GetMoveForwardDir() const;
-
+	void HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UPlayerUIComponent* PlayerUIComponent;
 	

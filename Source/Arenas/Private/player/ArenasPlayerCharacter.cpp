@@ -3,6 +3,7 @@
 
 #include "ArenasPlayerCharacter.h"
 
+#include "AbilitySystemComponent.h"
 #include "ArenasPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -56,6 +57,13 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleLookInput);
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleMoveInput);
+
+		// ability
+		for (const TPair<EArenasAbilityInputID, UInputAction*>& AbilityPair : GameplayAbilityInputActions)
+		{
+			EnhancedInputComponent->BindAction(AbilityPair.Value, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleAbilityInput, AbilityPair.Key);
+		}
+
 	}
 	
 }
@@ -68,6 +76,21 @@ UPawnUIComponent* AArenasPlayerCharacter::GetPawnUIComponent() const
 UPlayerUIComponent* AArenasPlayerCharacter::GetPlayerUIComponent() const
 {
 	return PlayerUIComponent;
+}
+
+FVector AArenasPlayerCharacter::GetLookForwardDir() const
+{
+	return FollowCamera->GetForwardVector();
+}
+
+FVector AArenasPlayerCharacter::GetLookRightDir() const
+{
+	return FollowCamera->GetRightVector();
+}
+
+FVector AArenasPlayerCharacter::GetMoveForwardDir() const
+{
+	return FVector::CrossProduct(GetLookRightDir(), FVector::UpVector);
 }
 
 void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)
@@ -87,20 +110,24 @@ void AArenasPlayerCharacter::HandleMoveInput(const FInputActionValue& Value)
 	
 }
 
-FVector AArenasPlayerCharacter::GetLookForwardDir() const
+void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID)
 {
-	return FollowCamera->GetForwardVector();
+	// 因为技能输入可能是按下就触发，也可能是按下后松开触发，所以这里通过检查bPressed来区别这两种情况
+	if (bool bPressed = Value.Get<bool>())
+	{
+		// 执行本地技能触发(按下)
+		GetAbilitySystemComponent()->AbilityLocalInputPressed(static_cast<int32>(AbilityID));
+	}
+	else
+	{
+		// 执行本地技能触发(松开)
+		GetAbilitySystemComponent()->AbilityLocalInputReleased(static_cast<int32>(AbilityID));
+	}
+	
 }
 
-FVector AArenasPlayerCharacter::GetLookRightDir() const
-{
-	return FollowCamera->GetRightVector();
-}
 
-FVector AArenasPlayerCharacter::GetMoveForwardDir() const
-{
-	return FVector::CrossProduct(GetLookRightDir(), FVector::UpVector);
-}
+
 	
 
 
