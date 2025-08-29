@@ -103,6 +103,10 @@ void AArenasCharacter::DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCoun
 	{
 		StartDeathSequence();
 	}
+	else
+	{
+		Respawn();
+	}
 }
 
 void AArenasCharacter::BindGASChangedDelegate()
@@ -182,11 +186,17 @@ void AArenasCharacter::StartDeathSequence()
 void AArenasCharacter::Respawn()
 {
 	OnRespawn();
-	ArenasAbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(ArenasGameplayTags::Status_Dead));
-	// ArenasAbilitySystemComponent->SetHealth(ArenasAttributeSet->GetMaxHealth());
+	
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SetStatusGaugeEnabled(true);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.0f);
+
+	if (ArenasAbilitySystemComponent)
+	{
+		ArenasAbilitySystemComponent->ApplyFullStateEffect();
+	}
+	
 }
 
 void AArenasCharacter::PlayDeathAnimation()

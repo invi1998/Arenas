@@ -21,8 +21,10 @@ public:
 	
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
+	void ApplyFullStateEffect();
 
 private:
+	void AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel = 1);
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
@@ -38,5 +40,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
 	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> FullStateEffectClass;
 	
 };

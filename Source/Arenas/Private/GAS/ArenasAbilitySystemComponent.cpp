@@ -46,13 +46,28 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 	
 }
 
+void UArenasAbilitySystemComponent::ApplyFullStateEffect()
+{
+	AuthApplyGameplayEffectToSelf(FullStateEffectClass);
+}
+
+void UArenasAbilitySystemComponent::AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(GameplayEffectClass, EffectLevel, MakeEffectContext());
+	if (EffectSpecHandle.IsValid())
+	{
+		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	}
+}
+
 void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 
 	if (Data.NewValue <= 0.f && DeathEffectClass)
 	{
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(DeathEffectClass, 1, MakeEffectContext());
-		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+		AuthApplyGameplayEffectToSelf(DeathEffectClass);
 	}
 }
