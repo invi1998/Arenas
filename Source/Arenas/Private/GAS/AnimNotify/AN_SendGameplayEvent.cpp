@@ -1,13 +1,13 @@
 ﻿// Ace of Arenas. (invi1998 All Rights Reserved)
 
 
-#include "ArenasAnimNotify_SendGameplayEvent.h"
+#include "AN_SendGameplayEvent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "GameplayTagsManager.h"
 
-void UArenasAnimNotify_SendGameplayEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UAN_SendGameplayEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
@@ -20,7 +20,7 @@ void UArenasAnimNotify_SendGameplayEvent::Notify(USkeletalMeshComponent* MeshCom
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, EventData);
 }
 
-FString UArenasAnimNotify_SendGameplayEvent::GetNotifyName_Implementation() const
+FString UAN_SendGameplayEvent::GetNotifyName_Implementation() const
 {
 	return UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag).ToString();
 }

@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "ArenasAnimNotify_SendGameplayEvent.generated.h"
+#include "AN_SendGameplayEvent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARENAS_API UArenasAnimNotify_SendGameplayEvent : public UAnimNotify
+class ARENAS_API UAN_SendGameplayEvent : public UAnimNotify
 {
 	GENERATED_BODY()
 
