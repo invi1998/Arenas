@@ -274,6 +274,10 @@ cython_debug/
 .cursorindexingignore
 
 # 第三方资产
+/Content/_ExternalActors_
+/Content/_ExternalObjects_
 /Content/ParagonCrunch
 /Content/HQUI_ProgressBars
+/Content/ModularSciFi
+/Content/Arenas/Map/GameLevel.umap
 
