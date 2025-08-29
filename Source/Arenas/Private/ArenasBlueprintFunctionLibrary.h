@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.generated.h"
 
+struct FGameplayTag;
 class UArenasAbilitySystemComponent;
 /**
  * 
@@ -20,5 +21,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Arenas | FunctionLibrary", meta=(DisplayName="Get Arenas ASC From Actor"))
 	static UArenasAbilitySystemComponent* BP_GetArenasASCFromActor(AActor* InActor);
+
+	static FName NativeGetGameplayTagLastName(const FGameplayTag& InTag);
 	
 };

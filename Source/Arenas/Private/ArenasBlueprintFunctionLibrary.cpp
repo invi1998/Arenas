@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayTagsManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 
 UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(AActor* InActor)
@@ -15,4 +16,15 @@ UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::NativeGetArenasA
 UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::BP_GetArenasASCFromActor(AActor* InActor)
 {
 	return NativeGetArenasASCFromActor(InActor);
+}
+
+FName UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(const FGameplayTag& InTag)
+{
+	if (InTag.IsValid())
+	{
+		TArray<FName> EventNames;
+		UGameplayTagsManager::Get().SplitGameplayTagFName(InTag, EventNames);
+		return EventNames.Last();
+	}
+	return NAME_None;
 }

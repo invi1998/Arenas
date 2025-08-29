@@ -4,6 +4,7 @@
 #include "ArenasAnimNotify_SendGameplayEvent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "GameplayTagsManager.h"
 
 void UArenasAnimNotify_SendGameplayEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -21,12 +22,5 @@ void UArenasAnimNotify_SendGameplayEvent::Notify(USkeletalMeshComponent* MeshCom
 
 FString UArenasAnimNotify_SendGameplayEvent::GetNotifyName_Implementation() const
 {
-	if (EventTag.IsValid())
-	{
-		TArray<FName> EventNames;
-		UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, EventNames);
-		return EventNames.Last().ToString();
-	}
-
-	return TEXT("");
+	return UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag).ToString();
 }

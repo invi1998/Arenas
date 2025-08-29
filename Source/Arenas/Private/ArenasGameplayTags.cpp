@@ -19,9 +19,11 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_BasicAttack, "Ability.BasicAttack", "基础攻击技能" );
 
 	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_Combo01, "Event.Ability.Combo.Change.Combo01", "连招技能切换到连招1" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_Combo02, "Event.Ability.Combo.Change.Combo02", "连招技能切换到连招2" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_Combo03, "Event.Ability.Combo.Change.Combo03", "连招技能切换到连招3" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_Combo04, "Event.Ability.Combo.Change.Combo04", "连招技能切换到连招4" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_End, "Event.Ability.Combo.Change.End", "连招技能切换到连招结束" );
 
 	
 }

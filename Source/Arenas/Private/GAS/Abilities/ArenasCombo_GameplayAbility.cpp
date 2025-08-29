@@ -3,8 +3,10 @@
 
 #include "ArenasCombo_GameplayAbility.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(nullptr)
 {
@@ -43,5 +45,37 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 		PlayComboMontageAndWaitTask->OnCancelled.AddDynamic(this, &UArenasCombo_GameplayAbility::K2_EndAbility);
 		
 		PlayComboMontageAndWaitTask->ReadyForActivation();	// 准备好被激活（实际并未被激活）
+
+		// 等待动画通知事件（AnimNotify Event）
+		UAbilityTask_WaitGameplayEvent* WaitComboChangeEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this,
+			GetComboChangeEventTag(),
+			nullptr,
+			false,
+			false);
+
+		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboChangeEventReceived);
+		WaitComboChangeEventTask->ReadyForActivation();
 	}
+}
+
+FGameplayTag UArenasCombo_GameplayAbility::GetComboChangeEventTag()
+{
+	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
+}
+
+void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData PayloadData)
+{
+	FGameplayTag EventTag = PayloadData.EventTag;
+
+	if (EventTag == ArenasGameplayTags::Event_Ability_Combo_Change_End)
+	{
+		NextComboName = NAME_None;
+		UE_LOG(LogTemp, Warning, TEXT("Combo Ended"));
+		return;
+	}
+
+	NextComboName = UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag);
+	UE_LOG(LogTemp, Warning, TEXT("Next Combo: %s"), *NextComboName.ToString());
+	
 }

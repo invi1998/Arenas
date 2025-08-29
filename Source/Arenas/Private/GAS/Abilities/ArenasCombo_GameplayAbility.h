@@ -16,11 +16,20 @@ class ARENAS_API UArenasCombo_GameplayAbility : public UArenasGameplayAbility
 
 public:
 	UArenasCombo_GameplayAbility();
+
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
+	static FGameplayTag GetComboChangeEventTag();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ComboMontage;
+
+	UFUNCTION()
+	void OnComboChangeEventReceived(FGameplayEventData PayloadData);
+
+	FName NextComboName;
+	
 	
 };
