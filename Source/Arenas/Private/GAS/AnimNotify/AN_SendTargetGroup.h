@@ -22,7 +22,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Gameplay Ability")
 	TArray<FName> TargetSocketNames;
 
-	UPROPERTY(EditAnywhere, Category = "Gameplay Ability")
+	UPROPERTY(EditAnywhere, Category = "Gameplay Ability", meta=(Categories="Event", GameplayTagFilter = "Event"))
 	FGameplayTag EventTag;
 	
 };
