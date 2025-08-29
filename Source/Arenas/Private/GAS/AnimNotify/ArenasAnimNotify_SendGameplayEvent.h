@@ -20,7 +20,7 @@ public:
 
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Gameplay Ability")
+	UPROPERTY(EditAnywhere, Category = "Gameplay Ability", meta=(Categories="Event", GameplayTagFilter = "Event"))
 	FGameplayTag EventTag;
 
 	// 重写该函数以在编辑器中显示自定义名称（如动画通知的名称），这里我们显示的是EventTag里的最后一个层级的名称

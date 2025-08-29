@@ -13,4 +13,7 @@ UCLASS()
 class ARENAS_API UArenasGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
+
+protected:
+	UAnimInstance* GetOwnerAnimInstance() const;
 };

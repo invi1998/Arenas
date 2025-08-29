@@ -23,11 +23,17 @@ public:
 private:
 	static FGameplayTag GetComboChangeEventTag();
 	
+	void SetupWaitComboInputPressTask();
+	void TryCommitCombo();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ComboMontage;
 
 	UFUNCTION()
 	void OnComboChangeEventReceived(FGameplayEventData PayloadData);
+
+	UFUNCTION()
+	void OnComboInputPressed(float TimeWaited);
 
 	FName NextComboName;
 	

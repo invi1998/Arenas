@@ -7,6 +7,7 @@
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(nullptr)
 {
@@ -51,17 +52,42 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 			this,
 			GetComboChangeEventTag(),
 			nullptr,
-			false,
-			false);
+			false,	// 因为连招会被多次触发，所以这里不需要只触发一次
+			false);	// 同时，我们这里监听的是Combo.Change，它下面有多个具体的连招段Tag，所以这里不需要只匹配精确标签
 
 		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboChangeEventReceived);
 		WaitComboChangeEventTask->ReadyForActivation();
+
+		SetupWaitComboInputPressTask();
 	}
 }
 
 FGameplayTag UArenasCombo_GameplayAbility::GetComboChangeEventTag()
 {
 	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
+}
+
+void UArenasCombo_GameplayAbility::SetupWaitComboInputPressTask()
+{
+	UAbilityTask_WaitInputPress* WaitComboInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
+	WaitComboInputPressTask->OnPress.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboInputPressed);
+	WaitComboInputPressTask->ReadyForActivation();
+	
+}
+
+void UArenasCombo_GameplayAbility::TryCommitCombo()
+{
+	if (NextComboName == NAME_None)
+	{
+		return;
+	}
+
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage), NextComboName, ComboMontage);
+		
+	}
+	
 }
 
 void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData PayloadData)
@@ -78,4 +104,10 @@ void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData
 	NextComboName = UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag);
 	UE_LOG(LogTemp, Warning, TEXT("Next Combo: %s"), *NextComboName.ToString());
 	
+}
+
+void UArenasCombo_GameplayAbility::OnComboInputPressed(float TimeWaited)
+{
+	SetupWaitComboInputPressTask();
+	TryCommitCombo();
 }
