@@ -24,7 +24,10 @@ FName UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(const FGamep
 	{
 		TArray<FName> EventNames;
 		UGameplayTagsManager::Get().SplitGameplayTagFName(InTag, EventNames);
-		return EventNames.Last();
+		if (EventNames.Num() > 0)
+		{
+			return EventNames.Last();
+		}
 	}
 	return NAME_None;
 }

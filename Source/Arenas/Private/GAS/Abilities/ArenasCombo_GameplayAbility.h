@@ -32,6 +32,8 @@ private:
 	TSubclassOf<UGameplayEffect> DefaultDamageEffect;	// 默认伤害GameplayEffect
 	
 	TSubclassOf<UGameplayEffect> GetCurrentComboDamageEffect() const;
+
+	int32 GetCurrentComboIndex() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ComboMontage;

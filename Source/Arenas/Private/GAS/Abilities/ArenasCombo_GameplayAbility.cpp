@@ -4,6 +4,7 @@
 #include "ArenasCombo_GameplayAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -120,6 +121,16 @@ TSubclassOf<UGameplayEffect> UArenasCombo_GameplayAbility::GetCurrentComboDamage
 	return DefaultDamageEffect;
 }
 
+int32 UArenasCombo_GameplayAbility::GetCurrentComboIndex() const
+{
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		FName CurrentSectionName = OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage);
+		return FCString::Atoi(*CurrentSectionName.ToString());
+	}
+	return 0; // 默认返回0，表示无效索引
+}
+
 void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData PayloadData)
 {
 	FGameplayTag EventTag = PayloadData.EventTag;
@@ -146,10 +157,15 @@ void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
 {
 	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, 30.f, true);
 
+	float CurrentComboIndex = GetCurrentComboIndex();
+	
 	for (const FHitResult& Hit : HitResults)
 	{
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GetCurrentComboDamageEffect(), GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
+		// 添加SetByCaller参数
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, CurrentComboIndex);
+		
 		ApplyGameplayEffectSpecToTarget(
 			GetCurrentAbilitySpecHandle(),
 			GetCurrentActorInfo(),

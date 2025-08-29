@@ -3,7 +3,9 @@
 
 #include "ArenasAttributeSet.h"
 
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffectExtension.h"
 
 void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -16,6 +18,45 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+}
+
+void UArenasAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	Super::PreAttributeBaseChange(Attribute, NewValue);
+
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+	else if (Attribute == GetMaxHealthAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 1.f);	// 最大生命值至少为1
+	}
+	else if (Attribute == GetManaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+	}
+	else if (Attribute == GetMaxManaAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.f);	// 最大法力值至少为0
+	}
+}
+
+void UArenasAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+
+	if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
+	{
+		// 处理伤害
+		float DamageAmount = GetDamageTaken();
+		if (DamageAmount > 0.f)
+		{
+			float NewHealth = GetHealth() - DamageAmount;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+			SetDamageTaken(0.f); // 重置伤害值
+		}
+	}
 }
 
 void UArenasAttributeSet::BroadcastAttributeInitialValue(const UPawnUIComponent* InPawnUIComponent) const
@@ -42,4 +83,9 @@ void UArenasAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldValue) con
 void UArenasAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MaxMana, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_DamageTaken(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, DamageTaken, OldValue);
 }

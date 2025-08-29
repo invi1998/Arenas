@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "Component/UI/PawnUIComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "ArenasAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -26,26 +25,32 @@ class ARENAS_API UArenasAttributeSet : public UAttributeSet
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	
-	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Health);
-	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Mana);
-	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxMana);
-
 	void BroadcastAttributeInitialValue(const UPawnUIComponent* InPawnUIComponent) const;
-
-private:
+	
 	UPROPERTY(ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Health);
 
 	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxHealth);
 
 	UPROPERTY(ReplicatedUsing = OnRep_Mana)
 	FGameplayAttributeData Mana;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Mana);
 
 	UPROPERTY(ReplicatedUsing = OnRep_MaxMana)
 	FGameplayAttributeData MaxMana;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MaxMana);
+
+	UPROPERTY(ReplicatedUsing = OnRep_DamageTaken)
+	FGameplayAttributeData DamageTaken;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, DamageTaken);
+
+private:
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldValue) const;
@@ -58,5 +63,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_DamageTaken(const FGameplayAttributeData& OldValue) const;
 	
 };
