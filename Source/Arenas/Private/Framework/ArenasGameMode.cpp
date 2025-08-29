@@ -3,3 +3,7 @@
 
 #include "Framework/ArenasGameMode.h"
 
+APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole, const FString& Options)
+{
+	return Super::SpawnPlayerController(InRemoteRole, Options);
+}
