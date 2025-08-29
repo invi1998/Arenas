@@ -5,6 +5,7 @@
 
 #include "ArenasPlayerCharacter.h"
 #include "Blueprint/UserWidget.h"
+#include "Net/UnrealNetwork.h"
 #include "Widgets/ArenasUserWidget.h"
 
 void AArenasPlayerController::OnPossess(APawn* InPawn)
@@ -15,7 +16,15 @@ void AArenasPlayerController::OnPossess(APawn* InPawn)
 	if (ArenasPlayerCharacter)
 	{
 		ArenasPlayerCharacter->ServerSideInit();
+		ArenasPlayerCharacter->SetGenericTeamId(TeamID);
 	}
+}
+
+void AArenasPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AArenasPlayerController, TeamID);
 }
 
 void AArenasPlayerController::AcknowledgePossession(class APawn* P)
@@ -28,6 +37,16 @@ void AArenasPlayerController::AcknowledgePossession(class APawn* P)
 		SpawnPlayerUIWidget();
 	}
 	
+}
+
+void AArenasPlayerController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	TeamID = InTeamID;
+}
+
+FGenericTeamId AArenasPlayerController::GetGenericTeamId() const
+{
+	return TeamID;
 }
 
 void AArenasPlayerController::SpawnPlayerUIWidget()

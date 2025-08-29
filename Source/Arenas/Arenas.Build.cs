@@ -19,13 +19,13 @@ public class Arenas : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"EnhancedInput",
 			"GameplayAbilities",
 			"GameplayTasks",
 			"GameplayTags",
 			"UMG",
 			"Slate",
 			"SlateCore",
+			"AIModule",
 		});
 
 		// Uncomment if you are using Slate UI

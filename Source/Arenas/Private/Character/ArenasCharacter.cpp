@@ -10,6 +10,7 @@
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Widgets/ArenasUserWidget.h"
 
 
@@ -33,6 +34,13 @@ AArenasCharacter::AArenasCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	BindGASChangedDelegate();
+}
+
+void AArenasCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AArenasCharacter, TeamID);
 }
 
 void AArenasCharacter::ServerSideInit()
@@ -241,5 +249,15 @@ void AArenasCharacter::OnDeath()
 
 void AArenasCharacter::OnRespawn()
 {
+}
+
+void AArenasCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	TeamID = InTeamID;
+}
+
+FGenericTeamId AArenasCharacter::GetGenericTeamId() const
+{
+	return TeamID;
 }
 

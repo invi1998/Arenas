@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "Interface/PawnUIInterface.h"
 #include "ArenasCharacter.generated.h"
@@ -15,13 +16,16 @@ class UArenasAttributeSet;
 class UArenasAbilitySystemComponent;
 
 UCLASS()
-class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface
+class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AArenasCharacter();
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void ServerSideInit();
 	void ClientSideInit();
 	bool IsLocallyControlledByPlayer() const;
@@ -108,5 +112,18 @@ private:
 
 	virtual void OnDeath();
 	virtual void OnRespawn();
+
+public:
+	/********************************************************************************************/
+	/*								 		Team												*/
+	/********************************************************************************************/
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+private:
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamID;
+
+	
 	
 };
