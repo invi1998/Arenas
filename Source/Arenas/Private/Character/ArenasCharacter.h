@@ -83,11 +83,20 @@ private:
 	
 	FTimerHandle OverheadTimerHandle;
 	void UpdateOverheadWidgetVisibility();
+	void SetStatusGaugeEnabled(bool bEnabled);
 
 	/********************************************************************************************/
 	/*								 		Death and Respawn									*/
 	/********************************************************************************************/
 	void StartDeathSequence();
 	void Respawn();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death and Respawn")
+	UAnimMontage* DeathMontage;
+
+	void PlayDeathAnimation();
+
+	virtual void OnDeath();
+	virtual void OnRespawn();
 	
 };

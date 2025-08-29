@@ -4,7 +4,9 @@
 #include "ArenasCharacter.h"
 
 #include "ArenasGameplayTags.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,6 +28,9 @@ AArenasCharacter::AArenasCharacter()
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent());
+
+	// 禁用角色骨骼和胶囊体对摄像机的遮挡
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	BindGASChangedDelegate();
 }
@@ -152,12 +157,51 @@ void AArenasCharacter::UpdateOverheadWidgetVisibility()
 	}
 }
 
+void AArenasCharacter::SetStatusGaugeEnabled(bool bEnabled)
+{
+	GetWorld()->GetTimerManager().ClearTimer(OverheadTimerHandle);
+	if (bEnabled)
+	{
+		SpawnOverheadWidgetComponent();
+	}
+	else
+	{
+		OverheadWidgetComponent->SetHiddenInGame(true);
+	}
+}
+
 void AArenasCharacter::StartDeathSequence()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Character %s has died."), *GetName());
+	OnDeath();
+	PlayDeathAnimation();
+	SetStatusGaugeEnabled(false);
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AArenasCharacter::Respawn()
+{
+	OnRespawn();
+	ArenasAbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(ArenasGameplayTags::Status_Dead));
+	// ArenasAbilitySystemComponent->SetHealth(ArenasAttributeSet->GetMaxHealth());
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SetStatusGaugeEnabled(true);
+}
+
+void AArenasCharacter::PlayDeathAnimation()
+{
+	if (DeathMontage && GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(DeathMontage);
+	}
+}
+
+void AArenasCharacter::OnDeath()
+{
+}
+
+void AArenasCharacter::OnRespawn()
 {
 }
 

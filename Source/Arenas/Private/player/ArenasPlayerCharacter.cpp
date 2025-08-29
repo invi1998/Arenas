@@ -126,6 +126,22 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 	
 }
 
+void AArenasPlayerCharacter::OnDeath()
+{
+	if (APlayerController* PC = GetController<APlayerController>())
+	{
+		DisableInput(PC);
+	}
+}
+
+void AArenasPlayerCharacter::OnRespawn()
+{
+	if (APlayerController* PC = GetController<APlayerController>())
+	{
+		EnableInput(PC);
+	}
+}
+
 
 
 	

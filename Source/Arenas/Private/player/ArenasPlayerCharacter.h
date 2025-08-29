@@ -67,5 +67,8 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UPlayerUIComponent* PlayerUIComponent;
+
+	virtual void OnDeath() override;
+	virtual void OnRespawn() override;
 	
 };
