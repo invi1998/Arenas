@@ -34,5 +34,8 @@ namespace ArenasGameplayTags
 
 	// SetByCaller
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_ComboIndex);
+
+	// Status
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Dead);
 	
 }

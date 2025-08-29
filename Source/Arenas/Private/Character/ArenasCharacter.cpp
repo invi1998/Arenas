@@ -3,6 +3,7 @@
 
 #include "ArenasCharacter.h"
 
+#include "ArenasGameplayTags.h"
 #include "Components/WidgetComponent.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
@@ -25,6 +26,8 @@ AArenasCharacter::AArenasCharacter()
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent());
+
+	BindGASChangedDelegate();
 }
 
 void AArenasCharacter::ServerSideInit()
@@ -89,6 +92,25 @@ UAbilitySystemComponent* AArenasCharacter::GetAbilitySystemComponent() const
 	return ArenasAbilitySystemComponent;
 }
 
+void AArenasCharacter::DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount)
+{
+	if (NewCount != 0)
+	{
+		StartDeathSequence();
+	}
+}
+
+void AArenasCharacter::BindGASChangedDelegate()
+{
+	if (ArenasAbilitySystemComponent)
+	{
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenasGameplayTags::Status_Dead,
+			EGameplayTagEventType::NewOrRemoved)
+			.AddUObject(this, &AArenasCharacter::DeathTagUpdated);
+	}
+}
+
 void AArenasCharacter::SpawnOverheadWidgetComponent()
 {
 	if (IsLocallyControlledByPlayer())
@@ -128,5 +150,14 @@ void AArenasCharacter::UpdateOverheadWidgetVisibility()
 		float DistanceSquared = FVector::DistSquared(GetActorLocation(), LocalPlayerPawn->GetActorLocation());
 		OverheadWidgetComponent->SetHiddenInGame(DistanceSquared > OverheadWidgetVisibilityRangeSquared);
 	}
+}
+
+void AArenasCharacter::StartDeathSequence()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character %s has died."), *GetName());
+}
+
+void AArenasCharacter::Respawn()
+{
 }
 

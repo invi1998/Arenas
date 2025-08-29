@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "Interface/PawnUIInterface.h"
 #include "ArenasCharacter.generated.h"
@@ -50,6 +51,9 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 private:
+	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
+	void BindGASChangedDelegate();
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;
 
@@ -60,7 +64,6 @@ private:
 	/********************************************************************************************/
 	/*								 		UI													*/
 	/********************************************************************************************/
-private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "UI")
 	UWidgetComponent* OverheadWidgetComponent;
 
@@ -80,5 +83,11 @@ private:
 	
 	FTimerHandle OverheadTimerHandle;
 	void UpdateOverheadWidgetVisibility();
+
+	/********************************************************************************************/
+	/*								 		Death and Respawn									*/
+	/********************************************************************************************/
+	void StartDeathSequence();
+	void Respawn();
 	
 };

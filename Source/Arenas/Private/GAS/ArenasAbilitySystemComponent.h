@@ -17,10 +17,17 @@ class UArenasAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
+	UArenasAbilitySystemComponent();
+	
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
 
 private:
+	void HandleHealthChanged(const FOnAttributeChangeData& Data);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> DeathEffectClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialGameplayEffects;
 

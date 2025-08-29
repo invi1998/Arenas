@@ -6,6 +6,11 @@
 #include "ArenasAttributeSet.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
 
+UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
+{
+	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleHealthChanged);
+}
+
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
@@ -39,4 +44,15 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 		}
 	}
 	
+}
+
+void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	if (Data.NewValue <= 0.f && DeathEffectClass)
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(DeathEffectClass, 1, MakeEffectContext());
+		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	}
 }
