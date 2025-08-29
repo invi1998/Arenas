@@ -30,6 +30,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
 	TSubclassOf<UGameplayEffect> DefaultDamageEffect;	// 默认伤害GameplayEffect
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	float TargetSweepSphereRadius = 30.f;	// 目标检测球体扫描半径
 	
 	TSubclassOf<UGameplayEffect> GetCurrentComboDamageEffect() const;
 

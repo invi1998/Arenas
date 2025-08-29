@@ -155,7 +155,7 @@ void UArenasCombo_GameplayAbility::OnComboInputPressed(float TimeWaited)
 
 void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
 {
-	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, 30.f, true);
+	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, TargetSweepSphereRadius, false, true);
 
 	float CurrentComboIndex = GetCurrentComboIndex();
 	
@@ -165,6 +165,10 @@ void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
 
 		// 添加SetByCaller参数
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, CurrentComboIndex);
+
+		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		EffectContext.AddHitResult(Hit);
+		EffectSpecHandle.Data->SetContext(EffectContext);
 		
 		ApplyGameplayEffectSpecToTarget(
 			GetCurrentAbilitySpecHandle(),
