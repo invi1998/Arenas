@@ -24,6 +24,14 @@ private:
 	
 	void SetupWaitComboInputPressTask();
 	void TryCommitCombo();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectsMap;	// 连招伤害GameplayEffect映射表，Key为连招名称Combo01, Combo02, Combo03, Combo04...，Value为对应的GameplayEffect Class
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	TSubclassOf<UGameplayEffect> DefaultDamageEffect;	// 默认伤害GameplayEffect
+	
+	TSubclassOf<UGameplayEffect> GetCurrentComboDamageEffect() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ComboMontage;

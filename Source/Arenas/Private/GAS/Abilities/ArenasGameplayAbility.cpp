@@ -18,7 +18,8 @@ UAnimInstance* UArenasGameplayAbility::GetOwnerAnimInstance() const
 TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 	const FGameplayAbilityTargetDataHandle& TargetData, float SphereSweepRadius, bool bDebug, bool bIgnoreSelf) const
 {
-	TArray<FHitResult> HitResults;
+	TArray<FHitResult> OutHitResults;
+	TSet<AActor*> HitActors;
 
 	for (const TSharedPtr<FGameplayAbilityTargetData> TargetDataPtr : TargetData.Data)
 	{
@@ -26,6 +27,8 @@ TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetD
 		FVector EndLoc = TargetDataPtr->GetEndPoint();
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+
+		TArray<FHitResult> HitResults;
 		UKismetSystemLibrary::SphereTraceMultiForObjects(
 			this,
 			StartLoc,
@@ -40,7 +43,19 @@ TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetD
 			FLinearColor::Red,
 			FLinearColor::Green, 2.f
 		);
+
+		// 去除重复的命中结果
+		for (const FHitResult& Hit : HitResults)
+		{
+			if (HitActors.Contains(Hit.GetActor()))
+			{
+				continue;
+			}
+			HitActors.Add(Hit.GetActor());
+			OutHitResults.Add(Hit);
+		}
+		
 	}
 
-	return HitResults;
+	return OutHitResults;
 }
