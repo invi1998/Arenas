@@ -57,9 +57,24 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 
 		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboChangeEventReceived);
 		WaitComboChangeEventTask->ReadyForActivation();
-
-		SetupWaitComboInputPressTask();
 	}
+
+	// 伤害事件
+	if (K2_HasAuthority())
+	{
+		UAbilityTask_WaitGameplayEvent* WaitComboDamageEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this,
+			ArenasGameplayTags::Event_Ability_Combo_Damage,
+			nullptr,
+			false,
+			true);
+
+		WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::DoDamage);
+		WaitComboDamageEventTask->ReadyForActivation();
+	}
+	
+
+	SetupWaitComboInputPressTask();
 }
 
 FGameplayTag UArenasCombo_GameplayAbility::GetComboChangeEventTag()
@@ -110,4 +125,9 @@ void UArenasCombo_GameplayAbility::OnComboInputPressed(float TimeWaited)
 {
 	SetupWaitComboInputPressTask();
 	TryCommitCombo();
+}
+
+void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
+{
+	TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, 30.f, true);
 }

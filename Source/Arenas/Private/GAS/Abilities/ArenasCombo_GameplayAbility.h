@@ -16,7 +16,6 @@ class ARENAS_API UArenasCombo_GameplayAbility : public UArenasGameplayAbility
 
 public:
 	UArenasCombo_GameplayAbility();
-
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
@@ -34,6 +33,9 @@ private:
 
 	UFUNCTION()
 	void OnComboInputPressed(float TimeWaited);
+
+	UFUNCTION()
+	void DoDamage(FGameplayEventData Payload);
 
 	FName NextComboName;
 	
