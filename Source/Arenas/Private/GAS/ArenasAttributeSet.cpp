@@ -46,7 +46,45 @@ void UArenasAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		// 处理生命值变化
+		float NewHealth = GetHealth();
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetMaxHealthAttribute())
+	{
+		// 处理最大生命值变化
+		float NewMaxHealth = GetMaxHealth();
+		SetMaxHealth(FMath::Max(NewMaxHealth, 1.f)); // 最大生命值至少为1
+
+		// 调整当前生命值以适应新的最大生命值
+		float CurrentHealth = GetHealth();
+		if (CurrentHealth > NewMaxHealth)
+		{
+			SetHealth(NewMaxHealth);
+		}
+	}
+	else if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		// 处理法力值变化
+		float NewMana = GetMana();
+		SetMana(FMath::Clamp(NewMana, 0.f, GetMaxMana()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetMaxManaAttribute())
+	{
+		// 处理最大法力值变化
+		float NewMaxMana = GetMaxMana();
+		SetMaxMana(FMath::Max(NewMaxMana, 0.f)); // 最大法力值至少为0
+
+		// 调整当前法力值以适应新的最大法力值
+		float CurrentMana = GetMana();
+		if (CurrentMana > NewMaxMana)
+		{
+			SetMana(NewMaxMana);
+		}
+	}
+	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
 	{
 		// 处理伤害
 		float DamageAmount = GetDamageTaken();
