@@ -88,11 +88,21 @@ private:
 	/********************************************************************************************/
 	/*								 		Death and Respawn									*/
 	/********************************************************************************************/
+	FTransform MeshRelativeTransform;
+	
 	void StartDeathSequence();
 	void Respawn();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Death and Respawn")
+	float DeathMontageFinishTimeOffset = -0.8f; // 死亡动画播放完成后，延迟或者提前多少秒后触发布娃娃物理
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death and Respawn")
 	UAnimMontage* DeathMontage;
+
+	FTimerHandle DeathMontageTimerHandle;
+
+	void DeathMontageFinished();
+	void SetRagdollPhysics(bool bEnabled);
 
 	void PlayDeathAnimation();
 

@@ -79,6 +79,7 @@ void AArenasCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnOverheadWidgetComponent();
+	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
 	
 }
 
@@ -186,6 +187,8 @@ void AArenasCharacter::StartDeathSequence()
 void AArenasCharacter::Respawn()
 {
 	OnRespawn();
+
+	SetRagdollPhysics(false);
 	
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -199,11 +202,36 @@ void AArenasCharacter::Respawn()
 	
 }
 
+void AArenasCharacter::DeathMontageFinished()
+{
+	// 死亡动画播放完毕后添加布娃娃物理效果
+	SetRagdollPhysics(true);
+}
+
+void AArenasCharacter::SetRagdollPhysics(bool bEnabled)
+{
+	if (bEnabled)
+	{
+		GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);	// 取消附加,保持世界变换
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform); // 重新附加到胶囊体，保持相对变换
+		GetMesh()->SetRelativeTransform(MeshRelativeTransform); // 重置相对变换
+	}
+}
+
 void AArenasCharacter::PlayDeathAnimation()
 {
 	if (DeathMontage && GetMesh() && GetMesh()->GetAnimInstance())
 	{
-		GetMesh()->GetAnimInstance()->Montage_Play(DeathMontage);
+		float MontageDuration = GetMesh()->GetAnimInstance()->Montage_Play(DeathMontage);
+		GetWorld()->GetTimerManager().ClearTimer(DeathMontageTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DeathMontageTimerHandle, this, &AArenasCharacter::DeathMontageFinished, MontageDuration + DeathMontageFinishTimeOffset, false);
 	}
 }
 
