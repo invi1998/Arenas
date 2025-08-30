@@ -203,6 +203,16 @@ void AArenasCharacter::Respawn()
 	SetStatusGaugeEnabled(true);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.0f);
 
+	if (HasAuthority() && GetController())
+	{
+		TWeakObjectPtr<AActor> StartSpot = GetController()->StartSpot;
+		if (StartSpot.IsValid())
+		{
+			// 如果控制器有出生点信息，则将角色传送到出生点位置
+			SetActorTransform(StartSpot->GetActorTransform());
+		}
+	}
+
 	if (ArenasAbilitySystemComponent)
 	{
 		ArenasAbilitySystemComponent->ApplyFullStateEffect();
