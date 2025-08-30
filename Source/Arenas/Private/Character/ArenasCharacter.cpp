@@ -11,6 +11,8 @@
 #include "GAS/ArenasAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "Widgets/ArenasUserWidget.h"
 
 
@@ -34,6 +36,10 @@ AArenasCharacter::AArenasCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	BindGASChangedDelegate();
+
+	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSourceComponent"));
+	
+	
 }
 
 void AArenasCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -88,6 +94,9 @@ void AArenasCharacter::BeginPlay()
 
 	SpawnOverheadWidgetComponent();
 	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
+
+	// 注册视觉感知，建议在BeginPlay中注册，如果在构造函数中注册那么可能会因为组件还未初始化而失败
+	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
 	
 }
 

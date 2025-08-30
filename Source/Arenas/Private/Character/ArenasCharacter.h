@@ -10,6 +10,7 @@
 #include "Interface/PawnUIInterface.h"
 #include "ArenasCharacter.generated.h"
 
+class UAIPerceptionStimuliSourceComponent;
 class UArenasUserWidget;
 class UWidgetComponent;
 class UArenasAttributeSet;
@@ -124,6 +125,11 @@ private:
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamID;
 
+	/********************************************************************************************/
+	/*								 			AI												*/
+	/********************************************************************************************/
+	UPROPERTY()
+	UAIPerceptionStimuliSourceComponent* PerceptionStimuliSourceComponent;
 	
 	
 };
