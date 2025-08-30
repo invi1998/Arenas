@@ -3,6 +3,7 @@
 
 #include "ArenasAIController.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Character/ArenasCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -26,6 +27,8 @@ AArenasAIController::AArenasAIController()
 
 	PerceptionComp->ConfigureSense(*SightConfig);
 	PerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());	// 设置主要感官为视觉
+
+	PerceptionComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AArenasAIController::OnTargetPerceptionUpdated);
 	
 }
 
@@ -38,6 +41,60 @@ void AArenasAIController::OnPossess(APawn* InPawn)
 	if (IGenericTeamAgentInterface* PawnAsTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn))
 	{
 		PawnAsTeamAgent->SetGenericTeamId(GetGenericTeamId()); // 让被控制的Pawn也属于同一队伍
+	}
+	
+}
+
+void AArenasAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RunBehaviorTree(BehaviorTree); // 运行行为树
+}
+
+void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
+{
+	// 当感知到目标时将目标设置为黑板中的目标
+	if (UpdateInfo.Stimulus.WasSuccessfullySensed())	// 感知到
+	{
+		if (!GetCurrentTargetActor())
+		{
+			SetCurrentTargetActor(UpdateInfo.Target.Get());
+		}
+	}
+	else
+	{
+		if (GetCurrentTargetActor() == UpdateInfo.Target.Get())
+		{
+			// 只有当当前目标是失去感知的目标时才清除
+			SetCurrentTargetActor(nullptr);
+		}
+	}
+}
+
+const AActor* AArenasAIController::GetCurrentTargetActor() const
+{
+	if (const UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+	{
+		return static_cast<const AActor*>(BlackboardComponent->GetValueAsObject(BlackboardKeyName_TargetActor));
+	}
+
+	return nullptr;
+	
+}
+
+void AArenasAIController::SetCurrentTargetActor(AActor* NewTargetActor)
+{
+	if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+	{
+		if (NewTargetActor)
+		{
+			BlackboardComponent->SetValueAsObject(BlackboardKeyName_TargetActor, NewTargetActor);
+		}
+		else
+		{
+			BlackboardComponent->ClearValue(BlackboardKeyName_TargetActor);
+		}
 	}
 	
 }

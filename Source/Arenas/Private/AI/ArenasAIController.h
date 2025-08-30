@@ -6,8 +6,10 @@
 #include "AIController.h"
 #include "ArenasAIController.generated.h"
 
+struct FActorPerceptionUpdateInfo;
 class UAISenseConfig_Sight;
 class UAIPerceptionComponent;
+class UBehaviorTree;
 
 UCLASS()
 class ARENAS_API AArenasAIController : public AAIController
@@ -20,8 +22,15 @@ public:
 	virtual void OnPossess(APawn* InPawn);
 
 protected:
+	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FName BlackboardKeyName_TargetActor = "TargetActor";
+	
 	// 感知组件
 	UPROPERTY(VisibleDefaultsOnly, Category = "Perception")
 	UAIPerceptionComponent* PerceptionComp;
@@ -29,5 +38,11 @@ private:
 	// 视觉感知配置
 	UPROPERTY(VisibleDefaultsOnly, Category = "Perception")
 	UAISenseConfig_Sight* SightConfig;
+
+	UFUNCTION()
+	void OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
+
+	const AActor* GetCurrentTargetActor() const;
+	void SetCurrentTargetActor(AActor* NewTargetActor);
 
 };
