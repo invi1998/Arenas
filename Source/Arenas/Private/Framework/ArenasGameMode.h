@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/GameModeBase.h"
 #include "ArenasGameMode.generated.h"
 
@@ -17,5 +18,13 @@ class AArenasGameMode : public AGameModeBase
 public:
 	// 该函数会在玩家生成的时候被调用，无论是本地客户端还是通过网络远程客户端连接生成
 	virtual APlayerController* SpawnPlayerController(ENetRole InRemoteRole, const FString& Options) override;
+
+private:
+	FGenericTeamId GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const;
+
+	AActor* FindNextStartingSpotForTeam(const FGenericTeamId& InTeamID) const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Team")
+	TMap<FGenericTeamId, FName> TeamStartingSpotTagsMap; // 队伍起始点标签映射表，Key为队伍ID，Value为起始点标签
 	
 };
