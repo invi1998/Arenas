@@ -17,6 +17,7 @@ class ARENAS_API AArenasAIController : public AAIController
 	GENERATED_BODY()
 
 public:
+
 	// Sets default values for this actor's properties
 	AArenasAIController();
 	virtual void OnPossess(APawn* InPawn);
@@ -33,7 +34,7 @@ private:
 	
 	// 感知组件
 	UPROPERTY(VisibleDefaultsOnly, Category = "Perception")
-	UAIPerceptionComponent* PerceptionComp;
+	UAIPerceptionComponent* AIPerceptionComponent;
 
 	// 视觉感知配置
 	UPROPERTY(VisibleDefaultsOnly, Category = "Perception")
@@ -42,7 +43,12 @@ private:
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
 
+	UFUNCTION()
+	void OnPerceptionForgottenTarget(AActor* Actor);
+
 	const AActor* GetCurrentTargetActor() const;
 	void SetCurrentTargetActor(AActor* NewTargetActor);
+
+	AActor* GetNextPerceivedActor() const;	// 获取下一个被感知的Actor
 
 };

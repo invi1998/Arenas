@@ -12,7 +12,7 @@
 // Sets default values
 AArenasAIController::AArenasAIController()
 {
-	PerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComp"));
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;		// 只检测敌人
@@ -25,10 +25,11 @@ AArenasAIController::AArenasAIController()
 
 	SightConfig->SetMaxAge(5.f);				// 记忆时间
 
-	PerceptionComp->ConfigureSense(*SightConfig);
-	PerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());	// 设置主要感官为视觉
+	AIPerceptionComponent->ConfigureSense(*SightConfig);
+	AIPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());	// 设置主要感官为视觉
 
-	PerceptionComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AArenasAIController::OnTargetPerceptionUpdated);
+	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AArenasAIController::OnTargetPerceptionUpdated);	// 绑定感知更新事件
+	AIPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AArenasAIController::OnPerceptionForgottenTarget);		// 绑定感知遗忘事件
 	
 }
 
@@ -64,11 +65,23 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	}
 	else
 	{
+		/* 
 		if (GetCurrentTargetActor() == UpdateInfo.Target.Get())
 		{
 			// 只有当当前目标是失去感知的目标时才清除
 			SetCurrentTargetActor(nullptr);
 		}
+		*/
+	}
+}
+
+void AArenasAIController::OnPerceptionForgottenTarget(AActor* Actor)
+{
+	if (!Actor) return;
+
+	if (GetCurrentTargetActor() == Actor)
+	{
+		SetCurrentTargetActor(GetNextPerceivedActor());
 	}
 }
 
@@ -97,6 +110,20 @@ void AArenasAIController::SetCurrentTargetActor(AActor* NewTargetActor)
 		}
 	}
 	
+}
+
+AActor* AArenasAIController::GetNextPerceivedActor() const
+{
+	if (PerceptionComponent)
+	{
+		TArray<AActor*> PerceivedActors;
+		AIPerceptionComponent->GetPerceivedHostileActors(PerceivedActors);	// 获取所有感知到的敌对角色
+		if (PerceivedActors.Num() > 0)
+		{
+			return PerceivedActors[0]; // 返回第一个感知到的敌对角色
+		}
+	}
+	return nullptr;
 }
 
 
