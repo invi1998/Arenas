@@ -15,10 +15,10 @@ void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
 	
 	if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(InActor))
 	{
-		if (UPlayerUIComponent* PlayerUIComponent = PawnUIInterface->GetPlayerUIComponent())
+		if (UPawnUIComponent* PawnUICom = PawnUIInterface->GetPawnUIComponent())
 		{
-			BP_OnOverheadWidgetInitialized(PlayerUIComponent);
-			PlayerUIComponent->SetAndBoundAttributeDelegate(OverHeadASC);
+			BP_OnOverheadWidgetInitialized(PawnUICom);
+			PawnUICom->SetAndBoundAttributeDelegate(OverHeadASC);
 		}
 	}
 }

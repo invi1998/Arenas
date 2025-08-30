@@ -39,7 +39,7 @@ AArenasCharacter::AArenasCharacter()
 
 	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSourceComponent"));
 	
-	
+	PawnUIComponent = CreateDefaultSubobject<UPawnUIComponent>(TEXT("PawnUIComponent"));
 }
 
 void AArenasCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -85,7 +85,7 @@ void AArenasCharacter::PossessedBy(AController* NewController)
 
 UPawnUIComponent* AArenasCharacter::GetPawnUIComponent() const
 {
-	return nullptr;
+	return PawnUIComponent;
 }
 
 void AArenasCharacter::BeginPlay()

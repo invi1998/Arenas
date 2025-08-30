@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ArenasUserWidget.generated.h"
 
+class UPawnUIComponent;
 class UArenasAbilitySystemComponent;
 struct FGameplayAttribute;
 class UPlayerUIComponent;
@@ -29,7 +30,7 @@ protected:
 	void BP_OnOwningPlayerUIComponentInitialized(UPlayerUIComponent* InPlayerUIComponent);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI", meta=(DisplayName = "On OverHead Created Widget Initialized"))
-	void BP_OnOverheadWidgetInitialized(UPlayerUIComponent* InOverHeadUIComponent);
+	void BP_OnOverheadWidgetInitialized(UPawnUIComponent* InOverHeadUIComponent);
 
 private:
 	UPROPERTY()

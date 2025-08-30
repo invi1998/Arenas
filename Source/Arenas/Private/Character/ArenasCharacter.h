@@ -70,6 +70,9 @@ private:
 	/********************************************************************************************/
 	/*								 		UI													*/
 	/********************************************************************************************/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UPawnUIComponent* PawnUIComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "UI")
 	UWidgetComponent* OverheadWidgetComponent;
 

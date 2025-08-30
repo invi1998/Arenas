@@ -68,11 +68,6 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 }
 
-UPawnUIComponent* AArenasPlayerCharacter::GetPawnUIComponent() const
-{
-	return PlayerUIComponent;
-}
-
 UPlayerUIComponent* AArenasPlayerCharacter::GetPlayerUIComponent() const
 {
 	return PlayerUIComponent;
