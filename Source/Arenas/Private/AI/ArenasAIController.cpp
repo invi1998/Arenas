@@ -3,6 +3,9 @@
 
 #include "ArenasAIController.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "ArenasGameplayTags.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/ArenasCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -65,13 +68,7 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	}
 	else
 	{
-		/* 
-		if (GetCurrentTargetActor() == UpdateInfo.Target.Get())
-		{
-			// 只有当当前目标是失去感知的目标时才清除
-			SetCurrentTargetActor(nullptr);
-		}
-		*/
+		ForgetActorIfDead(UpdateInfo.Target.Get());
 	}
 }
 
@@ -124,6 +121,26 @@ AActor* AArenasAIController::GetNextPerceivedActor() const
 		}
 	}
 	return nullptr;
+}
+
+void AArenasAIController::ForgetActorIfDead(AActor* Actor)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor);
+	// 如果目标存在并且已经死亡，那么让AI忘记该目标
+	if (TargetASC && TargetASC->HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead))
+	{
+		for (UAIPerceptionComponent::TActorPerceptionContainer::TIterator It = AIPerceptionComponent->GetPerceptualDataIterator(); It; ++It)
+		{
+			// 遍历感知数据，将指定Actor的感知数据的刺激时间设置为最大值，从而让AI忘记该Actor
+			if (It->Key != Actor) continue;
+
+			for (FAIStimulus& Stimulus : It->Value.LastSensedStimuli)
+			{
+				Stimulus.SetStimulusAge(TNumericLimits<float>::Max());
+				break;
+			}
+		}
+	}
 }
 
 

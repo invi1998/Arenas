@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Arenas | FunctionLibrary", meta=(DisplayName="Get Arenas ASC From Actor"))
 	static UArenasAbilitySystemComponent* BP_GetArenasASCFromActor(AActor* InActor);
 
+	// 获取Actor是否存在某个FGameplayTag
+	static bool NativeActorHasGameplayTag(AActor* InActor, const FGameplayTag& InTag);
+
 	static FName NativeGetGameplayTagLastName(const FGameplayTag& InTag);
 	
 };

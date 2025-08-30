@@ -199,11 +199,17 @@ void AArenasCharacter::StartDeathSequence()
 	SetStatusGaugeEnabled(false);
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// 停止AI感知
+	SetAIPerceptionStimuliSourceEnabled(false);
+	
 }
 
 void AArenasCharacter::Respawn()
 {
 	OnRespawn();
+	
+	SetAIPerceptionStimuliSourceEnabled(true);	// 重新启用AI感知
 
 	SetRagdollPhysics(false);
 	
@@ -278,5 +284,22 @@ void AArenasCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 FGenericTeamId AArenasCharacter::GetGenericTeamId() const
 {
 	return TeamID;
+}
+
+void AArenasCharacter::SetAIPerceptionStimuliSourceEnabled(bool bEnabled)
+{
+	if (PerceptionStimuliSourceComponent)
+	{
+		if (bEnabled)
+		{
+			PerceptionStimuliSourceComponent->RegisterWithPerceptionSystem();	// 注册到感知系统
+		}
+		else
+		{
+			PerceptionStimuliSourceComponent->UnregisterFromPerceptionSystem(); // 从感知系统注销
+			// 这里只是注销掉AI感知，但是并不意味着我们会立即丢失掉Target，因为AI感知系统会有一个记忆时间（默认是5秒），所以我们还需要在AI感知更新处更新我的Target
+			// void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
+		}
+	}
 }
 

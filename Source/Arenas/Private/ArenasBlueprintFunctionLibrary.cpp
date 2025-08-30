@@ -18,6 +18,15 @@ UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::BP_GetArenasASCF
 	return NativeGetArenasASCFromActor(InActor);
 }
 
+bool UArenasBlueprintFunctionLibrary::NativeActorHasGameplayTag(AActor* InActor, const FGameplayTag& InTag)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		return ArenasASC->HasMatchingGameplayTag(InTag);
+	}
+	return false;
+}
+
 FName UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(const FGameplayTag& InTag)
 {
 	if (InTag.IsValid())

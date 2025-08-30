@@ -51,4 +51,6 @@ private:
 
 	AActor* GetNextPerceivedActor() const;	// 获取下一个被感知的Actor
 
+	void ForgetActorIfDead(AActor* Actor); // 如果Actor死亡则忘记它
+
 };

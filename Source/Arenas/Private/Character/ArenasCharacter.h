@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "Interface/PawnUIInterface.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "ArenasCharacter.generated.h"
 
 class UAIPerceptionStimuliSourceComponent;
@@ -128,8 +129,12 @@ private:
 	/********************************************************************************************/
 	/*								 			AI												*/
 	/********************************************************************************************/
+	void SetAIPerceptionStimuliSourceEnabled(bool bEnabled);	// 启用或禁用AI感知组件（在角色死亡和复活时）
+	
+	// AI感知组件
 	UPROPERTY()
 	UAIPerceptionStimuliSourceComponent* PerceptionStimuliSourceComponent;
 	
 	
 };
+
