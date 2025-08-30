@@ -15,11 +15,12 @@ UAnimInstance* UArenasGameplayAbility::GetOwnerAnimInstance() const
 	return nullptr;
 }
 
-TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetData(
-	const FGameplayAbilityTargetDataHandle& TargetData, float SphereSweepRadius, bool bDebug, bool bIgnoreSelf) const
+TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetData(const FGameplayAbilityTargetDataHandle& TargetData, ETeamAttitude::Type TargetTeamType, float SphereSweepRadius, bool bDebug, bool bIgnoreSelf) const
 {
 	TArray<FHitResult> OutHitResults;
 	TSet<AActor*> HitActors;
+
+	IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
 
 	for (const TSharedPtr<FGameplayAbilityTargetData> TargetDataPtr : TargetData.Data)
 	{
@@ -51,6 +52,16 @@ TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetD
 			{
 				continue;
 			}
+			if (OwnerTeamAgent)
+			{
+				ETeamAttitude::Type OtherActorTeamAttitude = OwnerTeamAgent->GetTeamAttitudeTowards(*Hit.GetActor());
+				if (OtherActorTeamAttitude != TargetTeamType)
+				{
+					// 如果目标不符合指定的队伍关系，则跳过
+					continue;
+				}
+			}
+			
 			HitActors.Add(Hit.GetActor());
 			OutHitResults.Add(Hit);
 		}

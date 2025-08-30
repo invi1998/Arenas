@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "ArenasGameplayAbility.generated.h"
 
@@ -17,5 +18,5 @@ class ARENAS_API UArenasGameplayAbility : public UGameplayAbility
 protected:
 	UAnimInstance* GetOwnerAnimInstance() const;
 
-	TArray<FHitResult> GetHitResultsFromSweepLocationTargetData(const FGameplayAbilityTargetDataHandle& TargetData, float SphereSweepRadius = 30.f, bool bDebug = false, bool bIgnoreSelf = true) const;
+	TArray<FHitResult> GetHitResultsFromSweepLocationTargetData(const FGameplayAbilityTargetDataHandle& TargetData, ETeamAttitude::Type TargetTeamType = ETeamAttitude::Hostile, float SphereSweepRadius = 30.f, bool bDebug = false, bool bIgnoreSelf = true) const;
 };

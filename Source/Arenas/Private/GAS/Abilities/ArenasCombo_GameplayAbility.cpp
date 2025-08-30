@@ -155,7 +155,7 @@ void UArenasCombo_GameplayAbility::OnComboInputPressed(float TimeWaited)
 
 void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
 {
-	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, TargetSweepSphereRadius, false, true);
+	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, ETeamAttitude::Hostile, TargetSweepSphereRadius, false, true);
 
 	float CurrentComboIndex = GetCurrentComboIndex();
 	
