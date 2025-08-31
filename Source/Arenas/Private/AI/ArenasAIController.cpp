@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "ArenasGameplayTags.h"
+#include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/ArenasCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -45,6 +46,12 @@ void AArenasAIController::OnPossess(APawn* InPawn)
 	if (IGenericTeamAgentInterface* PawnAsTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn))
 	{
 		PawnAsTeamAgent->SetGenericTeamId(GetGenericTeamId()); // 让被控制的Pawn也属于同一队伍
+	}
+
+	// 订阅GAS的Tag生成或者移除事件，以便在角色死亡时禁用AI感知或者重生时启用AI感知
+	if (UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InPawn))
+	{
+		OwnerASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasAIController::OnOwnerDeadTagChanged);
 	}
 	
 }
@@ -140,6 +147,47 @@ void AArenasAIController::ForgetActorIfDead(AActor* Actor)
 				break;
 			}
 		}
+	}
+}
+
+void AArenasAIController::OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Count)
+{
+	if (Count != 0)
+	{
+		// 禁用行为树
+		GetBrainComponent()->StopLogic(TEXT("Owner Dead"));
+		ClearAndDisablePerception(); // 如果角色死亡，清除并禁用感知
+	}
+	else
+	{
+		GetBrainComponent()->StartLogic();
+		EnableAllPerception(); // 如果角色重生，启用所有感知
+	}
+}
+
+void AArenasAIController::ClearAndDisablePerception()
+{
+	// 要清除感知，首先我们需要将感知Age设置为最大值
+	AIPerceptionComponent->AgeStimuli(TNumericLimits<float>::Max());
+
+	// 然后禁用所有感官
+	for (auto SenseConfigIt = AIPerceptionComponent->GetSensesConfigIterator(); SenseConfigIt; ++SenseConfigIt)
+	{
+		AIPerceptionComponent->SetSenseEnabled((*SenseConfigIt)->GetSenseImplementation(), false); // 禁用所有感官
+	}
+	
+	// 然后清除黑板中的目标
+	if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+	{
+		BlackboardComponent->ClearValue(BlackboardKeyName_TargetActor);
+	}
+}
+
+void AArenasAIController::EnableAllPerception()
+{
+	for (auto SenseConfigIt = AIPerceptionComponent->GetSensesConfigIterator(); SenseConfigIt; ++SenseConfigIt)
+	{
+		AIPerceptionComponent->SetSenseEnabled((*SenseConfigIt)->GetSenseImplementation(), true); // 启用所有感官
 	}
 }
 

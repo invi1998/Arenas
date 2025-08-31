@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "GameplayTagContainer.h"
 #include "ArenasAIController.generated.h"
 
 struct FActorPerceptionUpdateInfo;
@@ -20,6 +21,7 @@ public:
 
 	// Sets default values for this actor's properties
 	AArenasAIController();
+	
 	virtual void OnPossess(APawn* InPawn);
 
 protected:
@@ -52,5 +54,10 @@ private:
 	AActor* GetNextPerceivedActor() const;	// 获取下一个被感知的Actor
 
 	void ForgetActorIfDead(AActor* Actor); // 如果Actor死亡则忘记它
+
+	void OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Count);
+
+	void ClearAndDisablePerception(); // 清除并禁用感知系统
+	void EnableAllPerception(); // 启用感知系统
 
 };

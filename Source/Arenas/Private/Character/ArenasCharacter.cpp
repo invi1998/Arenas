@@ -195,6 +195,13 @@ void AArenasCharacter::SetStatusGaugeEnabled(bool bEnabled)
 void AArenasCharacter::StartDeathSequence()
 {
 	OnDeath();
+
+	// 取消所有GAS
+	if (ArenasAbilitySystemComponent)
+	{
+		ArenasAbilitySystemComponent->CancelAllAbilities();
+	}
+	
 	PlayDeathAnimation();
 	SetStatusGaugeEnabled(false);
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
