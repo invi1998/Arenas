@@ -26,6 +26,9 @@ private:
 	void TryCommitCombo();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	float BaseDamage = 10.f;	// 基础伤害
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
 	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectsMap;	// 连招伤害GameplayEffect映射表，Key为连招名称Combo01, Combo02, Combo03, Combo04...，Value为对应的GameplayEffect Class
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")

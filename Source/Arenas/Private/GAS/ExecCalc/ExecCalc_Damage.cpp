@@ -23,7 +23,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	int32 ComboIndex = 0;
 	for (const TPair<FGameplayTag, float>& SetByCallerData : Spec.SetByCallerTagMagnitudes)
 	{
-		if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_ComboIndex))
+		if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_BaseDamage))
+		{
+			BaseDamage = SetByCallerData.Value;
+		}
+		else if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_ComboIndex))
 		{
 			ComboIndex = FMath::RoundToInt(SetByCallerData.Value);
 		}

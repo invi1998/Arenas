@@ -33,6 +33,7 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Damage);
 
 	// SetByCaller
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_BaseDamage);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_ComboIndex);
 
 	// Status

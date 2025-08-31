@@ -26,8 +26,8 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_End, "Event.Ability.Combo.Change.End", "连招技能切换到连招结束" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
-
-
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_BaseDamage, "SetByCaller.BaseDamage", "基础伤害" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_ComboIndex, "SetByCaller.ComboIndex", "连招索引" );
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Dead, "Status.Dead", "死亡状态" );
