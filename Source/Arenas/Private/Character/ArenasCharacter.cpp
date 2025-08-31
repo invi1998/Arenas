@@ -293,6 +293,11 @@ FGenericTeamId AArenasCharacter::GetGenericTeamId() const
 	return TeamID;
 }
 
+void AArenasCharacter::OnRep_TeamID()
+{
+	// 这里可以添加一些逻辑，当TeamID在客户端发生变化时触发
+}
+
 void AArenasCharacter::SetAIPerceptionStimuliSourceEnabled(bool bEnabled)
 {
 	if (PerceptionStimuliSourceComponent)
