@@ -72,6 +72,21 @@ bool AArenasCharacter::IsLocallyControlledByPlayer() const
 	return GetController() && GetController()->IsLocalPlayerController();
 }
 
+bool AArenasCharacter::IsAlive() const
+{
+	return GetAbilitySystemComponent() && !GetAbilitySystemComponent()->HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead);
+}
+
+void AArenasCharacter::Activate()
+{
+	if (GetAbilitySystemComponent())
+	{
+		FGameplayTagContainer TempTags;
+		TempTags.AddTag(ArenasGameplayTags::Status_Dead);
+		GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(TempTags);
+	}
+}
+
 void AArenasCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);

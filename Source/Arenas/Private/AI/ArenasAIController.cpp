@@ -41,11 +41,16 @@ void AArenasAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	SetGenericTeamId(FGenericTeamId(0)); // 设置为队伍0
-
 	if (IGenericTeamAgentInterface* PawnAsTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn))
 	{
-		PawnAsTeamAgent->SetGenericTeamId(GetGenericTeamId()); // 让被控制的Pawn也属于同一队伍
+		SetGenericTeamId(PawnAsTeamAgent->GetGenericTeamId()); // 让AIController属于被控制Pawn的队伍
+		// 注意这里：我们在生成AI角色时，要先赋予（确定）角色的队伍ID，然后再调用FinishSpawning去生成角色
+		// 这样OnPossess这里才能正确获取到角色的队伍ID
+
+		// 同时，AI在生成时，可能已经有某些感知信息了，所以我们需要让感知组件更新一次
+		ClearAndDisablePerception();
+		EnableAllPerception();
+		
 	}
 
 	// 订阅GAS的Tag生成或者移除事件，以便在角色死亡时禁用AI感知或者重生时启用AI感知

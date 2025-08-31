@@ -33,9 +33,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	FGenericTeamId BarrackTeamID;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn")
-	int32 InitialMinionPoolSize = 5; // 初始预生成的小兵数量
-
 	// 预生成的兵营小兵池
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TArray<AMinionCharacter*> SpawnedMinionPool;
@@ -49,7 +46,25 @@ private:
 	int32 NextSpawnSpotIndex = -1;
 
 	const APlayerStart* GetNextSpawnPoint();
+	void SpawnOrFindOneMinion();
 
-	void SpawnMinionsToPool(int32 NumMinions);
+	void SpawnMinionGroup();
+	void SpawnMinionsToPool();
+	AMinionCharacter* GetNextAvailableMinionFromPool() const;
+
+	// 生成一组小兵的定时器
+	FTimerHandle SpawnGroupMinionTimerHandle;
+
+	// 生成小兵的定时器（比如一组里面的小兵不是同时生成的，而是间隔一段时间生成）
+	FTimerHandle SpawnMinionTimerHandle;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	int32 MinionPerGroup = 5; // 每组生成的小兵数量
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	float SpawnGroupInterval = 30.f; // 小兵生成间隔，单位秒
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	float SpawnMinionInterval = 1.f; // 小兵组内生成间隔，单位秒
 	
 };

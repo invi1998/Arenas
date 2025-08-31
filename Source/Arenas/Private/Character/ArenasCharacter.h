@@ -32,6 +32,9 @@ public:
 	void ClientSideInit();
 	bool IsLocallyControlledByPlayer() const;
 
+	bool IsAlive() const;
+	void Activate();
+
 	// 当角色被控制器控制时调用(只会在服务端被调用)
 	virtual void PossessedBy(AController* NewController) override;
 
