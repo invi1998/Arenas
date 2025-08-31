@@ -9,6 +9,10 @@ void AMinionCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 	Super::SetGenericTeamId(InTeamID);
 }
 
+void AMinionCharacter::SetGoal(AActor* InGoal)
+{
+}
+
 void AMinionCharacter::OnRep_TeamID()
 {
 	PickSkinBasedOnTeamID();

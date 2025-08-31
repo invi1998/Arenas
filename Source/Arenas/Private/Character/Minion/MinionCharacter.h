@@ -13,6 +13,8 @@ class ARENAS_API AMinionCharacter : public AArenasCharacter
 
 public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+
+	void SetGoal(AActor* InGoal);
 	
 private:
 	virtual void OnRep_TeamID() override;
