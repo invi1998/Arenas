@@ -17,7 +17,16 @@ void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
 	{
 		if (UPawnUIComponent* PawnUICom = PawnUIInterface->GetPawnUIComponent())
 		{
-			BP_OnOverheadWidgetInitialized(PawnUICom);
+			// 获取传入InActor和当前客户端所属玩家的Character的阵营的关系（敌对、友方、中立）
+			ETeamAttitude::Type TeamAttitude = ETeamAttitude::Neutral;
+			if (IPawnUIInterface* LocalPlayerControllerPawnUIInterface = Cast<IPawnUIInterface>(GetOwningPlayerPawn()))
+			{
+				FGenericTeamId InActorTeamID = PawnUIInterface->GetOwningGenericTeamId();
+				FGenericTeamId LocalPlayerControllerPawnTeamID = LocalPlayerControllerPawnUIInterface->GetOwningGenericTeamId();
+				TeamAttitude = InActorTeamID == LocalPlayerControllerPawnTeamID ? ETeamAttitude::Friendly : ETeamAttitude::Hostile;
+			}
+			
+			BP_OnOverheadWidgetInitialized(PawnUICom, TeamAttitude);
 			PawnUICom->SetAndBoundAttributeDelegate(OverHeadASC);
 		}
 	}

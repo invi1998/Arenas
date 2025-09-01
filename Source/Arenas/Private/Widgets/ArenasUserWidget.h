@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "ArenasUserWidget.generated.h"
 
@@ -30,7 +31,7 @@ protected:
 	void BP_OnOwningPlayerUIComponentInitialized(UPlayerUIComponent* InPlayerUIComponent);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI", meta=(DisplayName = "On OverHead Created Widget Initialized"))
-	void BP_OnOverheadWidgetInitialized(UPawnUIComponent* InOverHeadUIComponent);
+	void BP_OnOverheadWidgetInitialized(UPawnUIComponent* InOverHeadUIComponent, ETeamAttitude::Type InTeamAttitude);
 
 private:
 	UPROPERTY()

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "UObject/Interface.h"
 #include "PawnUIInterface.generated.h"
 
@@ -26,5 +27,6 @@ class ARENAS_API IPawnUIInterface
 public:
 	virtual UPawnUIComponent* GetPawnUIComponent() const = 0;
 	virtual UPlayerUIComponent* GetPlayerUIComponent() const;
+	virtual FGenericTeamId GetOwningGenericTeamId() const { return FGenericTeamId::NoTeam; }
 	
 };

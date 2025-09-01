@@ -107,6 +107,11 @@ UPawnUIComponent* AArenasCharacter::GetPawnUIComponent() const
 	return PawnUIComponent;
 }
 
+FGenericTeamId AArenasCharacter::GetOwningGenericTeamId() const
+{
+	return TeamID;
+}
+
 void AArenasCharacter::BeginPlay()
 {
 	Super::BeginPlay();

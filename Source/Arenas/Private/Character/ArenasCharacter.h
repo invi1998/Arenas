@@ -40,6 +40,7 @@ public:
 
 	// Interface IPawnUIInterface Begin
 	virtual UPawnUIComponent* GetPawnUIComponent() const override;
+	FGenericTeamId GetOwningGenericTeamId() const;
 	// Interface IPawnUIInterface End
 
 protected:
