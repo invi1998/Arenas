@@ -25,6 +25,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	TMap<FGenericTeamId, USkeletalMesh*> TeamSkinMap; // 队伍骨骼网格（皮肤）映射表，Key为队伍ID，Value为对应的骨骼网格
 	
-	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FName GoalBlackboardKeyName = "Goal"; // 目标黑板键名称
 	
 };

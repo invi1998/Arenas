@@ -43,6 +43,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TArray<APlayerStart *> MinionSpawnPoints;
 
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	AActor* MinionGoal; // 小兵的目标点
+
 	int32 NextSpawnSpotIndex = -1;
 
 	const APlayerStart* GetNextSpawnPoint();
