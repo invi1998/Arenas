@@ -33,7 +33,7 @@ public:
 	bool IsLocallyControlledByPlayer() const;
 
 	bool IsAlive() const;
-	void Activate();
+	void RespawnImmediately();
 
 	// 当角色被控制器控制时调用(只会在服务端被调用)
 	virtual void PossessedBy(AController* NewController) override;

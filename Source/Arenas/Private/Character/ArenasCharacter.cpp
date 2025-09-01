@@ -77,13 +77,16 @@ bool AArenasCharacter::IsAlive() const
 	return GetAbilitySystemComponent() && !GetAbilitySystemComponent()->HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead);
 }
 
-void AArenasCharacter::Activate()
+void AArenasCharacter::RespawnImmediately()
 {
-	if (GetAbilitySystemComponent())
+	if (HasAuthority())
 	{
-		FGameplayTagContainer TempTags;
-		TempTags.AddTag(ArenasGameplayTags::Status_Dead);
-		GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(TempTags);
+		if (GetAbilitySystemComponent())
+		{
+			FGameplayTagContainer TempTags;
+			TempTags.AddTag(ArenasGameplayTags::Status_Dead);
+			GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(TempTags);
+		}
 	}
 }
 
@@ -259,8 +262,12 @@ void AArenasCharacter::Respawn()
 
 void AArenasCharacter::DeathMontageFinished()
 {
-	// 死亡动画播放完毕后添加布娃娃物理效果
-	SetRagdollPhysics(true);
+	if (!IsAlive())
+	{
+		// 死亡动画播放完毕后添加布娃娃物理效果
+		SetRagdollPhysics(true);
+	}
+	
 }
 
 void AArenasCharacter::SetRagdollPhysics(bool bEnabled)

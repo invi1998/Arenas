@@ -67,7 +67,7 @@ void AMinionBarrack::SpawnOrFindOneMinion()
 	if (AMinionCharacter* MinionToSpawn = GetNextAvailableMinionFromPool())
 	{
 		MinionToSpawn->SetActorTransform(SpawnPointTransform);
-		MinionToSpawn->Activate();
+		MinionToSpawn->RespawnImmediately();
 	}
 	else
 	{
