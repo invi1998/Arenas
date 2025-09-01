@@ -138,12 +138,10 @@ void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData
 	if (EventTag == ArenasGameplayTags::Event_Ability_Combo_Change_End)
 	{
 		NextComboName = NAME_None;
-		UE_LOG(LogTemp, Warning, TEXT("Combo Ended"));
 		return;
 	}
 
 	NextComboName = UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag);
-	UE_LOG(LogTemp, Warning, TEXT("Next Combo: %s"), *NextComboName.ToString());
 	
 }
 

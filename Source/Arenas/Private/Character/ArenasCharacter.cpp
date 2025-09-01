@@ -54,6 +54,7 @@ void AArenasCharacter::ServerSideInit()
 	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
 	ArenasAbilitySystemComponent->ApplyInitialEffects();		// 初始化角色属性
 	ArenasAbilitySystemComponent->GiveInitialAbilities();		// 赋予初始技能
+	UE_LOG(LogTemp, Warning, TEXT("ServerSideInit %s"), *GetName());
 }
 
 void AArenasCharacter::ClientSideInit()

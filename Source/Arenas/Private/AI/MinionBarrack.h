@@ -64,8 +64,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	int32 MinionPerGroup = 5; // 每组生成的小兵数量
 
+	int32 NumSpawnedThisRound = 0;
+
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	float SpawnGroupInterval = 30.f; // 小兵生成间隔，单位秒
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	float SpawnFirstGroupDelay = 10.f; // 第一组小兵生成延迟，单位秒
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	float SpawnMinionInterval = 1.f; // 小兵组内生成间隔，单位秒

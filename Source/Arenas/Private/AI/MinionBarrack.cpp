@@ -27,7 +27,7 @@ void AMinionBarrack::BeginPlay()
 			&AMinionBarrack::SpawnMinionGroup,
 			SpawnGroupInterval,
 			true,
-			SpawnGroupInterval);
+			SpawnFirstGroupDelay); // 10秒后开始生成第一波小兵
 	}
 	
 	
@@ -77,25 +77,33 @@ void AMinionBarrack::SpawnOrFindOneMinion()
 
 void AMinionBarrack::SpawnMinionGroup()
 {
-	int32 NumSpawnedThisRound = 0;
+	if (HasAuthority())
+	{
 
-	// 清除之前的定时器，防止重复触发
-	GetWorldTimerManager().ClearTimer(SpawnMinionTimerHandle);
-	// 设置新的定时器，每隔SpawnMinionInterval秒生成一个小兵，直到生成MinionPerGroup个小兵
-	GetWorldTimerManager().SetTimer(
-		SpawnMinionTimerHandle,
-		FTimerDelegate::CreateLambda([this, &NumSpawnedThisRound]()
-		{
-			SpawnOrFindOneMinion();
-			++NumSpawnedThisRound;
-			if (NumSpawnedThisRound >= MinionPerGroup)
+		// 清除之前的定时器，防止重复触发
+		GetWorldTimerManager().ClearTimer(SpawnMinionTimerHandle);
+		// 设置新的定时器，每隔SpawnMinionInterval秒生成一个小兵，直到生成MinionPerGroup个小兵
+		GetWorldTimerManager().SetTimer(
+			SpawnMinionTimerHandle,
+			[this]()
 			{
-				GetWorldTimerManager().ClearTimer(SpawnMinionTimerHandle);
-			}
-		}),
-		SpawnMinionInterval,
-		true);
-	
+				if (NumSpawnedThisRound < MinionPerGroup)
+				{
+					SpawnOrFindOneMinion();
+					++NumSpawnedThisRound;
+				}
+				else
+				{
+					// 达到每组小兵的数量后，清除定时器并重置计数
+					GetWorldTimerManager().ClearTimer(SpawnMinionTimerHandle);
+					NumSpawnedThisRound = 0;
+				}
+			},
+			SpawnMinionInterval,
+			true);
+		
+		
+	}
 }
 
 void AMinionBarrack::SpawnMinionsToPool()
