@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "ArenasGameplayAbility.h"
-#include "ArenasCombo_GameplayAbility.generated.h"
+#include "ArenasGA_Combo.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARENAS_API UArenasCombo_GameplayAbility : public UArenasGameplayAbility
+class ARENAS_API UArenasGA_Combo : public UArenasGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UArenasCombo_GameplayAbility();
+	UArenasGA_Combo();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 

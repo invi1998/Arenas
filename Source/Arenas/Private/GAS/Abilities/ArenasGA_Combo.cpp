@@ -1,7 +1,7 @@
 ﻿// Ace of Arenas. (invi1998 All Rights Reserved)
 
 
-#include "ArenasCombo_GameplayAbility.h"
+#include "ArenasGA_Combo.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -11,7 +11,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
-UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(nullptr)
+UArenasGA_Combo::UArenasGA_Combo() : ComboMontage(nullptr)
 {
 	FGameplayTagContainer TempAbilityTags;
 	TempAbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
@@ -19,7 +19,7 @@ UArenasCombo_GameplayAbility::UArenasCombo_GameplayAbility() : ComboMontage(null
 	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
 }
 
-void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                    const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                                    const FGameplayEventData* TriggerEventData)
 {
@@ -39,13 +39,13 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 	{
 		UAbilityTask_PlayMontageAndWait* PlayComboMontageAndWaitTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ComboMontage, 1.f, NAME_None, false);
 		// 订阅蒙太奇淡出混合事件
-		PlayComboMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UArenasCombo_GameplayAbility::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UArenasGA_Combo::K2_EndAbility);
 		// 订阅蒙太奇完成事件
-		PlayComboMontageAndWaitTask->OnCompleted.AddDynamic(this, &UArenasCombo_GameplayAbility::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnCompleted.AddDynamic(this, &UArenasGA_Combo::K2_EndAbility);
 		// 订阅蒙太奇中断事件
-		PlayComboMontageAndWaitTask->OnInterrupted.AddDynamic(this, &UArenasCombo_GameplayAbility::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnInterrupted.AddDynamic(this, &UArenasGA_Combo::K2_EndAbility);
 		// 订阅蒙太奇取消事件
-		PlayComboMontageAndWaitTask->OnCancelled.AddDynamic(this, &UArenasCombo_GameplayAbility::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnCancelled.AddDynamic(this, &UArenasGA_Combo::K2_EndAbility);
 		
 		PlayComboMontageAndWaitTask->ReadyForActivation();	// 准备好被激活（实际并未被激活）
 
@@ -57,7 +57,7 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 			false,	// 因为连招会被多次触发，所以这里不需要只触发一次
 			false);	// 同时，我们这里监听的是Combo.Change，它下面有多个具体的连招段Tag，所以这里不需要只匹配精确标签
 
-		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboChangeEventReceived);
+		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenasGA_Combo::OnComboChangeEventReceived);
 		WaitComboChangeEventTask->ReadyForActivation();
 	}
 
@@ -71,7 +71,7 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 			false,
 			true);
 
-		WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenasCombo_GameplayAbility::DoDamage);
+		WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenasGA_Combo::DoDamage);
 		WaitComboDamageEventTask->ReadyForActivation();
 	}
 	
@@ -79,20 +79,20 @@ void UArenasCombo_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHan
 	SetupWaitComboInputPressTask();
 }
 
-FGameplayTag UArenasCombo_GameplayAbility::GetComboChangeEventTag()
+FGameplayTag UArenasGA_Combo::GetComboChangeEventTag()
 {
 	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
 }
 
-void UArenasCombo_GameplayAbility::SetupWaitComboInputPressTask()
+void UArenasGA_Combo::SetupWaitComboInputPressTask()
 {
 	UAbilityTask_WaitInputPress* WaitComboInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
-	WaitComboInputPressTask->OnPress.AddDynamic(this, &UArenasCombo_GameplayAbility::OnComboInputPressed);
+	WaitComboInputPressTask->OnPress.AddDynamic(this, &UArenasGA_Combo::OnComboInputPressed);
 	WaitComboInputPressTask->ReadyForActivation();
 	
 }
 
-void UArenasCombo_GameplayAbility::TryCommitCombo()
+void UArenasGA_Combo::TryCommitCombo()
 {
 	if (NextComboName == NAME_None)
 	{
@@ -107,7 +107,7 @@ void UArenasCombo_GameplayAbility::TryCommitCombo()
 	
 }
 
-TSubclassOf<UGameplayEffect> UArenasCombo_GameplayAbility::GetCurrentComboDamageEffect() const
+TSubclassOf<UGameplayEffect> UArenasGA_Combo::GetCurrentComboDamageEffect() const
 {
 	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
 	{
@@ -121,7 +121,7 @@ TSubclassOf<UGameplayEffect> UArenasCombo_GameplayAbility::GetCurrentComboDamage
 	return DefaultDamageEffect;
 }
 
-int32 UArenasCombo_GameplayAbility::GetCurrentComboIndex() const
+int32 UArenasGA_Combo::GetCurrentComboIndex() const
 {
 	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
 	{
@@ -131,7 +131,7 @@ int32 UArenasCombo_GameplayAbility::GetCurrentComboIndex() const
 	return 0; // 默认返回0，表示无效索引
 }
 
-void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData PayloadData)
+void UArenasGA_Combo::OnComboChangeEventReceived(FGameplayEventData PayloadData)
 {
 	FGameplayTag EventTag = PayloadData.EventTag;
 
@@ -145,13 +145,13 @@ void UArenasCombo_GameplayAbility::OnComboChangeEventReceived(FGameplayEventData
 	
 }
 
-void UArenasCombo_GameplayAbility::OnComboInputPressed(float TimeWaited)
+void UArenasGA_Combo::OnComboInputPressed(float TimeWaited)
 {
 	SetupWaitComboInputPressTask();
 	TryCommitCombo();
 }
 
-void UArenasCombo_GameplayAbility::DoDamage(FGameplayEventData Payload)
+void UArenasGA_Combo::DoDamage(FGameplayEventData Payload)
 {
 	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, ETeamAttitude::Hostile, TargetSweepSphereRadius, false, true);
 

@@ -17,7 +17,12 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Cancel, "InputTag.Cancel", "取消输入" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_BasicAttack, "Ability.BasicAttack", "基础攻击技能" );
-
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_One, "Ability.One", "技能1" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Two, "Ability.Two", "技能2" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Three, "Ability.Three", "技能3" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Four, "Ability.Four", "技能4" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Five, "Ability.Five", "技能5" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Six, "Ability.Six", "技能6" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_1, "Event.Ability.Combo.Change.1", "连招技能切换到连招1" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_2, "Event.Ability.Combo.Change.2", "连招技能切换到连招2" );
