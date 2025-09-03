@@ -20,5 +20,9 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* UpperCutMontage;
+
+	UFUNCTION()
+	void OnUpperCutLaunch(FGameplayEventData Payload);
+
 	
 };

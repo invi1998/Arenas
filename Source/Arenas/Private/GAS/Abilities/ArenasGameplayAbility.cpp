@@ -70,3 +70,4 @@ TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetD
 
 	return OutHitResults;
 }
+

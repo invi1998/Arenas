@@ -17,18 +17,19 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Cancel, "InputTag.Cancel", "取消输入" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_BasicAttack, "Ability.BasicAttack", "基础攻击技能" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_One, "Ability.One", "技能1" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Two, "Ability.Two", "技能2" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Three, "Ability.Three", "技能3" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Four, "Ability.Four", "技能4" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Five, "Ability.Five", "技能5" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Six, "Ability.Six", "技能6" );
-	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Uppercut, "Ability.Uppercut", "上勾拳技能" );
+
+	/***** Event Tags *****/
+	// Event-Combo
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_1, "Event.Ability.Combo.Change.1", "连招技能切换到连招1" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_2, "Event.Ability.Combo.Change.2", "连招技能切换到连招2" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_3, "Event.Ability.Combo.Change.3", "连招技能切换到连招3" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_4, "Event.Ability.Combo.Change.4", "连招技能切换到连招4" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Change_End, "Event.Ability.Combo.Change.End", "连招技能切换到连招结束" );
+
+	// Event-Uppercut
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_Launch, "Event.Ability.Uppercut.Launch", "上勾拳技能起跳" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_Land, "Event.Ability.Uppercut.Land", "上勾拳技能落地" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	

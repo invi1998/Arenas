@@ -107,20 +107,6 @@ void UArenasGA_Combo::TryCommitCombo()
 	
 }
 
-TSubclassOf<UGameplayEffect> UArenasGA_Combo::GetCurrentComboDamageEffect() const
-{
-	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
-	{
-		FName CurrentSectionName = OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage);
-		if (DamageEffectsMap.Contains(CurrentSectionName))
-		{
-			return DamageEffectsMap[CurrentSectionName];
-		}
-	}
-
-	return DefaultDamageEffect;
-}
-
 int32 UArenasGA_Combo::GetCurrentComboIndex() const
 {
 	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
@@ -153,13 +139,13 @@ void UArenasGA_Combo::OnComboInputPressed(float TimeWaited)
 
 void UArenasGA_Combo::DoDamage(FGameplayEventData Payload)
 {
-	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, ETeamAttitude::Hostile, TargetSweepSphereRadius, false, true);
+	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, ETeamAttitude::Hostile, TargetSweepSphereRadius, bShowSweepDebug, true);
 
 	float CurrentComboIndex = GetCurrentComboIndex();
 	
 	for (const FHitResult& Hit : HitResults)
 	{
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GetCurrentComboDamageEffect(), GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
 		// 添加SetByCaller参数
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
