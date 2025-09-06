@@ -18,6 +18,7 @@ namespace ArenasGameplayTags
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_BasicAttack, "Ability.BasicAttack", "基础攻击技能" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Uppercut, "Ability.Uppercut", "上勾拳技能" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Passive_Launch_Activated, "Ability.Passive.Launch.Activated", "被动技能-发射器-激活" );
 
 	/***** Event Tags *****/
 	// Event-Combo

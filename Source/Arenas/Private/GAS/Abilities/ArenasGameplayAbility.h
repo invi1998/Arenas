@@ -7,6 +7,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "ArenasGameplayAbility.generated.h"
 
+class AArenasCharacter;
 /**
  * 
  */
@@ -31,5 +32,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Hit Sweep")
 	bool bShowSweepDebug = false;
+	
+	// 推开角色
+	void PushSelf(const FVector& PushVelocity);
+	void PushTarget(AActor* TargetActor, const FVector& PushVelocity);
+
+	AArenasCharacter* GetOwningArenasCharacter();
+
+private:
+	UPROPERTY()
+	AArenasCharacter* OwningArenasCharacter;
 	
 };

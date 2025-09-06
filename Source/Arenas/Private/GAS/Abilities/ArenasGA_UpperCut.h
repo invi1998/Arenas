@@ -20,6 +20,9 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* UpperCutMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Launch")
+	float LaunchStrength = 600.f; // 击飞力度
 
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);

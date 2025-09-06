@@ -32,6 +32,6 @@ void UAN_SendTargetGroup::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 		// 同时也需要注意，因为Add内部会使用智能指针进行管理，所以上面我们创建的LocationInfo必须是原始指针
 		PayloadData.TargetData.Add(LocationInfo);
 	}
-	
+
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, PayloadData);
 }

@@ -3,6 +3,9 @@
 
 #include "ArenasGameplayAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "ArenasGameplayTags.h"
+#include "Character/ArenasCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 UAnimInstance* UArenasGameplayAbility::GetOwnerAnimInstance() const
@@ -69,5 +72,43 @@ TArray<FHitResult> UArenasGameplayAbility::GetHitResultsFromSweepLocationTargetD
 	}
 
 	return OutHitResults;
+}
+
+void UArenasGameplayAbility::PushSelf(const FVector& PushVelocity)
+{
+	if (AArenasCharacter* ArenasCharacter = GetOwningArenasCharacter())
+	{
+		// 推开角色
+		ArenasCharacter->LaunchCharacter(PushVelocity, true, true);
+	}
+}
+
+void UArenasGameplayAbility::PushTarget(AActor* TargetActor, const FVector& PushVelocity)
+{
+	if (!TargetActor) return;
+
+	FGameplayEventData EventData;
+
+	FGameplayAbilityTargetData_SingleTargetHit* HitData = new FGameplayAbilityTargetData_SingleTargetHit();
+	FHitResult HitResult;
+	HitResult.ImpactNormal = PushVelocity;
+	HitData->HitResult = HitResult;
+	EventData.TargetData.Add(HitData);
+
+	// 使用 GameplayEvent 来触发击飞被动技能
+	EventData.EventTag = ArenasGameplayTags::Ability_Passive_Launch_Activated;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(TargetActor, EventData.EventTag, EventData);
+	
+}
+
+AArenasCharacter* UArenasGameplayAbility::GetOwningArenasCharacter()
+{
+	if (!OwningArenasCharacter)
+	{
+		OwningArenasCharacter = Cast<AArenasCharacter>(GetAvatarActorFromActorInfo());
+	}
+
+	return OwningArenasCharacter;
 }
 

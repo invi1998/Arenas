@@ -65,6 +65,9 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 		true
 	);
 
+	// 自己向上击飞
+	PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength);
+
 	for (FHitResult Hit : HitResults)
 	{
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
@@ -82,6 +85,10 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 			GetCurrentActivationInfo(),
 			EffectSpecHandle,
 			UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
+
+		// 向上击飞敌人
+		PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength);
+		
 	}
 	
 }
