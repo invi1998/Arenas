@@ -150,6 +150,20 @@ void AArenasCharacter::DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCoun
 	}
 }
 
+void AArenasCharacter::StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
+{
+	if (!IsAlive()) return;
+
+	if (NewCount != 0)
+	{
+		// 被眩晕
+	}
+	else
+	{
+		
+	}
+}
+
 void AArenasCharacter::BindGASChangedDelegate()
 {
 	if (ArenasAbilitySystemComponent)
@@ -158,6 +172,12 @@ void AArenasCharacter::BindGASChangedDelegate()
 			ArenasGameplayTags::Status_Dead,
 			EGameplayTagEventType::NewOrRemoved)
 			.AddUObject(this, &AArenasCharacter::DeathTagUpdated);
+
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenasGameplayTags::Status_Stun,
+			EGameplayTagEventType::NewOrRemoved)
+			.AddUObject(this, &AArenasCharacter::StunTagUpdated);
+		
 	}
 }
 

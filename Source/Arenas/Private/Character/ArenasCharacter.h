@@ -62,6 +62,7 @@ public:
 
 private:
 	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
+	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void BindGASChangedDelegate();
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
