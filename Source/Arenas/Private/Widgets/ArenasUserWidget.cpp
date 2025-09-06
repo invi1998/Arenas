@@ -36,6 +36,8 @@ void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	if (!bIsPlayerWidget) return;
+	
 	if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetOwningPlayerPawn()))
 	{
 		if (UPlayerUIComponent* PlayerUIComponent = PawnUIInterface->GetPlayerUIComponent())
@@ -48,6 +50,8 @@ void UArenasUserWidget::NativeOnInitialized()
 void UArenasUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (!bIsPlayerWidget) return;
 
 	CachedArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(GetOwningPlayerPawn());
 	if (CachedArenasASC)

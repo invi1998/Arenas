@@ -36,5 +36,8 @@ protected:
 private:
 	UPROPERTY()
 	UArenasAbilitySystemComponent* CachedArenasASC;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	bool bIsPlayerWidget = false;
 	
 };
