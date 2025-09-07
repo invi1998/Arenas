@@ -37,6 +37,11 @@ private:
 	UFUNCTION()
 	void HandleComboChange(FGameplayEventData Payload);
 
+	int32 GetCurrentComboIndex() const;
+
+	UFUNCTION()
+	void HandleComboDamageEvent(FGameplayEventData Payload);
+
 	FName NextComboName;
 	
 };

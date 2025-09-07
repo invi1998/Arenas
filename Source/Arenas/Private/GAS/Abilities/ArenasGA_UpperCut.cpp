@@ -116,6 +116,13 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 	);
 	WaitComboCommitEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboCommitEvent);
 	WaitComboCommitEventTask->ReadyForActivation();
+
+	UAbilityTask_WaitGameplayEvent* WaitComboDamageEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+		this,
+		ArenasGameplayTags::Event_Ability_Combo_Damage
+	);
+	WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboDamageEvent);
+	WaitComboDamageEventTask->ReadyForActivation();
 	
 }
 
@@ -123,15 +130,12 @@ void UArenasGA_UpperCut::HandleComboCommitEvent(FGameplayEventData Payload)
 {
 	if (NextComboName == NAME_None)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UpperCut No Next Combo"));
 		return;
 	}
 
 	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UpperCut Into Next Combo: %s"), *NextComboName.ToString());
 		OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage), NextComboName, UpperCutMontage);
-		
 	}
 }
 
@@ -141,14 +145,59 @@ void UArenasGA_UpperCut::HandleComboChange(FGameplayEventData Payload)
 	if (EventTag.MatchesTagExact(ArenasGameplayTags::Event_Ability_Combo_Change_End))
 	{
 		NextComboName = NAME_None;
-		UE_LOG(LogTemp, Warning, TEXT("UpperCut Combo End"));
 		return;
 	}
 
 	TArray<FName> ComboNames;
 	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, ComboNames);
 	NextComboName = ComboNames.Num() > 0 ? ComboNames.Last() : NAME_None;
-	UE_LOG(LogTemp, Warning, TEXT("UpperCut Next Combo: %s"), *NextComboName.ToString());
 	
+}
+
+int32 UArenasGA_UpperCut::GetCurrentComboIndex() const
+{
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		FName CurrentSectionName = OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage);
+		return FCString::Atoi(*CurrentSectionName.ToString());
+	}
+	return 0; // 默认返回0，表示无效索引
+}
+
+void UArenasGA_UpperCut::HandleComboDamageEvent(FGameplayEventData Payload)
+{
+	if (K2_HasAuthority())
+	{
+		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
+			Payload.TargetData,
+			ETeamAttitude::Hostile,
+			TargetSweepSphereRadius,
+			bShowSweepDebug,
+			true
+		);
+
+		int32 ComboIndex = GetCurrentComboIndex();
+		
+		for (FHitResult Hit : HitResults)
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+
+			// 添加SetByCaller参数
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, ComboIndex);
+
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			EffectContext.AddHitResult(Hit);
+			EffectSpecHandle.Data->SetContext(EffectContext);
+		
+			ApplyGameplayEffectSpecToTarget(
+				GetCurrentAbilitySpecHandle(),
+				GetCurrentActorInfo(),
+				GetCurrentActivationInfo(),
+				EffectSpecHandle,
+				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
+		
+		}
+	}
 }
 
