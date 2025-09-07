@@ -22,7 +22,10 @@ private:
 	UAnimMontage* UpperCutMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Launch")
-	float LaunchStrength = 600.f; // 击飞力度
+	float LaunchStrength_Self = 600.f; // 击飞力度
+
+	UPROPERTY(EditDefaultsOnly, Category = "Launch")
+	float LaunchStrength_Target = 1000.f; // 击飞力度
 
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);

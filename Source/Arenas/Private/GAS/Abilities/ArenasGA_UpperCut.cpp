@@ -66,7 +66,7 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 	);
 
 	// 自己向上击飞
-	PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength);
+	PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Self);
 
 	for (FHitResult Hit : HitResults)
 	{
@@ -87,7 +87,7 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 			UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
 
 		// 向上击飞敌人
-		PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength);
+		PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength_Target);
 		
 	}
 	
