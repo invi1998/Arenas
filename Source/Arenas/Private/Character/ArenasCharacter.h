@@ -35,6 +35,8 @@ public:
 	bool IsAlive() const;
 	void RespawnImmediately();
 
+	bool IsStunning() const;
+
 	// 当角色被控制器控制时调用(只会在服务端被调用)
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -122,6 +124,15 @@ private:
 
 	virtual void OnDeath();
 	virtual void OnRespawn();
+
+	/********************************************************************************************/
+	/*								 		Stun 眩晕											*/
+	/********************************************************************************************/
+	UPROPERTY(EditDefaultsOnly, Category = "Stun")
+	UAnimMontage* StunMontage;
+
+	virtual void OnStun();
+	virtual void OnUnStun();
 
 public:
 	/********************************************************************************************/

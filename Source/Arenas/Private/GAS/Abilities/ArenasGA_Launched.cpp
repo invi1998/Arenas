@@ -13,6 +13,8 @@ UArenasGA_Launched::UArenasGA_Launched()
 	TriggerData.TriggerTag = ArenasGameplayTags::Ability_Passive_Launch_Activated;	// TriggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.Passive.Launch.Activated"));
 	// TriggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.Uppercut.Launch")); // 也可以用这个
 	AbilityTriggers.Add(TriggerData);
+
+	ActivationBlockedTags.RemoveTag(ArenasGameplayTags::Status_Stun); // 眩晕状态下也能触发该能力
 }
 
 void UArenasGA_Launched::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

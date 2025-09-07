@@ -56,8 +56,11 @@ private:
 	void ForgetActorIfDead(AActor* Actor); // 如果Actor死亡则忘记它
 
 	void OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Count);
+	void OnOwnerStunTagChanged(FGameplayTag GameplayTag, int Count);
 
 	void ClearAndDisablePerception(); // 清除并禁用感知系统
 	void EnableAllPerception(); // 启用感知系统
+
+	bool bIsPawnDead = false;
 
 };

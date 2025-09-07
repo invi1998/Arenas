@@ -90,6 +90,11 @@ void AArenasCharacter::RespawnImmediately()
 	}
 }
 
+bool AArenasCharacter::IsStunning() const
+{
+	return GetAbilitySystemComponent() && GetAbilitySystemComponent()->HasMatchingGameplayTag(ArenasGameplayTags::Status_Stun);
+}
+
 void AArenasCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -157,10 +162,13 @@ void AArenasCharacter::StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
 	if (NewCount != 0)
 	{
 		// 被眩晕
+		OnStun();
+		PlayAnimMontage(StunMontage);
 	}
 	else
 	{
-		
+		OnUnStun();
+		StopAnimMontage(StunMontage);
 	}
 }
 
@@ -327,6 +335,14 @@ void AArenasCharacter::OnDeath()
 }
 
 void AArenasCharacter::OnRespawn()
+{
+}
+
+void AArenasCharacter::OnStun()
+{
+}
+
+void AArenasCharacter::OnUnStun()
 {
 }
 

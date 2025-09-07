@@ -57,6 +57,7 @@ void AArenasAIController::OnPossess(APawn* InPawn)
 	if (UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InPawn))
 	{
 		OwnerASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasAIController::OnOwnerDeadTagChanged);
+		OwnerASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasAIController::OnOwnerStunTagChanged);
 	}
 	
 }
@@ -162,11 +163,31 @@ void AArenasAIController::OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Co
 		// 禁用行为树
 		GetBrainComponent()->StopLogic(TEXT("Owner Dead"));
 		ClearAndDisablePerception(); // 如果角色死亡，清除并禁用感知
+		bIsPawnDead = true;
 	}
 	else
 	{
 		GetBrainComponent()->StartLogic();
 		EnableAllPerception(); // 如果角色重生，启用所有感知
+		bIsPawnDead = false;
+	}
+}
+
+void AArenasAIController::OnOwnerStunTagChanged(FGameplayTag GameplayTag, int Count)
+{
+	if (bIsPawnDead) return; // 如果角色已经死亡，则不处理眩晕状态
+	
+	if (Count != 0)
+	{
+		// 禁用行为树
+		GetBrainComponent()->StopLogic(TEXT("Owner Stunned"));
+		// 这里如果只是被眩晕，我们不清除感知，因为可能只是暂时性的眩晕，在眩晕结束后，AI应该继续追踪之前的目标
+		// ClearAndDisablePerception(); // 如果角色被眩晕，清除并禁用感知
+	}
+	else
+	{
+		GetBrainComponent()->StartLogic();
+		// EnableAllPerception(); // 如果角色解除眩晕，启用所有感知
 	}
 }
 

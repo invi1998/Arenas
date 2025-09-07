@@ -16,6 +16,9 @@ class ARENAS_API UArenasGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
+public:
+	UArenasGameplayAbility();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UGameplayEffect> DefaultDamageEffect;	// 默认伤害GameplayEffect

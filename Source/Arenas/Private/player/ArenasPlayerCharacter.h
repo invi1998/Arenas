@@ -69,5 +69,8 @@ private:
 
 	virtual void OnDeath() override;
 	virtual void OnRespawn() override;
+
+	virtual void OnStun() override;
+	virtual void OnUnStun() override;
 	
 };

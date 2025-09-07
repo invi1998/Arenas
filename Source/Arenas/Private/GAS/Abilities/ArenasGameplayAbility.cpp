@@ -8,6 +8,12 @@
 #include "Character/ArenasCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+UArenasGameplayAbility::UArenasGameplayAbility()
+{
+	ActivationBlockedTags.AddTag(ArenasGameplayTags::Status_Stun); // 眩晕状态下无法激活该能力
+	ActivationBlockedTags.AddTag(ArenasGameplayTags::Status_Dead); // 死亡状态下无法激活该能力
+}
+
 UAnimInstance* UArenasGameplayAbility::GetOwnerAnimInstance() const
 {
 	if (const USkeletalMeshComponent* OwnerSkeletalMeshComp = GetOwningComponentFromActorInfo())

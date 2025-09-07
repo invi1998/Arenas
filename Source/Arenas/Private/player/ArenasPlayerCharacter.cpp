@@ -131,6 +131,25 @@ void AArenasPlayerCharacter::OnDeath()
 
 void AArenasPlayerCharacter::OnRespawn()
 {
+	if (IsStunning()) return;
+	if (APlayerController* PC = GetController<APlayerController>())
+	{
+		EnableInput(PC);
+	}
+}
+
+void AArenasPlayerCharacter::OnStun()
+{
+	// 被眩晕时，禁用输入
+	if (APlayerController* PC = GetController<APlayerController>())
+	{
+		DisableInput(PC);
+	}
+}
+
+void AArenasPlayerCharacter::OnUnStun()
+{
+	if (!IsAlive()) return;
 	if (APlayerController* PC = GetController<APlayerController>())
 	{
 		EnableInput(PC);
