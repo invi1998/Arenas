@@ -41,11 +41,7 @@ void UArenasGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		PlayUpperCutMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_UpperCut::K2_EndAbility);
 		PlayUpperCutMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_UpperCut::K2_EndAbility);
 		PlayUpperCutMontageTask->ReadyForActivation();
-		
-	}
 
-	if (K2_HasAuthority())
-	{
 		UAbilityTask_WaitGameplayEvent* WaitUpperCutLaunchEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this,
 		ArenasGameplayTags::Event_Ability_Uppercut_Launch,
@@ -65,40 +61,43 @@ void UArenasGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 {
-	TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
-		Payload.TargetData,
-		ETeamAttitude::Hostile,
-		TargetSweepSphereRadius,
-		bShowSweepDebug,
-		true
-	);
-
-	// 自己向上击飞
-	PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Self);
-
-	for (FHitResult Hit : HitResults)
+	if (K2_HasAuthority())
 	{
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
+			Payload.TargetData,
+			ETeamAttitude::Hostile,
+			TargetSweepSphereRadius,
+			bShowSweepDebug,
+			true
+		);
 
-		// 添加SetByCaller参数
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+		// 自己向上击飞
+		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Self);
 
-		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
-		EffectContext.AddHitResult(Hit);
-		EffectSpecHandle.Data->SetContext(EffectContext);
+		for (FHitResult Hit : HitResults)
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+
+			// 添加SetByCaller参数
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			EffectContext.AddHitResult(Hit);
+			EffectSpecHandle.Data->SetContext(EffectContext);
 		
-		ApplyGameplayEffectSpecToTarget(
-			GetCurrentAbilitySpecHandle(),
-			GetCurrentActorInfo(),
-			GetCurrentActivationInfo(),
-			EffectSpecHandle,
-			UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
+			ApplyGameplayEffectSpecToTarget(
+				GetCurrentAbilitySpecHandle(),
+				GetCurrentActorInfo(),
+				GetCurrentActivationInfo(),
+				EffectSpecHandle,
+				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
 
-		// 向上击飞敌人
-		PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength_Target);
+			// 向上击飞敌人
+			PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength_Target);
 		
+		}
 	}
-
+	
 	UAbilityTask_WaitGameplayEvent* WaitComboChangeEndEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this,
 		UArenasGA_Combo::GetComboChangeEventTag(),
@@ -113,9 +112,7 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 	UAbilityTask_WaitGameplayEvent* WaitComboCommitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this,
 		ArenasGameplayTags::Ability_BasicAttack_Pressed,
-		nullptr,
-		false,
-		false
+		nullptr
 	);
 	WaitComboCommitEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboCommitEvent);
 	WaitComboCommitEventTask->ReadyForActivation();
@@ -124,7 +121,18 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 
 void UArenasGA_UpperCut::HandleComboCommitEvent(FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UpperCut Commit Combo: %s"), *NextComboName.ToString());
+	if (NextComboName == NAME_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UpperCut No Next Combo"));
+		return;
+	}
+
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UpperCut Into Next Combo: %s"), *NextComboName.ToString());
+		OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage), NextComboName, UpperCutMontage);
+		
+	}
 }
 
 void UArenasGA_UpperCut::HandleComboChange(FGameplayEventData Payload)
