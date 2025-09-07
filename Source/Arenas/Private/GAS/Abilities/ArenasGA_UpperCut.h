@@ -15,6 +15,7 @@ class ARENAS_API UArenasGA_UpperCut : public UArenasGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UArenasGA_UpperCut();
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
@@ -29,6 +30,9 @@ private:
 	
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);
+
+	UFUNCTION()
+	void HandleComboCommitEvent(FGameplayEventData Payload);
 
 	UFUNCTION()
 	void HandleComboChange(FGameplayEventData Payload);

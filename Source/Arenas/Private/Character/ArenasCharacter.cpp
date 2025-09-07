@@ -3,6 +3,7 @@
 
 #include "ArenasCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -141,6 +142,16 @@ void AArenasCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 UAbilitySystemComponent* AArenasCharacter::GetAbilitySystemComponent() const
 {
 	return ArenasAbilitySystemComponent;
+}
+
+void AArenasCharacter::Server_SendGameplayEventToSelf_Implementation(const FGameplayTag& EventTag, const FGameplayEventData& Payload)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventTag, Payload);
+}
+
+bool AArenasCharacter::Server_SendGameplayEventToSelf_Validate(const FGameplayTag& EventTag, const FGameplayEventData& Payload)
+{
+	return true;
 }
 
 void AArenasCharacter::DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount)

@@ -3,7 +3,9 @@
 
 #include "ArenasPlayerCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "ArenasGameplayTags.h"
 #include "ArenasPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -117,6 +119,14 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 	{
 		// 执行本地技能触发(松开)
 		GetAbilitySystemComponent()->AbilityLocalInputReleased(static_cast<int32>(AbilityID));
+	}
+
+	if (AbilityID == EArenasAbilityInputID::BasicAttack)
+	{
+		// 确认技能释放
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, ArenasGameplayTags::Ability_BasicAttack_Pressed, FGameplayEventData());
+		// 服务器端确认技能释放
+		Server_SendGameplayEventToSelf(ArenasGameplayTags::Ability_BasicAttack_Pressed, FGameplayEventData());
 	}
 	
 }

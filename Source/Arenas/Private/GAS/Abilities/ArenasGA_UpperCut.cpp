@@ -9,6 +9,11 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
+UArenasGA_UpperCut::UArenasGA_UpperCut()
+{
+	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);	// 阻止基础攻击技能
+}
+
 void UArenasGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                          const FGameplayEventData* TriggerEventData)
@@ -103,7 +108,23 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 	);
 	WaitComboChangeEndEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboChange);
 	WaitComboChangeEndEventTask->ReadyForActivation();
+
+	// 然后监听基础攻击
+	UAbilityTask_WaitGameplayEvent* WaitComboCommitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+		this,
+		ArenasGameplayTags::Ability_BasicAttack_Pressed,
+		nullptr,
+		false,
+		false
+	);
+	WaitComboCommitEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboCommitEvent);
+	WaitComboCommitEventTask->ReadyForActivation();
 	
+}
+
+void UArenasGA_UpperCut::HandleComboCommitEvent(FGameplayEventData Payload)
+{
+	UE_LOG(LogTemp, Warning, TEXT("UpperCut Commit Combo: %s"), *NextComboName.ToString());
 }
 
 void UArenasGA_UpperCut::HandleComboChange(FGameplayEventData Payload)

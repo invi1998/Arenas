@@ -11,6 +11,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "ArenasCharacter.generated.h"
 
+struct FGameplayEventData;
 class UAIPerceptionStimuliSourceComponent;
 class UArenasUserWidget;
 class UWidgetComponent;
@@ -61,6 +62,12 @@ public:
 	/********************************************************************************************/
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	// 标记为服务端可靠并且带有验证，以确保只有经过验证的客户端请求才能被服务器接受，意味着这是一个RPC(远程过程调用)函数
+	// 即当客户端调用此函数时，它实际会通知服务器在服务端调用相同的函数
+	// WithValidation 表示我们需要提供一个验证函数来验证调用请求的合法性
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& Payload);
 
 private:
 	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
