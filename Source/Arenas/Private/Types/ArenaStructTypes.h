@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "ArenaStructTypes.generated.h"
 
+class UGameplayEffect;
 class UArenasGameplayAbility;
 
 UENUM(BlueprintType)
@@ -40,4 +41,19 @@ struct FArenasAbilitySet
 	bool IsValid() const;
 	
 };
+
+USTRUCT(BlueprintType)
+struct FGenericDamageEffectData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> DamageEffect;
+
+	// 推力方向
+	UPROPERTY(EditAnywhere)
+	FVector PushVelocity;
+	
+};
+
 

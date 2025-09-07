@@ -59,6 +59,19 @@ void UArenasGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	
 }
 
+const FGenericDamageEffectData* UArenasGA_UpperCut::GetComboDamageEffectDataByName() const
+{
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		FName CurrentSectionName = OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage);
+		if (const FGenericDamageEffectData* FoundData = ComboDamageEffectDataMap.Find(CurrentSectionName))
+		{
+			return FoundData;
+		}
+	}
+	return nullptr;
+}
+
 void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 {
 	if (K2_HasAuthority())
@@ -123,6 +136,16 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 	);
 	WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboDamageEvent);
 	WaitComboDamageEventTask->ReadyForActivation();
+
+	UAbilityTask_WaitGameplayEvent* WaitComboFinalBlowEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+		this,
+		ArenasGameplayTags::Event_Ability_Uppercut_FinalBlow,
+		nullptr,
+		false,
+		false
+	);
+	WaitComboFinalBlowEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleUpperCutFinalBlow);
+	WaitComboFinalBlowEventTask->ReadyForActivation();
 	
 }
 
@@ -176,6 +199,8 @@ void UArenasGA_UpperCut::HandleComboDamageEvent(FGameplayEventData Payload)
 			true
 		);
 
+		// 自己向上击飞
+		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Air);
 		int32 ComboIndex = GetCurrentComboIndex();
 		
 		for (FHitResult Hit : HitResults)
@@ -196,6 +221,47 @@ void UArenasGA_UpperCut::HandleComboDamageEvent(FGameplayEventData Payload)
 				GetCurrentActivationInfo(),
 				EffectSpecHandle,
 				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
+
+			PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength_Air);
+		
+		}
+	}
+}
+
+void UArenasGA_UpperCut::HandleUpperCutFinalBlow(FGameplayEventData Payload)
+{
+	if (K2_HasAuthority())
+	{
+		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
+			Payload.TargetData,
+			ETeamAttitude::Hostile,
+			TargetSweepSphereRadius,
+			bShowSweepDebug,
+			true
+		);
+		
+		for (FHitResult Hit : HitResults)
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+
+			// 添加SetByCaller参数
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, 4);
+
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			EffectContext.AddHitResult(Hit);
+			EffectSpecHandle.Data->SetContext(EffectContext);
+		
+			ApplyGameplayEffectSpecToTarget(
+				GetCurrentAbilitySpecHandle(),
+				GetCurrentActorInfo(),
+				GetCurrentActivationInfo(),
+				EffectSpecHandle,
+				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Hit.GetActor()));
+
+			FVector PushVelocity = (Hit.GetActor()->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).GetSafeNormal();
+
+			PushTarget(Hit.GetActor(), PushVelocity * LaunchStrength_Target);
 		
 		}
 	}

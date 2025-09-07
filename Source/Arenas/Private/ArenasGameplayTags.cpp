@@ -31,7 +31,7 @@ namespace ArenasGameplayTags
 
 	// Event-Uppercut
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_Launch, "Event.Ability.Uppercut.Launch", "上勾拳技能起跳" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_Land, "Event.Ability.Uppercut.Land", "上勾拳技能落地" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_FinalBlow, "Event.Ability.Uppercut.FinalBlow", "上勾拳技能终结一击" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	
