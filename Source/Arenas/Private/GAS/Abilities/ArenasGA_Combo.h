@@ -16,11 +16,12 @@ class ARENAS_API UArenasGA_Combo : public UArenasGameplayAbility
 
 public:
 	UArenasGA_Combo();
+
+	static FGameplayTag GetComboChangeEventTag();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
-	static FGameplayTag GetComboChangeEventTag();
 	
 	void SetupWaitComboInputPressTask();
 	void TryCommitCombo();

@@ -26,9 +26,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Launch")
 	float LaunchStrength_Target = 1000.f; // 击飞力度
-
+	
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);
 
+	UFUNCTION()
+	void HandleComboChange(FGameplayEventData Payload);
+
+	FName NextComboName;
 	
 };

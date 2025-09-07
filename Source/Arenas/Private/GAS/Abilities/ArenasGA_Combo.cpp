@@ -19,6 +19,11 @@ UArenasGA_Combo::UArenasGA_Combo() : ComboMontage(nullptr)
 	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
 }
 
+FGameplayTag UArenasGA_Combo::GetComboChangeEventTag()
+{
+	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
+}
+
 void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                    const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                                    const FGameplayEventData* TriggerEventData)
@@ -77,11 +82,6 @@ void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 
 	SetupWaitComboInputPressTask();
-}
-
-FGameplayTag UArenasGA_Combo::GetComboChangeEventTag()
-{
-	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
 }
 
 void UArenasGA_Combo::SetupWaitComboInputPressTask()

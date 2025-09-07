@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasGameplayTags.h"
+#include "ArenasGA_Combo.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
@@ -52,6 +53,8 @@ void UArenasGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		WaitUpperCutLaunchEventTask->ReadyForActivation();
 		
 	}
+
+	NextComboName = NAME_None;
 	
 }
 
@@ -90,6 +93,33 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 		PushTarget(Hit.GetActor(), FVector::UpVector * LaunchStrength_Target);
 		
 	}
+
+	UAbilityTask_WaitGameplayEvent* WaitComboChangeEndEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+		this,
+		UArenasGA_Combo::GetComboChangeEventTag(),
+		nullptr,
+		false,
+		false
+	);
+	WaitComboChangeEndEventTask->EventReceived.AddDynamic(this, &UArenasGA_UpperCut::HandleComboChange);
+	WaitComboChangeEndEventTask->ReadyForActivation();
+	
+}
+
+void UArenasGA_UpperCut::HandleComboChange(FGameplayEventData Payload)
+{
+	FGameplayTag EventTag = Payload.EventTag;
+	if (EventTag.MatchesTagExact(ArenasGameplayTags::Event_Ability_Combo_Change_End))
+	{
+		NextComboName = NAME_None;
+		UE_LOG(LogTemp, Warning, TEXT("UpperCut Combo End"));
+		return;
+	}
+
+	TArray<FName> ComboNames;
+	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, ComboNames);
+	NextComboName = ComboNames.Num() > 0 ? ComboNames.Last() : NAME_None;
+	UE_LOG(LogTemp, Warning, TEXT("UpperCut Next Combo: %s"), *NextComboName.ToString());
 	
 }
 
