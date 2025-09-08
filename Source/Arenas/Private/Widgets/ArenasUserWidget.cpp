@@ -6,6 +6,7 @@
 #include "Interface/PawnUIInterface.h"
 #include "Component/UI/PlayerUIComponent.h"
 #include "ArenasBlueprintFunctionLibrary.h"
+#include "Component/AbilityListView.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 
 void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
@@ -34,7 +35,10 @@ void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
 
 void UArenasUserWidget::ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities)
 {
-	
+	if (bIsPlayerWidget && AbilityListView)
+	{
+		AbilityListView->ConfigureAbilities(InAbilities);
+	}
 }
 
 void UArenasUserWidget::NativeOnInitialized()

@@ -9,3 +9,11 @@ void UAbilityGaugeWidget::NativeConstruct()
 
 	
 }
+
+void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
+{
+	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+
+
+	
+}

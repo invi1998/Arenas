@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
 #include "AbilityGaugeWidget.generated.h"
 
@@ -12,12 +13,15 @@ class UImage;
  * 技能能量条Widget
  */
 UCLASS()
-class ARENAS_API UAbilityGaugeWidget : public UUserWidget
+class ARENAS_API UAbilityGaugeWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
 public:
 	virtual void NativeConstruct() override;
+
+protected:
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
 	UPROPERTY(meta=(BindWidget))

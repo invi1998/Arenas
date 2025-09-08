@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UAbilityListView;
 class UGameplayAbility;
 class UPawnUIComponent;
 class UArenasAbilitySystemComponent;
@@ -42,5 +43,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	bool bIsPlayerWidget = false;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	UAbilityListView* AbilityListView;
 	
 };
