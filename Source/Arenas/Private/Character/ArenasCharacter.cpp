@@ -117,6 +117,11 @@ FGenericTeamId AArenasCharacter::GetOwningGenericTeamId() const
 	return TeamID;
 }
 
+const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& AArenasCharacter::GetAbilities() const
+{
+	return ArenasAbilitySystemComponent->GetAbilities();
+}
+
 void AArenasCharacter::BeginPlay()
 {
 	Super::BeginPlay();

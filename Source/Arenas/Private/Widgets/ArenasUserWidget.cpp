@@ -32,6 +32,11 @@ void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
 	}
 }
 
+void UArenasUserWidget::ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities)
+{
+	
+}
+
 void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

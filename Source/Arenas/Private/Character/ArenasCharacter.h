@@ -46,6 +46,8 @@ public:
 	FGenericTeamId GetOwningGenericTeamId() const;
 	// Interface IPawnUIInterface End
 
+	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

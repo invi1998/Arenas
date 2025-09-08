@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
 #include "Blueprint/UserWidget.h"
+#include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UGameplayAbility;
 class UPawnUIComponent;
 class UArenasAbilitySystemComponent;
 struct FGameplayAttribute;
@@ -21,6 +23,7 @@ class ARENAS_API UArenasUserWidget : public UUserWidget
 
 public:
 	void InitOverheadWidget(AActor* InActor);
+	void ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities);
 
 protected:
 	// NativeOnInitialized 先执行，NativeConstruct 后执行

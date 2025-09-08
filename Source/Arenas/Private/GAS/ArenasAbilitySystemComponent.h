@@ -23,6 +23,8 @@ public:
 	void GiveInitialAbilities();
 	void ApplyFullStateEffect();
 
+	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
+
 private:
 	void AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel = 1);
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);

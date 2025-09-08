@@ -2,3 +2,10 @@
 
 
 #include "AbilityGaugeWidget.h"
+
+void UAbilityGaugeWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	
+}

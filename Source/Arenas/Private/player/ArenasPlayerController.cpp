@@ -57,6 +57,7 @@ void AArenasPlayerController::SpawnPlayerUIWidget()
 	if (PlayerUIWidget)
 	{
 		PlayerUIWidget->AddToViewport();
+		PlayerUIWidget->ConfigureAbilities(ArenasPlayerCharacter->GetAbilities());
 	}
 	
 }

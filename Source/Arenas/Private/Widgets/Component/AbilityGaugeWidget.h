@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ArenasUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "AbilityGaugeWidget.generated.h"
 
 class UTextBlock;
@@ -12,9 +12,12 @@ class UImage;
  * 技能能量条Widget
  */
 UCLASS()
-class ARENAS_API UAbilityGaugeWidget : public UArenasUserWidget
+class ARENAS_API UAbilityGaugeWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	virtual void NativeConstruct() override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
