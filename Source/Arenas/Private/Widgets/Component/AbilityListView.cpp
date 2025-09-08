@@ -17,7 +17,7 @@ void UAbilityListView::ConfigureAbilities(const TMap<EArenasAbilityInputID, TSub
 	{
 		if (AbilityPair.Value)
 		{
-			AddItem(AbilityPair.Value.Get());
+			AddItem(AbilityPair.Value.GetDefaultObject());
 		}
 	}
 }
