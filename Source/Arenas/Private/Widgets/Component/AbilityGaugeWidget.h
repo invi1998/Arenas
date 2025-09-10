@@ -43,5 +43,8 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* InputKeyText;			// 施法按键
+
+	UPROPERTY()
+	UGameplayAbility* AbilityCDO;		// 该技能的CDO(Class Default Object)
 	
 };

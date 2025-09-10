@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/GameplayAbility.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.generated.h"
 
@@ -26,5 +27,9 @@ public:
 	static bool NativeActorHasGameplayTag(AActor* InActor, const FGameplayTag& InTag);
 
 	static FName NativeGetGameplayTagLastName(const FGameplayTag& InTag);
+
+	// 从Ability中获取静态的冷却时间和消耗（不考虑任何加成，这些是技能的原始数据，没有上下文）
+	static float GetStaticCooldownDurationFromAbility(const UGameplayAbility* InAbility);
+	static float GetStaticCostFromAbility(const UGameplayAbility* InAbility);
 	
 };
