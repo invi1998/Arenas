@@ -25,6 +25,7 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack_Pressed);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Uppercut);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Passive_Launch_Activated);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_GroundBlast);
 
 	/***** Event Tags *****/
 	// Event-Combo
@@ -36,6 +37,7 @@ namespace ArenasGameplayTags
 	// Event-Uppercut
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Uppercut_Launch);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Uppercut_FinalBlow);
+	
 
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Damage);
 
@@ -49,5 +51,6 @@ namespace ArenasGameplayTags
 
 	// Cooldown
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Uppercut);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_GroundBlast);
 	
 }

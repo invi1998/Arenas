@@ -20,6 +20,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_BasicAttack_Pressed, "Ability.BasicAttack.Pressed", "基础攻击技能-按下" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Uppercut, "Ability.Uppercut", "上勾拳技能" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Passive_Launch_Activated, "Ability.Passive.Launch.Activated", "被动技能-发射器-激活" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_GroundBlast, "Ability.GroundBlast", "地面爆破技能" );
 
 	/***** Event Tags *****/
 	// Event-Combo
@@ -43,6 +44,7 @@ namespace ArenasGameplayTags
 
 	// Cooldown
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Uppercut, "Cooldown.Ability.Uppercut", "上勾拳技能冷却" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_GroundBlast, "Cooldown.Ability.GroundBlast", "地面爆破技能冷却" );
 	
 }
 
