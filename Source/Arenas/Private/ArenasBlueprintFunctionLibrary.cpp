@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameplayTagsManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 
@@ -68,4 +69,25 @@ float UArenasBlueprintFunctionLibrary::GetStaticCostFromAbility(const UGameplayA
 		return FMath::Abs(Cost);	// 消耗值应该是正数
 	}
 	return 0.f;
+}
+
+TArray<FString> UArenasBlueprintFunctionLibrary::GetKeyNamesForInputAction(const APlayerController* PlayerController, const UInputAction* InputAction)
+{
+	TArray<FString> KeyNames;
+	if (!PlayerController || !InputAction)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GetKeyNamesForInputAction: Invalid PlayerController or InputAction"));
+		return KeyNames;
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		TArray<FKey> Keys = Subsystem->QueryKeysMappedToAction(InputAction);
+
+		for (const FKey& Key : Keys)
+		{
+			KeyNames.Add(Key.GetDisplayName().ToString()); // 或者使用 Key.GetDisplayName().ToString()
+		}
+	}
+	return KeyNames;
 }

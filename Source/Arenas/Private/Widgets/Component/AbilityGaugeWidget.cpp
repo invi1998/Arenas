@@ -17,9 +17,21 @@ void UAbilityGaugeWidget::NativeConstruct()
 
 void UAbilityGaugeWidget::ConfigureWidgetData(const FAbilityWidgetData* AbilityWidgetData)
 {
-	if (Icon && AbilityWidgetData)
+	if (Icon && InputKeyText && AbilityWidgetData)
 	{
 		Icon->GetDynamicMaterial()->SetTextureParameterValue(IconMaterialParamName, AbilityWidgetData->AbilityIcon.LoadSynchronous());
+
+		TArray<FString> InputKeys = UArenasBlueprintFunctionLibrary::GetKeyNamesForInputAction(GetOwningPlayer(), AbilityWidgetData->InputAction);
+		FString InputKey = "";
+		for (const FString& Key : InputKeys)
+		{
+			InputKey += Key + " / ";
+		}
+		if (InputKey.Len() > 3)
+		{
+			InputKey = InputKey.LeftChop(3); // 去掉最后的 " / "
+		}
+		InputKeyText->SetText(FText::FromString(InputKey));
 	}
 }
 
@@ -36,6 +48,7 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 		CooldownCountdownText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCooldown)));
 		CostText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCost)));
+		
 	}
 	
 }

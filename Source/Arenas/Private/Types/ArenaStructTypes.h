@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "ArenaStructTypes.generated.h"
 
+class UInputAction;
 class UGameplayAbility;
 class UGameplayEffect;
 class UArenasGameplayAbility;
@@ -73,6 +74,9 @@ struct FAbilityWidgetData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UInputAction* InputAction;
 	
 };
 

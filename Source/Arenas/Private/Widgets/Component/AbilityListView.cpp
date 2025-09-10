@@ -47,7 +47,6 @@ const FAbilityWidgetData* UAbilityListView::FindWidgetDataByAbilityClass(const T
 			return AbilityWidgetData;
 		}
 	}
-
 	return nullptr;
 }
 

@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.generated.h"
 
+class UInputAction;
 struct FGameplayTag;
 class UArenasAbilitySystemComponent;
 /**
@@ -31,5 +32,8 @@ public:
 	// 从Ability中获取静态的冷却时间和消耗（不考虑任何加成，这些是技能的原始数据，没有上下文）
 	static float GetStaticCooldownDurationFromAbility(const UGameplayAbility* InAbility);
 	static float GetStaticCostFromAbility(const UGameplayAbility* InAbility);
+
+	// 传入PlayerController，InputAction，获取InputAction对应的按键名称
+	static TArray<FString> GetKeyNamesForInputAction(const APlayerController* PlayerController, const UInputAction* InputAction);
 	
 };
