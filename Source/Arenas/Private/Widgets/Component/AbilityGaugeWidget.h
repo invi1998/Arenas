@@ -28,6 +28,9 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	FName IconMaterialParamName = "AbilityIcon";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	float CooldownUpdateInterval = 0.1f; // 冷却倒计时文本更新间隔
 	
 	UPROPERTY(meta=(BindWidget))
 	UImage* Icon;
@@ -46,5 +49,21 @@ private:
 
 	UPROPERTY()
 	UGameplayAbility* AbilityCDO;		// 该技能的CDO(Class Default Object)
+
+	void OnAbilityCommited(UGameplayAbility* InAbility);
+
+	void StartCooldown(float CooldownTimeRemaining, float CooldownDuration);
+	
+	void CooldownFinished();
+	void UpdateCooldown();
+
+	// 在倒计时文本上显示剩余时间，并根据剩余时间的不同选择不同的格式化选项，在时间大于1时显示整数，小于1时显示1位小数
+	FNumberFormattingOptions WholeNumberFormatOptions;		// 整数格式化选项
+	FNumberFormattingOptions OneDigitNumberFormatOptions;	// 1位小数格式化选项
+
+	float CachedCooldownDuration = 0.f;
+	float CachedCooldownTimeRemaining = 0.f;
+	FTimerHandle CooldownTimerHandle;
+	FTimerHandle CooldownUpdateTimerHandle;	// 用于更新倒计时文本(每0.1秒更新一次)
 	
 };
