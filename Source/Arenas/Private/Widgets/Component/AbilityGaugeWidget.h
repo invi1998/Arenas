@@ -30,6 +30,9 @@ private:
 	FName IconMaterialParamName = "AbilityIcon";
 
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName CooldownMaterialParamName = "Percent";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	float CooldownUpdateInterval = 0.1f; // 冷却倒计时文本更新间隔
 	
 	UPROPERTY(meta=(BindWidget))

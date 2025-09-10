@@ -18,6 +18,8 @@ void UAbilityGaugeWidget::NativeConstruct()
 
 	CooldownCountdownText->SetVisibility(ESlateVisibility::Hidden);
 
+	Icon->GetDynamicMaterial()->SetScalarParameterValue(CooldownMaterialParamName, 1.f);
+
 	if (UArenasAbilitySystemComponent* OwnerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(GetOwningPlayerPawn()))
 	{
 		// 订阅技能冷却时间变化的委托
@@ -97,6 +99,7 @@ void UAbilityGaugeWidget::CooldownFinished()
 	CooldownCountdownText->SetVisibility(ESlateVisibility::Hidden);
 	CachedCooldownDuration = 0.f;
 	CachedCooldownTimeRemaining = 0.f;
+	Icon->GetDynamicMaterial()->SetScalarParameterValue(CooldownMaterialParamName, 1.f);
 }
 
 void UAbilityGaugeWidget::UpdateCooldown()
@@ -104,5 +107,7 @@ void UAbilityGaugeWidget::UpdateCooldown()
 	CachedCooldownTimeRemaining -= CooldownUpdateInterval;
 	FNumberFormattingOptions FormattingOptions = CachedCooldownTimeRemaining > 1.f ? WholeNumberFormatOptions : OneDigitNumberFormatOptions;
 	CooldownCountdownText->SetText(FText::AsNumber(CachedCooldownTimeRemaining, &FormattingOptions));
+
+	Icon->GetDynamicMaterial()->SetScalarParameterValue(CooldownMaterialParamName, FMath::Clamp(1 - (CachedCooldownTimeRemaining / CachedCooldownDuration), 0.f, 1.f));
 	
 }
