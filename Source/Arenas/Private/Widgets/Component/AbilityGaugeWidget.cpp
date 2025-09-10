@@ -46,7 +46,7 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		float StaticCooldown = UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(AbilityCDO);
 		float StaticCost = UArenasBlueprintFunctionLibrary::GetStaticCostFromAbility(AbilityCDO);
 
-		CooldownCountdownText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCooldown)));
+		CooldownDurationText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCooldown)));
 		CostText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCost)));
 		
 	}
