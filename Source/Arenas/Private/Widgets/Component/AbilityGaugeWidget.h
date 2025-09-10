@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
+#include "Types/ArenaStructTypes.h"
 #include "AbilityGaugeWidget.generated.h"
 
 class UTextBlock;
@@ -19,11 +20,15 @@ class ARENAS_API UAbilityGaugeWidget : public UUserWidget, public IUserObjectLis
 
 public:
 	virtual void NativeConstruct() override;
+	void ConfigureWidgetData(const FAbilityWidgetData* AbilityWidgetData);
 
 protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName IconMaterialParamName = "AbilityIcon";
+	
 	UPROPERTY(meta=(BindWidget))
 	UImage* Icon;
 

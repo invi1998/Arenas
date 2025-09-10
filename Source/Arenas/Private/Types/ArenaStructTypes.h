@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "ArenaStructTypes.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 class UArenasGameplayAbility;
 
@@ -53,6 +54,25 @@ struct FGenericDamageEffectData
 	// 推力方向
 	UPROPERTY(EditAnywhere)
 	FVector PushVelocity;
+	
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityWidgetData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayAbility> AbilityClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName AbilityName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<UTexture2D> AbilityIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Description;
 	
 };
 

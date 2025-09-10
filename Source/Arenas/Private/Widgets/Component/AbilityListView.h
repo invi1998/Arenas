@@ -7,6 +7,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "AbilityListView.generated.h"
 
+struct FAbilityWidgetData;
 class UAbilityGaugeWidget;
 class UGameplayAbility;
 /**
@@ -19,12 +20,13 @@ class ARENAS_API UAbilityListView : public UListView
 
 public:
 	virtual void NativeConstruct();
-	
+
+	void OnAbilityWidgetGenerated(UUserWidget& AbilityUserWidget);
 	void ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities);
 
 private:
-	UPROPERTY()
-	TMap<EArenasAbilityInputID, UAbilityGaugeWidget*> AbilityWidgetsMap;
+	UPROPERTY(EditAnywhere, Category = "Data")
+	UDataTable* AbilityDataTable;
 	
-	
+	const FAbilityWidgetData* FindWidgetDataByAbilityClass(const TSubclassOf<UGameplayAbility>& InAbilityClass) const;
 };
