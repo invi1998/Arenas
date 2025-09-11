@@ -48,6 +48,7 @@ namespace ArenasGameplayTags
 	// Status
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Dead);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Stun);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Aiming);
 
 	// Cooldown
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Uppercut);

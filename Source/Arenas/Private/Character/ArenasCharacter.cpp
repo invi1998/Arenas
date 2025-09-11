@@ -188,6 +188,19 @@ void AArenasCharacter::StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
 	}
 }
 
+void AArenasCharacter::AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
+{
+	SetIsAiming(NewCount != 0);
+}
+
+void AArenasCharacter::SetIsAiming(bool bNewAiming)
+{
+	// 切换瞄准状态时，调整角色的旋转行为
+	// 瞄准时角色面向控制器方向，非瞄准时角色面向移动方向
+	bUseControllerRotationYaw = bNewAiming;
+	GetCharacterMovement()->bOrientRotationToMovement = !bNewAiming;
+}
+
 void AArenasCharacter::BindGASChangedDelegate()
 {
 	if (ArenasAbilitySystemComponent)
@@ -201,6 +214,11 @@ void AArenasCharacter::BindGASChangedDelegate()
 			ArenasGameplayTags::Status_Stun,
 			EGameplayTagEventType::NewOrRemoved)
 			.AddUObject(this, &AArenasCharacter::StunTagUpdated);
+
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenasGameplayTags::Status_Aiming,
+			EGameplayTagEventType::NewOrRemoved)
+			.AddUObject(this, &AArenasCharacter::AimingTagUpdated);
 		
 	}
 }

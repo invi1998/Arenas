@@ -15,6 +15,8 @@ class ARENAS_API UArenasGA_GroundBlast : public UArenasGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UArenasGA_GroundBlast();
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 

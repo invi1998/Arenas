@@ -7,8 +7,10 @@
 #include "GameplayTagContainer.h"
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
+#include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "Interface/PawnUIInterface.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Types/ArenaStructTypes.h"
 #include "ArenasCharacter.generated.h"
 
 struct FGameplayEventData;
@@ -74,6 +76,8 @@ public:
 private:
 	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
 	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	void AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	void SetIsAiming(bool bNewAiming);
 	void BindGASChangedDelegate();
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")

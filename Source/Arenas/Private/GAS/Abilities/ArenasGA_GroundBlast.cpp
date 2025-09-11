@@ -3,7 +3,13 @@
 
 #include "ArenasGA_GroundBlast.h"
 
+#include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+
+UArenasGA_GroundBlast::UArenasGA_GroundBlast()
+{
+	ActivationOwnedTags.AddTag(ArenasGameplayTags::Status_Aiming);
+}
 
 void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

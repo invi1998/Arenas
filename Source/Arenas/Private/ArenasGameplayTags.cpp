@@ -41,6 +41,7 @@ namespace ArenasGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Dead, "Status.Dead", "死亡状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Stun, "Status.Stun", "眩晕状态" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Aiming, "Status.Aiming", "瞄准状态" );
 
 	// Cooldown
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Uppercut, "Cooldown.Ability.Uppercut", "上勾拳技能冷却" );
