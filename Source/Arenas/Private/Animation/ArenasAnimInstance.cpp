@@ -3,8 +3,11 @@
 
 #include "ArenasAnimInstance.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
+#include "ArenasGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UArenasAnimInstance::NativeInitializeAnimation()
@@ -15,10 +18,19 @@ void UArenasAnimInstance::NativeInitializeAnimation()
 	if (OwnerPlayerCharacter)
 	{
 		OwnerMovementComponent = OwnerPlayerCharacter->GetCharacterMovement();
+		OwnerArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(OwnerPlayerCharacter);
+		if (OwnerArenasASC)
+		{
+			OwnerArenasASC->RegisterGameplayTagEvent(
+				ArenasGameplayTags::Status_Aiming,
+				EGameplayTagEventType::NewOrRemoved
+			).AddUObject(this, &UArenasAnimInstance::OnOwnerAimingTagChanged);
+		}
 	}
 	else
 	{
 		OwnerMovementComponent = nullptr;
+		OwnerArenasASC = nullptr;
 	}
 	
 }
@@ -27,7 +39,8 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (OwnerPlayerCharacter)
 	{
-		Speed = OwnerPlayerCharacter->GetVelocity().Length();
+		FVector Velocity = OwnerPlayerCharacter->GetVelocity();
+		Speed = Velocity.Length();
 		FRotator BodyRot = OwnerPlayerCharacter->GetActorRotation();
 		FRotator BodyRotDelta = UKismetMathLibrary::NormalizedDeltaRotator(BodyRot, BodyPrevRot);	// 计算身体旋转的增量，同时该增量会被规范化到0-180度范围内
 		BodyPrevRot = BodyRot;
@@ -60,6 +73,11 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// 这意味着只有我们的客户端能看到俯仰角在起作用，但偏航角没有效果
 
 		LookRotOffset = UKismetMathLibrary::NormalizedDeltaRotator(ControlRot, BodyRot);	// 计算头部旋转的偏移量
+
+		// ForwardSpeed = UKismetMathLibrary::Dot_VectorVector(ControlRot.Vector(), Velocity);	// 计算前向速度
+		ForwardSpeed = Velocity.Dot(ControlRot.Vector());
+		// RightSpeed = UKismetMathLibrary::Dot_VectorVector(UKismetMathLibrary::GetRightVector(ControlRot), Velocity);	// 计算右向速度
+		RightSpeed = Velocity.Dot(ControlRot.Vector().Cross(FVector::UpVector));
 		
 	}
 
@@ -73,5 +91,15 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UArenasAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
+}
+
+bool UArenasAnimInstance::ShouldDoFullBody() const
+{
+	return (GetSpeed() <= 0) && !bIsJumping && !bIsAiming;
+}
+
+void UArenasAnimInstance::OnOwnerAimingTagChanged(FGameplayTag GameplayTag, int32 Count)
+{
+	bIsAiming = Count != 0;
 }
 
