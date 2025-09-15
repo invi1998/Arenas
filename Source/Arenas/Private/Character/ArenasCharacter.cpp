@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasGameplayTags.h"
+#include "Arenas/Arenas.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,6 +24,8 @@ AArenasCharacter::AArenasCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_SpringArm, ECR_Ignore); // 胶囊体忽略摄像机碰撞
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
 	
 	ArenasAbilitySystemComponent = CreateDefaultSubobject<UArenasAbilitySystemComponent>(TEXT("ArenasAbilitySystemComponent"));
 	// ArenasAbilitySystemComponent->SetIsReplicated(true);
@@ -32,10 +35,7 @@ AArenasCharacter::AArenasCharacter()
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent());
-
-	// 禁用角色骨骼和胶囊体对摄像机的遮挡
-	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-
+	
 	BindGASChangedDelegate();
 
 	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSourceComponent"));

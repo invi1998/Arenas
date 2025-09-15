@@ -6,7 +6,7 @@
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
-#include "GAS/TargetActor_GroundPick.h"
+#include "GAS/TargetActor/TargetActor_GroundPick.h"
 
 UArenasGA_GroundBlast::UArenasGA_GroundBlast()
 {

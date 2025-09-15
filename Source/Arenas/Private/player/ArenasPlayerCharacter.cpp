@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Arenas/Arenas.h"
 #include "Component/UI/PlayerUIComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -22,6 +23,7 @@ AArenasPlayerCharacter::AArenasPlayerCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->bUsePawnControlRotation = true; // 让弹簧臂组件使用控制器的旋转
+	CameraBoom->ProbeChannel = ECC_SpringArm;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	// 这里我需要指定插槽，如果不这样做，相机实际会附着在相机臂的根部，而不是末端插槽上，我们需要指定该插槽，以便使用弹簧臂组件的插槽名
