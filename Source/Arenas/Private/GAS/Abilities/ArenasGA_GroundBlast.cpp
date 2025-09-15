@@ -44,10 +44,12 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnTargetConfirmed"));
+	UE_LOG(LogTemp, Warning, TEXT("OnTargetConfirmed +++++++++"));
+	K2_EndAbility();
 }
 
 void UArenasGA_GroundBlast::OnTargetCancelled(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnTargetCancelled"));
+	UE_LOG(LogTemp, Warning, TEXT("OnTargetCancelled -------------"));
+	K2_EndAbility();
 }
