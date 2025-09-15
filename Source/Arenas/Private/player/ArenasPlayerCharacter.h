@@ -72,5 +72,21 @@ private:
 
 	virtual void OnStun() override;
 	virtual void OnUnStun() override;
+
+	virtual void OnAimStateChanged(bool bNewAiming) override;
+
+	// 瞄准时相机位置的偏移
+	UPROPERTY(EditDefaultsOnly, Category = "View")
+	FVector CameraAimLocationOffset = FVector(50.f, 0.f, 50.f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "View")
+	float CameraLerpSpeed = 10.f;
+
+	// 相机差值计时器
+	FTimerHandle CameraLerpTimerHandle;
+
+	// 将相机位置差值到指定位置
+	void LerpCameraToLocalOffsetLocation(const FVector& Goal);
+	void TickCameraLerp(FVector Goal);
 	
 };

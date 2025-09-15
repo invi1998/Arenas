@@ -77,7 +77,7 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// ForwardSpeed = UKismetMathLibrary::Dot_VectorVector(ControlRot.Vector(), Velocity);	// 计算前向速度
 		ForwardSpeed = Velocity.Dot(ControlRot.Vector());
 		// RightSpeed = UKismetMathLibrary::Dot_VectorVector(UKismetMathLibrary::GetRightVector(ControlRot), Velocity);	// 计算右向速度
-		RightSpeed = Velocity.Dot(ControlRot.Vector().Cross(FVector::UpVector));
+		RightSpeed = -Velocity.Dot(ControlRot.Vector().Cross(FVector::UpVector));
 		
 	}
 

@@ -199,6 +199,11 @@ void AArenasCharacter::SetIsAiming(bool bNewAiming)
 	// 瞄准时角色面向控制器方向，非瞄准时角色面向移动方向
 	bUseControllerRotationYaw = bNewAiming;
 	GetCharacterMovement()->bOrientRotationToMovement = !bNewAiming;
+	OnAimStateChanged(bNewAiming);
+}
+
+void AArenasCharacter::OnAimStateChanged(bool bNewAiming)
+{
 }
 
 void AArenasCharacter::BindGASChangedDelegate()

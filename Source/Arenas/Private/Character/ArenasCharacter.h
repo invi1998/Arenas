@@ -78,6 +78,7 @@ private:
 	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void SetIsAiming(bool bNewAiming);
+	virtual void OnAimStateChanged(bool bNewAiming);
 	void BindGASChangedDelegate();
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")

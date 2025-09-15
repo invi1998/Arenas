@@ -166,6 +166,36 @@ void AArenasPlayerCharacter::OnUnStun()
 	}
 }
 
+void AArenasPlayerCharacter::OnAimStateChanged(bool bNewAiming)
+{
+	FVector Goal = bNewAiming ? CameraAimLocationOffset : FVector::ZeroVector;
+	LerpCameraToLocalOffsetLocation(Goal);
+}
+
+void AArenasPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)
+{
+	GetWorldTimerManager().ClearTimer(CameraLerpTimerHandle);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
+}
+
+void AArenasPlayerCharacter::TickCameraLerp(FVector Goal)
+{
+	FVector CurrentLocation = FollowCamera->GetRelativeLocation();
+	if (FVector::Dist(CurrentLocation, Goal) < 1.f)
+	{
+		FollowCamera->SetRelativeLocation(Goal);
+		// 因为我们的计时器是下一帧执行，当摄像机偏移到目标位置后，我们就直接return，不再设置下一帧的计时器
+		return;
+	}
+
+	float LerpAlpha = FMath::Clamp(GetWorld()->GetDeltaSeconds() * CameraLerpSpeed, 0.f, 1.f);
+	FVector NewLocation = FMath::Lerp(CurrentLocation, Goal, LerpAlpha);
+	FollowCamera->SetRelativeLocation(NewLocation);
+
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
+	
+}
+
 
 
 	
