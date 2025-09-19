@@ -60,6 +60,7 @@ void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHa
 	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
 	PushTargets(TargetActors, PushVelocity);
 	FGameplayCueParameters BlastingCueParameters;
+	// 这参数1是因为我们在InTargetDataHandle里传递了两组数据信息，第一组是技能作用目标，第二组是施法位置
 	BlastingCueParameters.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(InTargetDataHandle, 1).ImpactPoint;
 	// 我们希望在施法位置生成一个火焰升腾特效，同时，特效的规模与技能作用半径成正比，所以我们把技能作用半径也传递给特效
 	BlastingCueParameters.RawMagnitude = TargetAreaRadius;
