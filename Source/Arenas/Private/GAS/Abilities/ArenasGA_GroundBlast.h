@@ -27,6 +27,21 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	TSubclassOf<ATargetActor_GroundPick> GroundPickTargetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetTraceDistance = 2000.f;	// 目标追踪距离
+
+	// 技能施法目标区域半径
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetAreaRadius = 300.f;
+
+	// 是否应该选择敌人
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	bool bShouldTargetEnemies = true;
+
+	// 是否应该选择友军
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	bool bShouldTargetAllies = false;
 	
 	UFUNCTION()
 	void OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle);

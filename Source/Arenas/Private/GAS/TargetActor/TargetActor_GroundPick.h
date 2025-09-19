@@ -21,7 +21,9 @@ public:
 
 	void SetTargetAreaRadius(float InRadius);
 	void SetTargetOptions(bool bInShouldTargetEnemies, bool bInShouldTargetAllies);
-
+	FORCEINLINE void SetShouldDrawDebugSphere(bool bInShouldDrawDebugSphere) { bShouldDrawDebugSphere = bInShouldDrawDebugSphere; }
+	FORCEINLINE void SetTargetTraceDistance(float InDistance) { TargetTraceDistance = InDistance; }
+	
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -35,5 +37,7 @@ protected:
 
 	bool bShouldTargetEnemies = true;	// 是否应该选择敌人
 	bool bShouldTargetAllies = false;	// 是否应该选择友军
+
+	bool bShouldDrawDebugSphere = false; // 是否绘制调试用的球体
 	
 };

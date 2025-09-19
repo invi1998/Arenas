@@ -39,21 +39,38 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	AGameplayAbilityTargetActor* TargetActor = nullptr;
 	WaitTargetDataTask->BeginSpawningActor(this, GroundPickTargetClass, TargetActor);
+
+	if (ATargetActor_GroundPick* GroundPickTargetActor = Cast<ATargetActor_GroundPick>(TargetActor))
+	{
+		GroundPickTargetActor->SetShouldDrawDebugSphere(bShowSweepDebug);
+		GroundPickTargetActor->SetTargetAreaRadius(TargetAreaRadius);
+		GroundPickTargetActor->SetTargetTraceDistance(TargetTraceDistance);
+		GroundPickTargetActor->SetTargetOptions(bShouldTargetEnemies, bShouldTargetAllies);
+	}
+	
 	WaitTargetDataTask->FinishSpawningActor(this, TargetActor);
 
 }
 
 void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
-	// 从目标数据句柄中获取所有被选中的目标Actor
-	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
+	// BP_ApplyGameplayEffectToTarget(InTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
 	for (AActor* TargetActor : TargetActors)
 	{
-		UE_LOG(LogTemp, Display, TEXT("TargetActor: %s"), *TargetActor->GetName());
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+
+		ApplyGameplayEffectSpecToTarget(
+			GetCurrentAbilitySpecHandle(),
+			GetCurrentActorInfo(),
+			GetCurrentActivationInfo(),
+			EffectSpecHandle,
+			UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor));
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("OnTargetConfirmed +++++++++"));
 	K2_EndAbility();
 }
 
