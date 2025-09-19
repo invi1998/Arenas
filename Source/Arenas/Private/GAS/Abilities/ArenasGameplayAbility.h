@@ -39,6 +39,8 @@ protected:
 	// 推开角色
 	void PushSelf(const FVector& PushVelocity);
 	void PushTarget(AActor* TargetActor, const FVector& PushVelocity);
+	void PushTargets(const TArray<AActor*>& TargetActors, const FVector& PushVelocity);
+	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& PushVelocity);
 
 	AArenasCharacter* GetOwningArenasCharacter();
 

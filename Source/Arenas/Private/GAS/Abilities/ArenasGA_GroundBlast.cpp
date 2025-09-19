@@ -4,6 +4,8 @@
 #include "ArenasGA_GroundBlast.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
@@ -55,8 +57,16 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
 	// BP_ApplyGameplayEffectToTarget(InTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-
 	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
+	PushTargets(TargetActors, PushVelocity);
+	FGameplayCueParameters BlastingCueParameters;
+	BlastingCueParameters.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(InTargetDataHandle, 1).ImpactPoint;
+	// 我们希望在施法位置生成一个火焰升腾特效，同时，特效的规模与技能作用半径成正比，所以我们把技能作用半径也传递给特效
+	BlastingCueParameters.RawMagnitude = TargetAreaRadius;
+
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(BlastGameplayCueTag, BlastingCueParameters);
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(UArenasBlueprintFunctionLibrary::GetCameraShakeGameplayCueTag(), BlastingCueParameters);
+	
 	for (AActor* TargetActor : TargetActors)
 	{
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));

@@ -108,6 +108,20 @@ void UArenasGameplayAbility::PushTarget(AActor* TargetActor, const FVector& Push
 	
 }
 
+void UArenasGameplayAbility::PushTargets(const TArray<AActor*>& TargetActors, const FVector& PushVelocity)
+{
+	for (AActor* TargetActor : TargetActors)
+	{
+		PushTarget(TargetActor, PushVelocity);
+	}
+}
+
+void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& PushVelocity)
+{
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetData);
+	PushTargets(TargetActors, PushVelocity);
+}
+
 AArenasCharacter* UArenasGameplayAbility::GetOwningArenasCharacter()
 {
 	if (!OwningArenasCharacter)

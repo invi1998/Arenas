@@ -42,6 +42,12 @@ private:
 	// 是否应该选择友军
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	bool bShouldTargetAllies = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	FVector PushVelocity = FVector(0.f, 0.f, 600.f); // 击退的初始速度
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cue")
+	FGameplayTag BlastGameplayCueTag; // 施法时播放的GameplayCue标签
 	
 	UFUNCTION()
 	void OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle);

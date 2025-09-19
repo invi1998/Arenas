@@ -35,5 +35,7 @@ public:
 
 	// 传入PlayerController，InputAction，获取InputAction对应的按键名称
 	static TArray<FString> GetKeyNamesForInputAction(const APlayerController* PlayerController, const UInputAction* InputAction);
+
+	static FGameplayTag GetCameraShakeGameplayCueTag();
 	
 };

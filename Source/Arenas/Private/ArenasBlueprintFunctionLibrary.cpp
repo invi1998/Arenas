@@ -91,3 +91,8 @@ TArray<FString> UArenasBlueprintFunctionLibrary::GetKeyNamesForInputAction(const
 	}
 	return KeyNames;
 }
+
+FGameplayTag UArenasBlueprintFunctionLibrary::GetCameraShakeGameplayCueTag()
+{
+	return FGameplayTag::RequestGameplayTag("GameplayCue.CameraShake");
+}

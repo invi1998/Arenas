@@ -53,13 +53,17 @@ void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
 				}
 			}
 		}
-
-		// 生成目标数据句柄
-		FGameplayAbilityTargetDataHandle TargetDataHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(OverlappingActors.Array(), false);
-		// 广播目标数据准备好的委托（该委托会被AbilityTask_WaitTargetData监听到），并将目标数据句柄传递过去（WaitTargetDataTask->ValidData）
-		TargetDataReadyDelegate.Broadcast(TargetDataHandle);
-		
 	}
+	// 生成目标数据句柄
+	FGameplayAbilityTargetDataHandle TargetDataHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(OverlappingActors.Array(), false);
+
+	// 将技能施法位置也加入目标数据中
+	FGameplayAbilityTargetData_SingleTargetHit* SingleTargetHitData_HitLocation = new FGameplayAbilityTargetData_SingleTargetHit();
+	SingleTargetHitData_HitLocation->HitResult.ImpactPoint = GetActorLocation();
+	TargetDataHandle.Add(SingleTargetHitData_HitLocation);
+
+	// 广播目标数据准备好的委托（该委托会被AbilityTask_WaitTargetData监听到），并将目标数据句柄传递过去（WaitTargetDataTask->ValidData）
+	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 	
 }
 
