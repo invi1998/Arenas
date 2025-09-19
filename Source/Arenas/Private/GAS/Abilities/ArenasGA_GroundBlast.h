@@ -25,6 +25,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* GroundBlastMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* CastBlastMontage;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	TSubclassOf<ATargetActor_GroundPick> GroundPickTargetClass;
 

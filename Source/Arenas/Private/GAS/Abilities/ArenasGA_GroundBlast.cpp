@@ -56,9 +56,34 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
-	// BP_ApplyGameplayEffectToTarget(InTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
-	PushTargets(TargetActors, PushVelocity);
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+	
+	if (K2_HasAuthority())
+	{
+		// BP_ApplyGameplayEffectToTarget(InTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
+	
+		PushTargets(TargetActors, PushVelocity);
+		
+		for (AActor* TargetActor : TargetActors)
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
+
+			ApplyGameplayEffectSpecToTarget(
+				GetCurrentAbilitySpecHandle(),
+				GetCurrentActorInfo(),
+				GetCurrentActivationInfo(),
+				EffectSpecHandle,
+				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor));
+		}
+	}
+	
 	FGameplayCueParameters BlastingCueParameters;
 	// 这参数1是因为我们在InTargetDataHandle里传递了两组数据信息，第一组是技能作用目标，第二组是施法位置
 	BlastingCueParameters.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(InTargetDataHandle, 1).ImpactPoint;
@@ -68,18 +93,10 @@ void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHa
 	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(BlastGameplayCueTag, BlastingCueParameters);
 	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(UArenasBlueprintFunctionLibrary::GetCameraShakeGameplayCueTag(), BlastingCueParameters);
 	
-	for (AActor* TargetActor : TargetActors)
+	UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance();
+	if (OwnerAnimInstance && CastBlastMontage)
 	{
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-
-		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
-
-		ApplyGameplayEffectSpecToTarget(
-			GetCurrentAbilitySpecHandle(),
-			GetCurrentActorInfo(),
-			GetCurrentActivationInfo(),
-			EffectSpecHandle,
-			UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor));
+		OwnerAnimInstance->Montage_Play(CastBlastMontage);
 	}
 	
 	K2_EndAbility();
@@ -87,6 +104,11 @@ void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHa
 
 void UArenasGA_GroundBlast::OnTargetCancelled(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnTargetCancelled -------------"));
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+	{
+		// 取消目标选择时停止播放施法动画
+		OwnerAnimInstance->Montage_Stop(0.2f, GroundBlastMontage);
+	}
+	
 	K2_EndAbility();
 }
