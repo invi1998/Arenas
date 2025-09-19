@@ -6,6 +6,8 @@
 #include "Abilities/GameplayAbilityTargetActor.h"
 #include "TargetActor_GroundPick.generated.h"
 
+class UDecalComponent;
+
 /**
  * 
  */
@@ -23,10 +25,14 @@ public:
 	void SetTargetOptions(bool bInShouldTargetEnemies, bool bInShouldTargetAllies);
 	FORCEINLINE void SetShouldDrawDebugSphere(bool bInShouldDrawDebugSphere) { bShouldDrawDebugSphere = bInShouldDrawDebugSphere; }
 	FORCEINLINE void SetTargetTraceDistance(float InDistance) { TargetTraceDistance = InDistance; }
-	
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
-
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	UDecalComponent* DecalComponent;
+	
 	FVector GetTargetPoint() const;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")

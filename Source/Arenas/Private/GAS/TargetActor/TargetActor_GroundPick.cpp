@@ -7,11 +7,15 @@
 #include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "Arenas/Arenas.h"
+#include "Components/DecalComponent.h"
 #include "Engine/OverlapResult.h"
 
 ATargetActor_GroundPick::ATargetActor_GroundPick()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
+	DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComponent"));
+	DecalComponent->SetupAttachment(GetRootComponent());
 }
 
 void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
@@ -70,6 +74,7 @@ void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
 void ATargetActor_GroundPick::SetTargetAreaRadius(float InRadius)
 {
 	TargetAreaRadius = InRadius;
+	DecalComponent->DecalSize = FVector(InRadius, InRadius, InRadius);
 }
 
 void ATargetActor_GroundPick::SetTargetOptions(bool bInShouldTargetEnemies, bool bInShouldTargetAllies)
