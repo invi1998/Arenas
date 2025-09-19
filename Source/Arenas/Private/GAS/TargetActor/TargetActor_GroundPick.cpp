@@ -3,11 +3,75 @@
 
 #include "TargetActor_GroundPick.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GenericTeamAgentInterface.h"
+#include "Abilities/GameplayAbility.h"
 #include "Arenas/Arenas.h"
+#include "Engine/OverlapResult.h"
 
 ATargetActor_GroundPick::ATargetActor_GroundPick()
 {
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
+{
+	TArray<FOverlapResult> Overlaps;	// 用于存储重叠结果
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn); // 只查询Pawn类型
+	FCollisionShape CollisionShape = FCollisionShape::MakeSphere(TargetAreaRadius); // 以目标区域半径创建一个球形碰撞体
+	GetWorld()->OverlapMultiByObjectType(
+		Overlaps,
+		GetActorLocation(),
+		FQuat::Identity,
+		ObjectQueryParams,
+		CollisionShape
+	);
+
+	TSet<AActor*> OverlappingActors;
+	if (OwningAbility)
+	{
+		if (IGenericTeamAgentInterface* OwnerAsTeamAgent = Cast<IGenericTeamAgentInterface>(OwningAbility->GetAvatarActorFromActorInfo()))
+		{
+			for (const FOverlapResult& OverlapResult : Overlaps)
+			{
+				if (bShouldTargetEnemies)
+				{
+					// 选择敌人
+					if (OwnerAsTeamAgent->GetTeamAttitudeTowards(*OverlapResult.GetActor()) == ETeamAttitude::Hostile)
+					{
+						OverlappingActors.Add(OverlapResult.GetActor());
+					}
+				}
+				if (bShouldTargetAllies)
+				{
+					// 选择友军
+					if (OwnerAsTeamAgent->GetTeamAttitudeTowards(*OverlapResult.GetActor()) == ETeamAttitude::Friendly)
+					{
+						OverlappingActors.Add(OverlapResult.GetActor());
+					}
+				}
+			}
+		}
+
+		// 生成目标数据句柄
+		FGameplayAbilityTargetDataHandle TargetDataHandle = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(OverlappingActors.Array(), false);
+		// 广播目标数据准备好的委托（该委托会被AbilityTask_WaitTargetData监听到），并将目标数据句柄传递过去（WaitTargetDataTask->ValidData）
+		TargetDataReadyDelegate.Broadcast(TargetDataHandle);
+		
+	}
+	
+}
+
+void ATargetActor_GroundPick::SetTargetAreaRadius(float InRadius)
+{
+	TargetAreaRadius = InRadius;
+}
+
+void ATargetActor_GroundPick::SetTargetOptions(bool bInShouldTargetEnemies, bool bInShouldTargetAllies)
+{
+	bShouldTargetEnemies = bInShouldTargetEnemies;
+	bShouldTargetAllies = bInShouldTargetAllies;
 }
 
 void ATargetActor_GroundPick::Tick(float DeltaSeconds)

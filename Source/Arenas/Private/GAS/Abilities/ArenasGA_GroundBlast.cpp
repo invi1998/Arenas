@@ -3,6 +3,7 @@
 
 #include "ArenasGA_GroundBlast.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
@@ -44,6 +45,14 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle)
 {
+	// 从目标数据句柄中获取所有被选中的目标Actor
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(InTargetDataHandle);
+
+	for (AActor* TargetActor : TargetActors)
+	{
+		UE_LOG(LogTemp, Display, TEXT("TargetActor: %s"), *TargetActor->GetName());
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("OnTargetConfirmed +++++++++"));
 	K2_EndAbility();
 }
