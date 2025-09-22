@@ -18,6 +18,10 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DamageTaken, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
 }
 
 void UArenasAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -126,4 +130,19 @@ void UArenasAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldValue) 
 void UArenasAttributeSet::OnRep_DamageTaken(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, DamageTaken, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackDamage, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, Armor, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MoveSpeed, OldValue);
 }

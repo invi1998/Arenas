@@ -50,6 +50,18 @@ public:
 	FGameplayAttributeData DamageTaken;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, DamageTaken);
 
+	UPROPERTY(ReplicatedUsing = OnRep_AttackDamage)
+	FGameplayAttributeData AttackDamage;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackDamage);
+
+	UPROPERTY(ReplicatedUsing = OnRep_Armor)
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Armor);
+
+	UPROPERTY(ReplicatedUsing = OnRep_MoveSpeed)
+	FGameplayAttributeData MoveSpeed;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MoveSpeed);
+
 private:
 
 	UFUNCTION()
@@ -66,5 +78,14 @@ private:
 
 	UFUNCTION()
 	void OnRep_DamageTaken(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_AttackDamage(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const;
 	
 };
