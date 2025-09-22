@@ -8,8 +8,7 @@
 #include "PawnUIComponent.generated.h"
 
 class UArenasAbilitySystemComponent;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPercentChangedDelegate, float, NewPercent, float, NewValue, float,
-                                               MaxValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPercentChangedDelegate, float, NewPercent, float, NewValue, float, MaxValue);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ARENAS_API UPawnUIComponent : public UPawnExtensionComponentBase
@@ -28,7 +27,7 @@ public:
 	void OnManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 
-	void SetAndBoundAttributeDelegate(UArenasAbilitySystemComponent* InArenasASC);
+	virtual void SetAndBoundAttributeDelegate(UArenasAbilitySystemComponent* InArenasASC);
 
 private:
 	float Health = 0.f;

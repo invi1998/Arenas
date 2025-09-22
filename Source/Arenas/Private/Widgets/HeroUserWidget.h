@@ -1,0 +1,37 @@
+﻿// Ace of Arenas. (invi_1998 All Rights Reserved)
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AttributeSet.h"
+#include "Blueprint/UserWidget.h"
+#include "HeroUserWidget.generated.h"
+
+class UTextBlock;
+class UImage;
+class UPlayerUIComponent;
+class UArenasAbilitySystemComponent;
+/**
+ * 
+ */
+UCLASS()
+class ARENAS_API UHeroUserWidget : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+
+protected:
+	// NativeOnInitialized 先执行，NativeConstruct 后执行
+	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", meta=(DisplayName = "On Owning Player UI Component Initialized"))
+	void BP_OnOwningPlayerUIComponentInitialized(UPlayerUIComponent* InPlayerUIComponent);
+
+private:
+	UPROPERTY()
+	UArenasAbilitySystemComponent* CachedArenasASC;
+	
+
+};
