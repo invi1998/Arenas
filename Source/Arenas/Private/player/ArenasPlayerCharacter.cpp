@@ -14,6 +14,8 @@
 #include "Component/UI/PlayerUIComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GAS/ArenasHeroAttributeSet.h"
+#include "GAS/ArenasHeroAttributeSet.h"
 
 
 // Sets default values
@@ -34,6 +36,8 @@ AArenasPlayerCharacter::AArenasPlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // 设置角色的旋转速率
 
 	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
+
+	HeroAttributeSet = CreateDefaultSubobject<UArenasHeroAttributeSet>(TEXT("HeroAttributeSet"));
 	
 }
 

@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+class UArenasHeroAttributeSet;
 class UPlayerUIComponent;
 struct FInputActionValue;
 class UInputAction;
@@ -35,6 +36,9 @@ public:
 	// Interface IPawnUIInterface End
 	
 private:
+	UPROPERTY()
+	UArenasHeroAttributeSet* HeroAttributeSet;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	USpringArmComponent* CameraBoom;
 
