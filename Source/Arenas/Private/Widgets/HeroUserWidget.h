@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HeroUserWidget.generated.h"
 
+class UHeroStatsGauge;
 class UTextBlock;
 class UImage;
 class UPlayerUIComponent;
@@ -32,6 +33,20 @@ protected:
 private:
 	UPROPERTY()
 	UArenasAbilitySystemComponent* CachedArenasASC;
-	
+
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* AttackDamageGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* ArmorGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* MoveSpeedGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* StrengthGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* IntelligenceGauge;
 
 };

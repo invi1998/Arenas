@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UHeroUserWidget;
 class UAbilityListView;
 class UGameplayAbility;
 class UPawnUIComponent;
@@ -46,5 +47,8 @@ private:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UAbilityListView* AbilityListView;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	UHeroUserWidget* HeroUserWidget;
 	
 };
