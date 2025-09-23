@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
+#include "GAS/ArenasHeroAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -205,6 +206,11 @@ void AArenasCharacter::OnAimStateChanged(bool bNewAiming)
 {
 }
 
+void AArenasCharacter::OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	GetCharacterMovement()->MaxWalkSpeed = OnAttributeChangeData.NewValue;
+}
+
 void AArenasCharacter::BindGASChangedDelegate()
 {
 	if (ArenasAbilitySystemComponent)
@@ -223,6 +229,8 @@ void AArenasCharacter::BindGASChangedDelegate()
 			ArenasGameplayTags::Status_Aiming,
 			EGameplayTagEventType::NewOrRemoved)
 			.AddUObject(this, &AArenasCharacter::AimingTagUpdated);
+
+		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedChanged);
 		
 	}
 }
