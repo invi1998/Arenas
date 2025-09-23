@@ -53,8 +53,7 @@ void AArenasCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 void AArenasCharacter::ServerSideInit()
 {
 	ArenasAbilitySystemComponent->InitAbilityActorInfo(this, this);
-	ArenasAbilitySystemComponent->ApplyInitialEffects();		// 初始化角色属性
-	ArenasAbilitySystemComponent->GiveInitialAbilities();		// 赋予初始技能
+	ArenasAbilitySystemComponent->ServerSideInit();
 }
 
 void AArenasCharacter::ClientSideInit()

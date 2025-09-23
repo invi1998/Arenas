@@ -18,14 +18,17 @@ class UArenasAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	UArenasAbilitySystemComponent();
-	
-	void ApplyInitialEffects();
-	void GiveInitialAbilities();
+
+	void InitializeBaseAttributes();
+	void ServerSideInit();
 	void ApplyFullStateEffect();
 
 	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
 
 private:
+	void ApplyInitialEffects();
+	void GiveInitialAbilities();
+	
 	void AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel = 1);
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
 
@@ -45,5 +48,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> FullStateEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Stats")
+	UDataTable* BaseStatsDataTable;
 	
 };

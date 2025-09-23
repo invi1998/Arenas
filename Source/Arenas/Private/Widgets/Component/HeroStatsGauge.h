@@ -33,16 +33,25 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* AttributeText;
 
+	UPROPERTY(meta=(BindWidgetOptional))
+	UTextBlock* AttributeGrowthRateText;
+
 	UPROPERTY(EditAnywhere, Category = "Attribute")
 	FGameplayAttribute AttributeToDisplay;
+
+	UPROPERTY(EditAnywhere, Category = "Attribute")
+	FGameplayAttribute AttributeGrowthRate;
 
 	UPROPERTY(EditAnywhere, Category = "Visual")
 	UTexture2D* IconTexture;
 
 	void SetValue(float NewValue);
+	void SetGrowthRateValue(float NewValue);
 
 	FNumberFormattingOptions NumberFormattingOptions;
+	FNumberFormattingOptions GrowthRateNumberFormattingOptions;
 
 	void AttributeChanged(const FOnAttributeChangeData& Data);
+	void AttributeGrowthRateChanged(const FOnAttributeChangeData& Data);
 
 };

@@ -4,7 +4,9 @@
 #include "GAS/ArenasAbilitySystemComponent.h"
 
 #include "ArenasAttributeSet.h"
+#include "ArenasHeroAttributeSet.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
+#include "player/ArenasPlayerCharacter.h"
 
 UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 {
@@ -12,6 +14,59 @@ UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 	
 	GenericConfirmInputID = static_cast<int32>(EArenasAbilityInputID::Confirm);	// 确认输入ID
 	GenericCancelInputID = static_cast<int32>(EArenasAbilityInputID::Cancel);	// 取消输入ID
+}
+
+void UArenasAbilitySystemComponent::InitializeBaseAttributes()
+{
+	if (!BaseStatsDataTable || !GetOwner()) return;
+
+	const FHeroBaseStats* BaseStats = nullptr;
+
+	for (const TPair<FName, uint8*>& DataPair : BaseStatsDataTable->GetRowMap())
+	{
+		// BaseStats = reinterpret_cast<FHeroBaseStats*>(DataPair.Value);
+		BaseStats = BaseStatsDataTable->FindRow<FHeroBaseStats>(DataPair.Key, "");
+		if (BaseStats && BaseStats->HeroClass == GetOwner()->GetClass())
+		{
+			break;
+		}
+	}
+
+	// 此处我们只筛选出英雄类的基础数据，小兵、建筑等其他类型的单位不在此处初始化属性
+	if (!BaseStats) return;
+
+	SetNumericAttributeBase(UArenasAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
+	SetNumericAttributeBase(UArenasAttributeSet::GetMaxManaAttribute(), BaseStats->BaseMaxMana);
+	SetNumericAttributeBase(UArenasAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
+	SetNumericAttributeBase(UArenasAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
+	SetNumericAttributeBase(UArenasAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
+
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetExperienceAttribute(), 0.f);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), 0.f);
+	// SetNumericAttributeBase(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), BaseStats->ExperienceToNextLevel);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute(), 1.f);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), 0.f);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelAttribute(), BaseStats->MaxLevel);
+	// SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelExperienceAttribute(), BaseStats->MaxLevelExperience);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetGoldAttribute(), BaseStats->StartingGold);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
+	
+}
+
+void UArenasAbilitySystemComponent::ServerSideInit()
+{
+	// 此处顺序不可颠倒，因为初始化属性时，可能会有些属性是由技能计算得来的
+	InitializeBaseAttributes();
+	ApplyInitialEffects();
+	GiveInitialAbilities();
+}
+
+void UArenasAbilitySystemComponent::ApplyFullStateEffect()
+{
+	AuthApplyGameplayEffectToSelf(FullStateEffectClass);
 }
 
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
@@ -47,11 +102,6 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 		}
 	}
 	
-}
-
-void UArenasAbilitySystemComponent::ApplyFullStateEffect()
-{
-	AuthApplyGameplayEffectToSelf(FullStateEffectClass);
 }
 
 void UArenasAbilitySystemComponent::AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel)
