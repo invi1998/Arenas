@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "ArenaStructTypes.generated.h"
 
+class AArenasPlayerCharacter;
 class UInputAction;
 class UGameplayAbility;
 class UGameplayEffect;
@@ -77,6 +78,55 @@ struct FAbilityWidgetData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UInputAction* InputAction;
+	
+};
+
+USTRUCT(BlueprintType)
+struct FHeroBaseStats : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AArenasPlayerCharacter> HeroClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseMaxHealth = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseMaxMana = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseAttackDamage = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseArmor = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseMoveSpeed = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Strength = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Intelligence = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float StrengthGrowthRate = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float IntelligenceGrowthRate = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxLevel = 30;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 BaseExp = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ExpGrowthRate = 1.2f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 StartingGold = 500;
 	
 };
 
