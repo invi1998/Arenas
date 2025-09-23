@@ -10,10 +10,14 @@
 struct FArenasDamageCaptureStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(DamageTaken)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackDamage)
 
 	FArenasDamageCaptureStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, DamageTaken, Target, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, Armor, Target, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, AttackDamage, Source, true)
 	}
 	
 };

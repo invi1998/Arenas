@@ -8,6 +8,8 @@
 UExecCalc_Damage::UExecCalc_Damage()
 {
 	RelevantAttributesToCapture.Add(GetDamageCaptureStatics().DamageTakenDef);
+	RelevantAttributesToCapture.Add(GetDamageCaptureStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(GetDamageCaptureStatics().AttackDamageDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -33,16 +35,23 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		}
 	}
 
-	if (ComboIndex > 0)
-	{
-		BaseDamage *= ComboIndex;	// 连招伤害翻倍
-	}
+	float AttackDamage = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetDamageCaptureStatics().AttackDamageDef, EvaluateParams, AttackDamage);
+	float Armor = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetDamageCaptureStatics().ArmorDef, EvaluateParams, Armor);
+
+	// 每段连招加百分之10的伤害
+	AttackDamage += BaseDamage;
+	AttackDamage += AttackDamage * 0.1f * ComboIndex;
+
+	// 最终伤害计算公式
+	float Damage = AttackDamage * (100.f / (100.f + Armor));
 
 	OutExecutionOutput.AddOutputModifier(
 		FGameplayModifierEvaluatedData(
 			GetDamageCaptureStatics().DamageTakenProperty,
 			EGameplayModOp::Override,
-			BaseDamage
+			Damage
 		)
 	);
 	
