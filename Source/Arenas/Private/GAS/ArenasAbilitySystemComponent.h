@@ -25,12 +25,17 @@ public:
 
 	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
 
+	void AddGameplayTagToActorIfNotHas(FGameplayTag InTag);
+	void RemoveGameplayTagFromActorIfHas(FGameplayTag InTag);
+
 private:
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
 	
 	void AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel = 1);
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
+	void HandleManaChanged(const FOnAttributeChangeData& Data);
+	void HandleIncomingDamage(const FOnAttributeChangeData& Data);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> DeathEffectClass;
@@ -51,5 +56,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Base Stats")
 	UDataTable* BaseStatsDataTable;
+
+	FTimerHandle DamageStateTimerHandle;	// 伤害状态定时器
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage State")
+	bool bNeedHandleDamageState = false;	// 是否需要处理伤害状态
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage State")
+	float DamageStateDuration = 5.f;	// 伤害状态持续时间
 	
 };

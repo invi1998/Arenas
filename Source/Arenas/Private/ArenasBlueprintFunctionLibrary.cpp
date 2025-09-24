@@ -19,6 +19,28 @@ UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::BP_GetArenasASCF
 	return NativeGetArenasASCFromActor(InActor);
 }
 
+void UArenasBlueprintFunctionLibrary::AddGameplayTagToActorIfNotHas(AActor* InActor, FGameplayTag InTag)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		if (!ArenasASC->HasMatchingGameplayTag(InTag))
+		{
+			ArenasASC->AddLooseGameplayTag(InTag);
+		}
+	}
+}
+
+void UArenasBlueprintFunctionLibrary::RemoveGameplayTagFromActorIfHas(AActor* InActor, FGameplayTag InTag)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		if (ArenasASC->HasMatchingGameplayTag(InTag))
+		{
+			ArenasASC->RemoveLooseGameplayTag(InTag);
+		}
+	}
+}
+
 bool UArenasBlueprintFunctionLibrary::NativeActorHasGameplayTag(AActor* InActor, const FGameplayTag& InTag)
 {
 	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))

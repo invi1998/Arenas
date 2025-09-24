@@ -4,6 +4,7 @@
 #include "GAS/ArenasAbilitySystemComponent.h"
 
 #include "ArenasAttributeSet.h"
+#include "ArenasGameplayTags.h"
 #include "ArenasHeroAttributeSet.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "player/ArenasPlayerCharacter.h"
@@ -11,6 +12,9 @@
 UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleHealthChanged);
+	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleManaChanged);
+
+	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetDamageTakenAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleIncomingDamage);
 	
 	GenericConfirmInputID = static_cast<int32>(EArenasAbilityInputID::Confirm);	// 确认输入ID
 	GenericCancelInputID = static_cast<int32>(EArenasAbilityInputID::Cancel);	// 取消输入ID
@@ -69,6 +73,23 @@ void UArenasAbilitySystemComponent::ApplyFullStateEffect()
 	AuthApplyGameplayEffectToSelf(FullStateEffectClass);
 }
 
+void UArenasAbilitySystemComponent::AddGameplayTagToActorIfNotHas(FGameplayTag InTag)
+{
+	if (!HasMatchingGameplayTag(InTag))
+	{
+		// 这是一个只会在本地机器上被添加的标签，不会被网络同步（因为在调用该函数之前，我们已经确保了只在服务端调用，所以需要注意，该函数添加标签是不会进行同步的）
+		AddLooseGameplayTag(InTag);
+	}
+}
+
+void UArenasAbilitySystemComponent::RemoveGameplayTagFromActorIfHas(FGameplayTag InTag)
+{
+	if (HasMatchingGameplayTag(InTag))
+	{
+		RemoveLooseGameplayTag(InTag);
+	}
+}
+
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
@@ -118,9 +139,79 @@ void UArenasAbilitySystemComponent::AuthApplyGameplayEffectToSelf(TSubclassOf<UG
 void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
-
-	if (Data.NewValue <= 0.f && DeathEffectClass)
+	
+	if (Data.NewValue <= 0.f)
 	{
-		AuthApplyGameplayEffectToSelf(DeathEffectClass);
+		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Health_Empty);
+		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Health_Full);
+		if (DeathEffectClass)
+		{
+			AuthApplyGameplayEffectToSelf(DeathEffectClass);
+		}
+		
+	}
+	else
+	{
+		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Health_Empty);
+		bool bFound = false;
+		float MaxHealth = GetGameplayAttributeValue(UArenasAttributeSet::GetMaxHealthAttribute(), bFound);
+		if (bFound)
+		{
+			if (Data.NewValue >= MaxHealth)
+			{
+				AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Health_Full);
+			}
+			else
+			{
+				RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Health_Full);
+			}
+			
+		}
 	}
 }
+
+void UArenasAbilitySystemComponent::HandleManaChanged(const FOnAttributeChangeData& Data)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	if (Data.NewValue <= 0.f)
+	{
+		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Mana_Empty);
+		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Mana_Full);
+	}
+	else
+	{
+		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Mana_Empty);
+		bool bFound = false;
+		float MaxMana = GetGameplayAttributeValue(UArenasAttributeSet::GetMaxManaAttribute(), bFound);
+		if (bFound)
+		{
+			if (Data.NewValue >= MaxMana)
+			{
+				AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Mana_Full);
+			}
+			else
+			{
+				RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Mana_Full);
+			}
+			
+		}
+	}
+	
+}
+
+void UArenasAbilitySystemComponent::HandleIncomingDamage(const FOnAttributeChangeData& Data)
+{
+	if (!bNeedHandleDamageState) return;
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	
+	if (Data.NewValue > 0.f)
+	{
+		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Damaged);
+		GetWorld()->GetTimerManager().ClearTimer(DamageStateTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DamageStateTimerHandle, [this]()
+		{
+			RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Damaged);
+		}, DamageStateDuration, false);
+	}
+}
+

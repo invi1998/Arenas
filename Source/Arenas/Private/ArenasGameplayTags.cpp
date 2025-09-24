@@ -46,6 +46,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Health_Empty, "Status.Health.Empty", "生命值空状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Mana_Full, "Status.Mana.Full", "法力值满状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Mana_Empty, "Status.Mana.Empty", "法力值空状态" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Damaged, "Status.Damaged", "受伤状态" );
 
 	// Cooldown
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Uppercut, "Cooldown.Ability.Uppercut", "上勾拳技能冷却" );
