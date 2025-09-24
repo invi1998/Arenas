@@ -17,6 +17,7 @@ void UPawnUIComponent::OnHealthChanged(const FOnAttributeChangeData& OnAttribute
 	float HealthPercent = UKismetMathLibrary::SafeDivide(Health, MaxHealth);
 	
 	OnHealthPercentChanged.Broadcast(HealthPercent, Health, MaxHealth);
+	BoardCastHealthAndManaRegenState();
 }
 
 void UPawnUIComponent::OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -28,6 +29,7 @@ void UPawnUIComponent::OnMaxHealthChanged(const FOnAttributeChangeData& OnAttrib
 	}
 	float HealthPercent = UKismetMathLibrary::SafeDivide(Health, MaxHealth);
 	OnHealthPercentChanged.Broadcast(HealthPercent, Health, MaxHealth);
+	BoardCastHealthAndManaRegenState();
 }
 
 void UPawnUIComponent::OnManaChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -39,6 +41,7 @@ void UPawnUIComponent::OnManaChanged(const FOnAttributeChangeData& OnAttributeCh
 	}
 	float ManaPercent = UKismetMathLibrary::SafeDivide(Mana, MaxMana);
 	OnManaPercentChanged.Broadcast(ManaPercent, Mana, MaxMana);
+	BoardCastHealthAndManaRegenState();
 }
 
 void UPawnUIComponent::OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -50,17 +53,19 @@ void UPawnUIComponent::OnMaxManaChanged(const FOnAttributeChangeData& OnAttribut
 	}
 	float ManaPercent = UKismetMathLibrary::SafeDivide(Mana, MaxMana);
 	OnManaPercentChanged.Broadcast(ManaPercent, Mana, MaxMana);
+	BoardCastHealthAndManaRegenState();
 }
 
 void UPawnUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemComponent* InArenasASC)
 {
 	if (InArenasASC)
 	{
+		CachedArenasASC = InArenasASC;
 		bool bFound = false;
-		float HealthC = InArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetHealthAttribute(), bFound);
-		float MaxHealthC = InArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMaxHealthAttribute(), bFound);
-		float ManaC = InArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetManaAttribute(), bFound);
-		float MaxManaC = InArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMaxManaAttribute(), bFound);
+		float HealthC = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetHealthAttribute(), bFound);
+		float MaxHealthC = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMaxHealthAttribute(), bFound);
+		float ManaC = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetManaAttribute(), bFound);
+		float MaxManaC = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMaxManaAttribute(), bFound);
 		// 初始化当前属性值
 		if (bFound)
 		{
@@ -68,6 +73,9 @@ void UPawnUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemComponen
 			MaxHealth = MaxHealthC;
 			Mana = ManaC;
 			MaxMana = MaxManaC;
+
+			bIsHealthFull = FMath::IsNearlyEqual(Health, MaxHealth) && MaxHealth > 0.f;
+			bIsManaFull = FMath::IsNearlyEqual(Mana, MaxMana) && MaxMana > 0.f;
 			
 			// 广播当前属性值
 			OnHealthPercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Health, MaxHealth), Health, MaxHealth);
@@ -91,11 +99,18 @@ void UPawnUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemComponen
 		 */
 		
 		// 绑定属性变化的委托
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
+		CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
+		CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
+		CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
+		CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 
 		
 	}
 }
+
+void UPawnUIComponent::BoardCastHealthAndManaRegenState()
+{
+	bIsHealthFull = FMath::IsNearlyEqual(Health, MaxHealth) && MaxHealth > 0.f;
+	bIsManaFull = FMath::IsNearlyEqual(Mana, MaxMana) && MaxMana > 0.f;
+}
+

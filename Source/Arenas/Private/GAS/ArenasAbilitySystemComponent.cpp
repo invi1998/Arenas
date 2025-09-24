@@ -13,8 +13,6 @@ UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleHealthChanged);
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleManaChanged);
-
-	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetDamageTakenAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleIncomingDamage);
 	
 	GenericConfirmInputID = static_cast<int32>(EArenasAbilityInputID::Confirm);	// 确认输入ID
 	GenericCancelInputID = static_cast<int32>(EArenasAbilityInputID::Cancel);	// 取消输入ID
@@ -148,7 +146,6 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 		{
 			AuthApplyGameplayEffectToSelf(DeathEffectClass);
 		}
-		
 	}
 	else
 	{
@@ -197,21 +194,5 @@ void UArenasAbilitySystemComponent::HandleManaChanged(const FOnAttributeChangeDa
 		}
 	}
 	
-}
-
-void UArenasAbilitySystemComponent::HandleIncomingDamage(const FOnAttributeChangeData& Data)
-{
-	if (!bNeedHandleDamageState) return;
-	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
-	
-	if (Data.NewValue > 0.f)
-	{
-		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Damaged);
-		GetWorld()->GetTimerManager().ClearTimer(DamageStateTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DamageStateTimerHandle, [this]()
-		{
-			RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Damaged);
-		}, DamageStateDuration, false);
-	}
 }
 

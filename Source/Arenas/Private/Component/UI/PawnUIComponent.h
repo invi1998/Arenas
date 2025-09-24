@@ -28,11 +28,21 @@ public:
 	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 
 	virtual void SetAndBoundAttributeDelegate(UArenasAbilitySystemComponent* InArenasASC);
+	virtual void BoardCastHealthAndManaRegenState();
+
+protected:
+	UPROPERTY()
+	UArenasAbilitySystemComponent* CachedArenasASC;
+
+	bool bIsDead = false;
+	bool bIsStunned = false;
+	bool bIsHealthFull = true;
+	bool bIsManaFull = true;
 
 private:
 	float Health = 0.f;
 	float MaxHealth = 0.f;
 	float Mana = 0.f;
 	float MaxMana = 0.f;
-
+	
 };

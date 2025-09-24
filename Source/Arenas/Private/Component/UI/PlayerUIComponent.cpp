@@ -3,6 +3,7 @@
 
 #include "PlayerUIComponent.h"
 
+#include "ArenasGameplayTags.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasAttributeSet.h"
 #include "GAS/ArenasHeroAttributeSet.h"
@@ -33,44 +34,121 @@ void UPlayerUIComponent::OnMaxExpChanged(const FOnAttributeChangeData& OnAttribu
 	OnExperiencePercentChanged.Broadcast(HealthPercent, Exp, MaxExp);
 }
 
+void UPlayerUIComponent::OnStrengthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	BoardCastHealthAndManaRegenState();
+}
+
+void UPlayerUIComponent::OnIntelligenceChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	BoardCastHealthAndManaRegenState();
+}
+
 void UPlayerUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemComponent* InArenasASC)
 {
 	Super::SetAndBoundAttributeDelegate(InArenasASC);
 
-	if (InArenasASC)
+	bool bFound = false;
+	float CurrentExp = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetExperienceAttribute(), bFound);
+	float CurrentMaxExp = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), bFound);
+
+	// 初始化当前属性值
+	if (bFound)
+	{
+		Exp = CurrentExp;
+		MaxExp = CurrentMaxExp;
+			
+		// 广播当前属性值
+		OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp, MaxExp), Exp, MaxExp);
+	}
+	else
+	{
+		// 如果没有找到属性值，则将其设置为0
+		Exp = 0.f;
+		MaxExp = 0.f;
+	}
+
+	/*
+	// 广播当前属性值
+	if (const UArenasAttributeSet* AttributeSet = Cast<UArenasAttributeSet>(InArenasASC->GetAttributeSet(UArenasAttributeSet::StaticClass())))
+	{
+		AttributeSet->BroadcastAttributeInitialValue(this);
+	}
+	 */
+		
+	// 绑定属性变化的委托
+	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::OnExpChanged);
+	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute()).AddUObject(this, &ThisClass::OnMaxExpChanged);
+
+	// 监听 Status_Dead，Status_Stun，Status_Health_Full，Status_Mana_Full，Status_Damaged 状态，来计算并广播当前英雄回血回蓝数值状态
+	CachedArenasASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::OnStatusTagChanged);
+	CachedArenasASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::OnStatusTagChanged);
+	// 同时还需要监听 力量和智力属性的变化
+	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetStrengthAttribute()).AddUObject(this, &ThisClass::OnStrengthChanged);
+	
+}
+
+void UPlayerUIComponent::BoardCastHealthAndManaRegenState()
+{
+	Super::BoardCastHealthAndManaRegenState();
+	
+	bool bInHealthRegenState = !bIsDead && !bIsStunned && !bIsHealthFull;
+	bool bInManaRegenState = !bIsDead && !bIsStunned && !bIsManaFull;
+	float CurrentHealthRegen = bInHealthRegenState ? GetCurrentHealthRegenNumber() : 0.f;
+	float CurrentManaRegen = bInManaRegenState ? GetCurrentManaRegenNumber() : 0.f;
+	FNumberFormattingOptions NumberFormattingOptions;
+	NumberFormattingOptions.MaximumFractionalDigits = 1;
+	// 格式： +number / s
+	FText HealthRegenText = FText::Format(FText::FromString("+{0} / s"), FText::AsNumber(CurrentHealthRegen, &NumberFormattingOptions));
+	FText ManaRegenText = FText::Format(FText::FromString("+{0} / s"), FText::AsNumber(CurrentManaRegen, &NumberFormattingOptions));
+
+	OnHealthRegenStateChanged.Broadcast(bInHealthRegenState, HealthRegenText);
+	OnManaRegenStateChanged.Broadcast(bInManaRegenState, ManaRegenText);
+	
+}
+
+float UPlayerUIComponent::GetCurrentHealthRegenNumber() const
+{
+	if (CachedArenasASC)
 	{
 		bool bFound = false;
-		float CurrentExp = InArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetExperienceAttribute(), bFound);
-		float CurrentMaxExp = InArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), bFound);
-
-		// 初始化当前属性值
+		float Strength = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetStrengthAttribute(), bFound);
 		if (bFound)
 		{
-			Exp = CurrentExp;
-			MaxExp = CurrentMaxExp;
-			
-			// 广播当前属性值
-			OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp, MaxExp), Exp, MaxExp);
+			// 回血公式 0.1 * 力量值 + 1
+			return 0.1f * Strength + 1.f;
 		}
-		else
-		{
-			// 如果没有找到属性值，则将其设置为0
-			Exp = 0.f;
-			MaxExp = 0.f;
-		}
+	}
+	return 0.f;
+}
 
-		/*
-		// 广播当前属性值
-		if (const UArenasAttributeSet* AttributeSet = Cast<UArenasAttributeSet>(InArenasASC->GetAttributeSet(UArenasAttributeSet::StaticClass())))
+float UPlayerUIComponent::GetCurrentManaRegenNumber() const
+{
+	if (CachedArenasASC)
+	{
+		bool bFound = false;
+		float Intelligence = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetIntelligenceAttribute(), bFound);
+		if (bFound)
 		{
-			AttributeSet->BroadcastAttributeInitialValue(this);
+			// 回蓝公式 0.05 * 智力值 + 1
+			return 0.05f * Intelligence + 1.0f;
 		}
-		 */
-		
-		// 绑定属性变化的委托
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::OnExpChanged);
-		InArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute()).AddUObject(this, &ThisClass::OnMaxExpChanged);
-		
+	}
+	return 0.f;
+}
+
+void UPlayerUIComponent::OnStatusTagChanged(FGameplayTag StatTag, int32 Count)
+{
+	if (!StatTag.IsValid()) return;
+
+	if (StatTag == ArenasGameplayTags::Status_Dead)
+	{
+		bIsDead = Count > 0;
+	}
+	else if (StatTag == ArenasGameplayTags::Status_Stun)
+	{
+		bIsStunned = Count > 0;
 	}
 	
+	BoardCastHealthAndManaRegenState();
 }
