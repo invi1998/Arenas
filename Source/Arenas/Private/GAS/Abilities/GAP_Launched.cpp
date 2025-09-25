@@ -1,11 +1,11 @@
 ﻿// Ace of Arenas. (invi_1998 All Rights Reserved)
 
 
-#include "ArenasGA_Launched.h"
+#include "GAP_Launched.h"
 
 #include "ArenasGameplayTags.h"
 
-UArenasGA_Launched::UArenasGA_Launched()
+UGAP_Launched::UGAP_Launched()
 {
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;		// 该能力只能在服务器上执行
 	FAbilityTriggerData TriggerData;
@@ -17,7 +17,7 @@ UArenasGA_Launched::UArenasGA_Launched()
 	ActivationBlockedTags.RemoveTag(ArenasGameplayTags::Status_Stun); // 眩晕状态下也能触发该能力
 }
 
-void UArenasGA_Launched::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UGAP_Launched::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {

@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "ArenasGameplayAbility.h"
-#include "ArenasGA_Launched.generated.h"
+#include "GAP_Dead.generated.h"
 
 /**
- * 被动技能：被击飞或者击退
+ * 死亡被动： 当角色死亡时触发，通常用于处理角色的死亡状态和相关逻辑，奖励经验等
  */
 UCLASS()
-class ARENAS_API UArenasGA_Launched : public UArenasGameplayAbility
+class ARENAS_API UGAP_Dead : public UArenasGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UArenasGA_Launched();
+	UGAP_Dead();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
+	
 };

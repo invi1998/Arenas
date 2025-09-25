@@ -3,9 +3,11 @@
 
 #include "GAS/ArenasAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasAttributeSet.h"
 #include "ArenasGameplayTags.h"
 #include "ArenasHeroAttributeSet.h"
+#include "GameplayEffectExtension.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "player/ArenasPlayerCharacter.h"
 
@@ -120,6 +122,15 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 			GiveAbility(AbilitySpec);
 		}
 	}
+
+	for (const TSubclassOf<UGameplayAbility>& Ability : PassiveAbilities)
+	{
+		if (Ability)
+		{
+			FGameplayAbilitySpec AbilitySpec(Ability, 1, -1, nullptr);
+			GiveAbility(AbilitySpec);
+		}
+	}
 	
 }
 
@@ -146,6 +157,24 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 		{
 			AuthApplyGameplayEffectToSelf(DeathEffectClass);
 		}
+
+		/*
+		 * 下面的代码逻辑已经被放到 ArenasAttributeSet::PostGameplayEffectExecute 中处理了
+		 * 因为我们从接收伤害到血量变更之间是通过DamageToken这个中间量来设置的，所以此处监听血量变化并不会附带Data.GEModData信息，因为我们是在属性集里直接SetHealth来修改的血量
+		 * 当然我们也可以舍弃这个中间量去在GE里应用并修改血量，这样就能在此处监听血量变化时有GE信息了
+		if (Data.GEModData)
+		{
+			UE_LOG(LogTemp, Warning, TEXT(" 0000000000000000000000 Health changed to zero, triggering death event."));
+			FGameplayEventData DeathEventData;
+			DeathEventData.ContextHandle = Data.GEModData->EffectSpec.GetContext();	// 传递效果上下文，以便获取击杀者等信息
+
+			// 触发死亡事件
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), ArenasGameplayTags::Status_Dead, DeathEventData);
+			
+		}
+		*/
+		
+		
 	}
 	else
 	{

@@ -50,6 +50,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
 	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
+	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> FullStateEffectClass;
 

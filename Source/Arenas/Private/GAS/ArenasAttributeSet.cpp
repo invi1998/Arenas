@@ -3,6 +3,9 @@
 
 #include "ArenasAttributeSet.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "ArenasAbilitySystemComponent.h"
+#include "ArenasGameplayTags.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
@@ -97,6 +100,23 @@ void UArenasAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			float NewHealth = GetHealth() - DamageAmount;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 			SetDamageTaken(0.f); // 重置伤害值
+
+			// 这里如果直接通过SetHealth来设置角色血量，会导致丢失FGameplayEffectModCallbackData中的数据
+			// 所以需要手动调用OnHealthChanged等函数来处理血量变化
+			AActor* OwnerActor = GetOwningActor();
+			if ( OwnerActor && OwnerActor->HasAuthority() && NewHealth <= 0.f)
+			{
+				if (UArenasAbilitySystemComponent* ArenasASC = Cast<UArenasAbilitySystemComponent>(OwnerActor->GetComponentByClass(UArenasAbilitySystemComponent::StaticClass())))
+				{
+					FGameplayEventData DeathEventData;
+					DeathEventData.ContextHandle = Data.EffectSpec.GetContext();	// 传递效果上下文，以便获取击杀者等信息
+
+					// 触发死亡事件
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, ArenasGameplayTags::Status_Dead, DeathEventData);
+			
+				}
+			}
+			
 		}
 	}
 }
