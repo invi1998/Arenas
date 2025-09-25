@@ -3,8 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectExecutionCalculation.h"
 #include "GameplayModMagnitudeCalculation.h"
+#include "GAS/ArenasAttributeSet.h"
 #include "MMC_BaseAttackDamage.generated.h"
+
+struct FArenasDamageCaptureStatics_MMC
+{
+	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackDamage)
+
+	FArenasDamageCaptureStatics_MMC()
+	{
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, Armor, Target, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, AttackDamage, Source, true)
+	}
+	
+};
+
+static const FArenasDamageCaptureStatics_MMC& GetMMCDamageCaptureStatics()
+{
+	static FArenasDamageCaptureStatics_MMC DmgStatics;
+	return DmgStatics;
+}
 
 /**
  * 
@@ -19,7 +40,9 @@ public:
 	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
 
 private:
+	/*
 	FGameplayEffectAttributeCaptureDefinition AttackDamageCaptureDef;
 	FGameplayEffectAttributeCaptureDefinition ArmorDamageCaptureDef;
+	*/
 	
 };

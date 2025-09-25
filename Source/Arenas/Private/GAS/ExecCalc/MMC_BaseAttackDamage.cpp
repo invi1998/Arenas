@@ -3,18 +3,21 @@
 
 #include "GAS/ExecCalc/MMC_BaseAttackDamage.h"
 
+#include "ArenasGameplayTags.h"
 #include "GAS/ArenasAttributeSet.h"
 
 UMMC_BaseAttackDamage::UMMC_BaseAttackDamage()
 {
+	/*
 	AttackDamageCaptureDef.AttributeToCapture = UArenasAttributeSet::GetAttackDamageAttribute();
 	AttackDamageCaptureDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
 
 	ArmorDamageCaptureDef.AttributeToCapture = UArenasAttributeSet::GetArmorAttribute();
 	ArmorDamageCaptureDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	*/
 
-	RelevantAttributesToCapture.Add(AttackDamageCaptureDef);
-	RelevantAttributesToCapture.Add(ArmorDamageCaptureDef);
+	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().AttackDamageDef);
 	
 }
 
@@ -28,8 +31,25 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 	EvaluationParameters.SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	EvaluationParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
-	GetCapturedAttributeMagnitude(AttackDamageCaptureDef, Spec, EvaluationParameters, AttackDamage);
-	GetCapturedAttributeMagnitude(ArmorDamageCaptureDef, Spec, EvaluationParameters, Armor);
+	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().AttackDamageDef, Spec, EvaluationParameters, AttackDamage);
+	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().ArmorDef, Spec, EvaluationParameters, Armor);
+
+	float BaseDamage = 10.f;
+	
+	int32 ComboIndex = 0;
+	for (const TPair<FGameplayTag, float>& SetByCallerData : Spec.SetByCallerTagMagnitudes)
+	{
+		if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_BaseDamage))
+		{
+			BaseDamage = SetByCallerData.Value;
+		}
+		else if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_ComboIndex))
+		{
+			ComboIndex = FMath::RoundToInt(SetByCallerData.Value);
+		}
+	}
+	AttackDamage += BaseDamage;
+	AttackDamage += AttackDamage * 0.1f * ComboIndex;
 	
 	// 计算最终伤害值，考虑护甲的减伤效果
 	float FinalDamage = AttackDamage * (100.f / (100.f + Armor));
