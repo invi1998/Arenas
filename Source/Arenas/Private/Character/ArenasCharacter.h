@@ -80,6 +80,8 @@ private:
 	void SetIsAiming(bool bNewAiming);
 	virtual void OnAimStateChanged(bool bNewAiming);
 	void OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void BindGASChangedDelegate();
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")

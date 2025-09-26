@@ -29,6 +29,9 @@ public:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	
 	void BroadcastAttributeInitialValue(const UPawnUIComponent* InPawnUIComponent) const;
+
+	void RescaleHealth();
+	void RescaleMana();
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
@@ -61,6 +64,16 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_MoveSpeed)
 	FGameplayAttributeData MoveSpeed;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MoveSpeed);
+
+	// 缓存的血量和蓝量百分比，在最大血量和蓝量变化时，我们希望同步缩放血量和蓝量，该比例只存在服务端，不需要同步
+	UPROPERTY()
+	FGameplayAttributeData CachedHealthPercent;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, CachedHealthPercent);
+
+	UPROPERTY()
+	FGameplayAttributeData CachedManaPercent;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, CachedManaPercent);
+
 
 private:
 

@@ -58,6 +58,7 @@ void UArenasAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 		// 处理生命值变化
 		float NewHealth = GetHealth();
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		SetCachedHealthPercent(UKismetMathLibrary::SafeDivide(GetHealth(), GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetMaxHealthAttribute())
 	{
@@ -71,12 +72,14 @@ void UArenasAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 		{
 			SetHealth(NewMaxHealth);
 		}
+		
 	}
 	else if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		// 处理法力值变化
 		float NewMana = GetMana();
 		SetMana(FMath::Clamp(NewMana, 0.f, GetMaxMana()));
+		SetCachedManaPercent(UKismetMathLibrary::SafeDivide(GetMana(), GetMaxMana()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetMaxManaAttribute())
 	{
@@ -125,6 +128,29 @@ void UArenasAttributeSet::BroadcastAttributeInitialValue(const UPawnUIComponent*
 {
 	InPawnUIComponent->OnHealthPercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(GetHealth(), GetMaxHealth()), GetHealth(), GetMaxHealth());
 	InPawnUIComponent->OnManaPercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(GetMana(), GetMaxMana()), GetMana(), GetMaxMana());
+}
+
+void UArenasAttributeSet::RescaleHealth()
+{
+	if (!GetOwningActor() || !GetOwningActor()->HasAuthority()) return;
+
+	if (GetCachedHealthPercent() != 0.f)
+	{
+		float NewHealth = GetMaxHealth() * GetCachedHealthPercent();
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+	}
+}
+
+void UArenasAttributeSet::RescaleMana()
+{
+	if (!GetOwningActor() || !GetOwningActor()->HasAuthority()) return;
+
+	if (GetCachedManaPercent() != 0.f)
+	{
+		float NewMana = GetMaxMana() * GetCachedManaPercent();
+		SetMana(FMath::Clamp(NewMana, 0.f, GetMaxMana()));
+	}
+	
 }
 
 void UArenasAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue) const

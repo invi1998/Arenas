@@ -69,7 +69,7 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_IntelligenceGrowthRate)
 	FGameplayAttributeData IntelligenceGrowthRate;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, IntelligenceGrowthRate);
-
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UFUNCTION()

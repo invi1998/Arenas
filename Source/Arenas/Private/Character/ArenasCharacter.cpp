@@ -211,6 +211,22 @@ void AArenasCharacter::OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttrib
 	GetCharacterMovement()->MaxWalkSpeed = OnAttributeChangeData.NewValue;
 }
 
+void AArenasCharacter::OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	if (IsValid(ArenasAttributeSet))
+	{
+		ArenasAttributeSet->RescaleHealth();
+	}
+}
+
+void AArenasCharacter::OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	if (IsValid(ArenasAttributeSet))
+	{
+		ArenasAttributeSet->RescaleMana();
+	}
+}
+
 void AArenasCharacter::BindGASChangedDelegate()
 {
 	if (ArenasAbilitySystemComponent)
@@ -231,6 +247,8 @@ void AArenasCharacter::BindGASChangedDelegate()
 			.AddUObject(this, &AArenasCharacter::AimingTagUpdated);
 
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedChanged);
+		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
+		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 		
 	}
 }
