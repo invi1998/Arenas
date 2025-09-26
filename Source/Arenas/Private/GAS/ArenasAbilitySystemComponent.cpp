@@ -8,6 +8,7 @@
 #include "ArenasGameplayTags.h"
 #include "ArenasHeroAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "PA_AbilitySystemGenerics.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "player/ArenasPlayerCharacter.h"
 
@@ -22,14 +23,14 @@ UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 
 void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 {
-	if (!BaseStatsDataTable || !GetOwner()) return;
+	if (!AbilitySystemGenerics->GetBaseStatsDataTable() || !GetOwner()) return;
 
 	const FHeroBaseStats* BaseStats = nullptr;
 
-	for (const TPair<FName, uint8*>& DataPair : BaseStatsDataTable->GetRowMap())
+	for (const TPair<FName, uint8*>& DataPair : AbilitySystemGenerics->GetBaseStatsDataTable()->GetRowMap())
 	{
 		// BaseStats = reinterpret_cast<FHeroBaseStats*>(DataPair.Value);
-		BaseStats = BaseStatsDataTable->FindRow<FHeroBaseStats>(DataPair.Key, "");
+		BaseStats = AbilitySystemGenerics->GetBaseStatsDataTable()->FindRow<FHeroBaseStats>(DataPair.Key, "");
 		if (BaseStats && BaseStats->HeroClass == GetOwner()->GetClass())
 		{
 			break;
@@ -70,7 +71,7 @@ void UArenasAbilitySystemComponent::ServerSideInit()
 
 void UArenasAbilitySystemComponent::ApplyFullStateEffect()
 {
-	AuthApplyGameplayEffectToSelf(FullStateEffectClass);
+	AuthApplyGameplayEffectToSelf(AbilitySystemGenerics->GetFullStateEffectClass());
 }
 
 void UArenasAbilitySystemComponent::AddGameplayTagToActorIfNotHas(FGameplayTag InTag)
@@ -94,7 +95,7 @@ void UArenasAbilitySystemComponent::ApplyInitialEffects()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 	
-	for (const TSubclassOf<UGameplayEffect>& EffectClass : InitialGameplayEffects)
+	for (const TSubclassOf<UGameplayEffect>& EffectClass : AbilitySystemGenerics->GetInitialGameplayEffects())
 	{
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(EffectClass, 1, MakeEffectContext());
 		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
@@ -123,7 +124,7 @@ void UArenasAbilitySystemComponent::GiveInitialAbilities()
 		}
 	}
 
-	for (const TSubclassOf<UGameplayAbility>& Ability : PassiveAbilities)
+	for (const TSubclassOf<UGameplayAbility>& Ability : AbilitySystemGenerics->GetPassiveAbilities())
 	{
 		if (Ability)
 		{
@@ -153,9 +154,9 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 	{
 		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Health_Empty);
 		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Health_Full);
-		if (DeathEffectClass)
+		if (AbilitySystemGenerics->GetDeathEffectClass())
 		{
-			AuthApplyGameplayEffectToSelf(DeathEffectClass);
+			AuthApplyGameplayEffectToSelf(AbilitySystemGenerics->GetDeathEffectClass());
 		}
 
 		/*

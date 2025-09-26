@@ -7,6 +7,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasAbilitySystemComponent.generated.h"
 
+class UPA_AbilitySystemGenerics;
 class IPawnUIInterface;
 /**
  * 
@@ -36,12 +37,9 @@ private:
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
 	void HandleManaChanged(const FOnAttributeChangeData& Data);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> DeathEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "PA_Generics")
+	UPA_AbilitySystemGenerics* AbilitySystemGenerics;		// 赋予初始属性和效果
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TArray<TSubclassOf<UGameplayEffect>> InitialGameplayEffects;
-
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
@@ -49,14 +47,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
 	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
-	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> FullStateEffectClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Base Stats")
-	UDataTable* BaseStatsDataTable;
 	
 };
