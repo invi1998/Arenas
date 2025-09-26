@@ -51,6 +51,10 @@ namespace ArenasGameplayTags
 	// Cooldown
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Uppercut, "Cooldown.Ability.Uppercut", "上勾拳技能冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_GroundBlast, "Cooldown.Ability.GroundBlast", "地面爆破技能冷却" );
+
+	// RoleType
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RoleType_Hero, "RoleType.Hero", "英雄角色" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RoleType_Minion, "RoleType.Minion", "小兵角色" );
 	
 }
 

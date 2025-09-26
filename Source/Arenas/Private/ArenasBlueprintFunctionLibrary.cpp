@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "ArenasGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayTagsManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
@@ -117,4 +118,24 @@ TArray<FString> UArenasBlueprintFunctionLibrary::GetKeyNamesForInputAction(const
 FGameplayTag UArenasBlueprintFunctionLibrary::GetCameraShakeGameplayCueTag()
 {
 	return FGameplayTag::RequestGameplayTag("GameplayCue.CameraShake");
+}
+
+bool UArenasBlueprintFunctionLibrary::IsHeroActor(AActor* InActor)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		return ArenasASC->HasMatchingGameplayTag(ArenasGameplayTags::RoleType_Hero);
+	}
+
+	return false;
+	
+}
+
+bool UArenasBlueprintFunctionLibrary::IsAlive(AActor* InActor)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		return !ArenasASC->HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead);
+	}
+	return false;
 }

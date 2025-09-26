@@ -58,5 +58,9 @@ namespace ArenasGameplayTags
 	// Cooldown
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Uppercut);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_GroundBlast);
+
+	// Role Type
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RoleType_Hero);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RoleType_Minion);
 	
 }
