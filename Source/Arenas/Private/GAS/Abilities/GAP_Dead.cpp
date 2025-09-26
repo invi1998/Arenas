@@ -3,9 +3,11 @@
 
 #include "GAP_Dead.h"
 
+#include "AbilitySystemComponent.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Engine/OverlapResult.h"
+#include "GAS/ArenasHeroAttributeSet.h"
 
 UGAP_Dead::UGAP_Dead()
 {
@@ -32,15 +34,27 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		// 如果没有击杀者，则将奖励的100%均分给附近的敌方英雄单位
 		// 奖励范围内的敌方英雄单位必须是存活状态
 		// 奖励范围内的敌方英雄单位必须是英雄单位
-		if (AActor* Killer = TriggerEventData->ContextHandle.GetEffectCauser())
+		AActor* Killer = TriggerEventData->ContextHandle.GetEffectCauser();
+		if (!Killer || !UArenasBlueprintFunctionLibrary::IsHeroActor(Killer))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("****** UGAP_Dead::ActivateAbility Killer: %s"), *Killer->GetName());
+			Killer = nullptr;
 		}
 		TArray<AActor*> RewardTargets = GetRewardTargets();
-		for (AActor* RewardTarget : RewardTargets)
+		if (RewardTargets.Num() == 0 && !Killer)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("***-------*** UGAP_Dead::ActivateAbility RewardTarget: %s"), *RewardTarget->GetName());
+			K2_EndAbility();
+			return;
 		}
+		if (Killer && !RewardTargets.Contains(Killer))
+		{
+			RewardTargets.Add(Killer);
+		}
+
+		bool bFound = false;
+		float SelfOwnerExp = GetAbilitySystemComponentFromActorInfo_Ensured()->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetExperienceAttribute(), bFound);
+		float TotalExpReward = BaseExperienceReward + ExperienceRewardExperience * SelfOwnerExp;
+		float TotalGoldReward = BaseGoldReward + GoldRewardPerExperience * SelfOwnerExp;
+		
 	}
 	
 	
