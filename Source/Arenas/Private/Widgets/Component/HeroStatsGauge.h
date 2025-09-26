@@ -27,7 +27,7 @@ private:
 	UPROPERTY()
 	UArenasAbilitySystemComponent* CachedArenasASC;
 
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta=(BindWidgetOptional))
 	UImage* Icon;
 
 	UPROPERTY(meta=(BindWidget))

@@ -7,6 +7,7 @@
 #include "PlayerUIComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRegenStateChangedDelegate, bool, bInRegenState, FText, InRegenText);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPercentTextChangedDelegate, float, InPercent, FText, InValueText, FText, InMaxValueText);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ARENAS_API UPlayerUIComponent : public UPawnUIComponent
@@ -14,8 +15,10 @@ class ARENAS_API UPlayerUIComponent : public UPawnUIComponent
 	GENERATED_BODY()
 
 public:
+	UPlayerUIComponent();
+	
 	UPROPERTY(BlueprintAssignable)
-	FOnPercentChangedDelegate OnExperiencePercentChanged;
+	FOnPercentTextChangedDelegate OnExperiencePercentChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRegenStateChangedDelegate OnHealthRegenStateChanged;
@@ -39,6 +42,8 @@ private:
 	float Exp = 0.f;
 	float StartExp = 0.f;
 	float MaxExp = 0.f;
+
+	FNumberFormattingOptions FormattingOptions;
 
 	float GetCurrentHealthRegenNumber() const;
 	float GetCurrentManaRegenNumber() const;

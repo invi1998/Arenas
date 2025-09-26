@@ -10,6 +10,11 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
+UPlayerUIComponent::UPlayerUIComponent()
+{
+	FormattingOptions.MaximumFractionalDigits = 0;	// 默认不显示小数位
+}
+
 void UPlayerUIComponent::OnExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	Exp = OnAttributeChangeData.NewValue;
@@ -17,19 +22,32 @@ void UPlayerUIComponent::OnExpChanged(const FOnAttributeChangeData& OnAttributeC
 	{
 		return;
 	}
+	if (Exp > MaxExp) return;	// 防止升级时，下一等级的经验计算还未完成，导致当前经验大于最大经验值，从而出现负数进度条
 	float ExpPercent = UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp);
 	
-	OnExperiencePercentChanged.Broadcast(ExpPercent, Exp, MaxExp);
+	OnExperiencePercentChanged.Broadcast(ExpPercent, FText::AsNumber(Exp, &FormattingOptions), FText::AsNumber(MaxExp, &FormattingOptions));
 }
 
 void UPlayerUIComponent::OnMaxExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	MaxExp = OnAttributeChangeData.NewValue;
+	if (MaxExp <= 0.f)
+	{
+		return;
+	}
+	float ExpPercent = UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp);
+	OnExperiencePercentChanged.Broadcast(ExpPercent, FText::AsNumber(Exp, &FormattingOptions), FText::AsNumber(MaxExp, &FormattingOptions));
 }
 
 void UPlayerUIComponent::OnPrevExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	StartExp = OnAttributeChangeData.NewValue;
+	if (MaxExp <= 0.f)
+	{
+		return;
+	}
+	float ExpPercent = UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp);
+	OnExperiencePercentChanged.Broadcast(ExpPercent, FText::AsNumber(Exp, &FormattingOptions), FText::AsNumber(MaxExp, &FormattingOptions));
 }
 
 void UPlayerUIComponent::OnStrengthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -59,7 +77,7 @@ void UPlayerUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemCompon
 		MaxExp = CurrentMaxExp;
 			
 		// 广播当前属性值
-		OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp), Exp, MaxExp);
+		OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp), FText::AsNumber(Exp, &FormattingOptions), FText::AsNumber(MaxExp, &FormattingOptions));
 	}
 	else
 	{

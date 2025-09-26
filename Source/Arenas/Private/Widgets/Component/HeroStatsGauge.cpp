@@ -11,7 +11,10 @@
 void UHeroStatsGauge::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	Icon->SetBrushFromTexture(IconTexture);
+	if (Icon && IconTexture)
+	{
+		Icon->SetBrushFromTexture(IconTexture);
+	}
 }
 
 void UHeroStatsGauge::NativeConstruct()
