@@ -117,12 +117,6 @@ struct FHeroBaseStats : public FTableRowBase
 	float IntelligenceGrowthRate = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaxLevel = 30;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 BaseExp = 100;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ExpGrowthRate = 1.2f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

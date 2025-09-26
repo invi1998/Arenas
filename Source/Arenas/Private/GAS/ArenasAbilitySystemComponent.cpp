@@ -50,14 +50,18 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetExperienceAttribute(), 0.f);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), 0.f);
-	// SetNumericAttributeBase(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), BaseStats->ExperienceToNextLevel);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute(), 1.f);
-	SetNumericAttributeBase(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), 0.f);
-	SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelAttribute(), BaseStats->MaxLevel);
-	// SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelExperienceAttribute(), BaseStats->MaxLevelExperience);
+	
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetGoldAttribute(), BaseStats->StartingGold);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
+
+	if (const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetEXPCurve())
+	{
+		int32 MaxLevel = ExperienceCurve->GetNumKeys();
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelAttribute(), MaxLevel);
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelExperienceAttribute(), ExperienceCurve->GetKeyValue(ExperienceCurve->GetLastKeyHandle()));
+	}
 	
 }
 

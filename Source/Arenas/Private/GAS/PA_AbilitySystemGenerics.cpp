@@ -2,3 +2,8 @@
 
 
 #include "PA_AbilitySystemGenerics.h"
+
+const FRealCurve* UPA_AbilitySystemGenerics::GetEXPCurve() const
+{
+	return EXP_CurveTable->FindCurve(EXP_RowName, ""); 
+}
