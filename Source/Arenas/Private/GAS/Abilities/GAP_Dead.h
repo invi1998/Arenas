@@ -37,6 +37,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Reward")
 	float KillerRewardPercent = 0.5f; // 击杀者奖励百分比（击杀者直接获得的总奖励的百分比，剩下的均分给范围内的其他英雄，包括击杀者）
+
+	UPROPERTY(EditDefaultsOnly, Category = "Reward")
+	TSubclassOf<UGameplayEffect> RewardEffectClass; // 奖励效果类
 	
 	TArray<AActor*> GetRewardTargets() const;
 	

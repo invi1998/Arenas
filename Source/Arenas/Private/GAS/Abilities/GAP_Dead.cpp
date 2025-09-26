@@ -3,6 +3,7 @@
 
 #include "GAP_Dead.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
@@ -54,10 +55,38 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		float SelfOwnerExp = GetAbilitySystemComponentFromActorInfo_Ensured()->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetExperienceAttribute(), bFound);
 		float TotalExpReward = BaseExperienceReward + ExperienceRewardExperience * SelfOwnerExp;
 		float TotalGoldReward = BaseGoldReward + GoldRewardPerExperience * SelfOwnerExp;
+
+		// 对于奖励发放，此处我们通过GE来实现，而非直接修改角色属性集，因为在某些情况下，当我们尝试奖励击杀者时，击杀者可能已经死亡
+		// 这种情况下，我们不应该发送任何奖励，GE可以很容易的阻止这种情况的发生
+
+		if (Killer)
+		{
+			float KillerExpReward = TotalExpReward * KillerRewardPercent;
+			float KillerGoldReward = TotalGoldReward * KillerRewardPercent;
+
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(RewardEffectClass, 1.f);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Exp, KillerExpReward);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Gold, KillerGoldReward);
+
+			ApplyGameplayEffectSpecToTarget(
+				GetCurrentAbilitySpecHandle(),
+				GetCurrentActorInfo(),
+				GetCurrentActivationInfo(),
+				EffectSpecHandle,
+				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Killer));
+		}
 		
+		float TargetExpReward = TotalExpReward * (1.f - KillerRewardPercent) / RewardTargets.Num();
+		float TargetGoldReward = TotalGoldReward * (1.f - KillerRewardPercent) / RewardTargets.Num();
+
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(RewardEffectClass, 1.f);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Exp, TargetExpReward);
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Gold, TargetGoldReward);
+
+		K2_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(RewardTargets, true));
+
+		K2_EndAbility();
 	}
-	
-	
 }
 
 TArray<AActor*> UGAP_Dead::GetRewardTargets() const
