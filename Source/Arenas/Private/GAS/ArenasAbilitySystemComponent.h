@@ -29,6 +29,8 @@ public:
 	void AddGameplayTagToActorIfNotHas(FGameplayTag InTag);
 	void RemoveGameplayTagFromActorIfHas(FGameplayTag InTag);
 
+	bool IsAtMaxLevel() const;
+
 private:
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
@@ -36,6 +38,7 @@ private:
 	void AuthApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 EffectLevel = 1);
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
 	void HandleManaChanged(const FOnAttributeChangeData& Data);
+	void HandleExperienceChanged(const FOnAttributeChangeData& Data);
 
 	UPROPERTY(EditDefaultsOnly, Category = "PA_Generics")
 	UPA_AbilitySystemGenerics* AbilitySystemGenerics;		// 赋予初始属性和效果

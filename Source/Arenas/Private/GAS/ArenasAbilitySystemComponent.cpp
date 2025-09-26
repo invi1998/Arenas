@@ -16,6 +16,7 @@ UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleHealthChanged);
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleManaChanged);
+	GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleExperienceChanged);
 	
 	GenericConfirmInputID = static_cast<int32>(EArenasAbilityInputID::Confirm);	// 确认输入ID
 	GenericCancelInputID = static_cast<int32>(EArenasAbilityInputID::Cancel);	// 取消输入ID
@@ -49,8 +50,6 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetExperienceAttribute(), 0.f);
-	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), 0.f);
-	SetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute(), 1.f);
 	
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetGoldAttribute(), BaseStats->StartingGold);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
@@ -62,6 +61,9 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 		SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelAttribute(), MaxLevel);
 		SetNumericAttributeBase(UArenasHeroAttributeSet::GetMaxLevelExperienceAttribute(), ExperienceCurve->GetKeyValue(ExperienceCurve->GetLastKeyHandle()));
 	}
+
+	// 初始化当前经验值和等级，以及升级点信息
+	HandleExperienceChanged(FOnAttributeChangeData{});
 	
 }
 
@@ -93,6 +95,21 @@ void UArenasAbilitySystemComponent::RemoveGameplayTagFromActorIfHas(FGameplayTag
 	{
 		RemoveLooseGameplayTag(InTag);
 	}
+}
+
+bool UArenasAbilitySystemComponent::IsAtMaxLevel() const
+{
+	bool bFound = false;
+	float CurrentLevel = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetLevelAttribute(), bFound);
+	if (bFound)
+	{
+		float MaxLevel = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetMaxLevelAttribute(), bFound);
+		if (bFound)
+		{
+			return FMath::IsNearlyEqual(CurrentLevel, MaxLevel);
+		}
+	}
+	return false;
 }
 
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
@@ -224,6 +241,45 @@ void UArenasAbilitySystemComponent::HandleManaChanged(const FOnAttributeChangeDa
 			
 		}
 	}
+	
+}
+
+void UArenasAbilitySystemComponent::HandleExperienceChanged(const FOnAttributeChangeData& Data)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	if (IsAtMaxLevel()) return;
+
+	if (!AbilitySystemGenerics) return;
+
+	float CurrentExp = Data.NewValue;
+	const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetEXPCurve();
+	if (!ExperienceCurve) return;
+
+	float PrevLevelExp = 0.f;
+	float NextLevelExp = 0.f;
+	float NewLevel = 1;
+	for (auto It = ExperienceCurve->GetKeyHandleIterator(); It; ++It)
+	{
+		float ExpToReachLevel = ExperienceCurve->GetKeyValue(*It);
+		if (CurrentExp < ExpToReachLevel)
+		{
+			NextLevelExp = ExpToReachLevel;
+			break;
+		}
+		PrevLevelExp = ExpToReachLevel;
+		NewLevel = It.GetIndex() + 1;
+	}
+
+	float CurrentLevel = GetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute());
+	float CurrentUpgradePoints = GetNumericAttributeBase(UArenasHeroAttributeSet::GetUpgradePointsAttribute());
+	float LevelUpgraded = NewLevel - CurrentLevel;
+	float NewUpgradePoints = CurrentUpgradePoints + LevelUpgraded;
+
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), NewUpgradePoints);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute(), NewLevel);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), PrevLevelExp);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), NextLevelExp);
 	
 }
 
