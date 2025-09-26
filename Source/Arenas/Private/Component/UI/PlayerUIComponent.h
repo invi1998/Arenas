@@ -26,6 +26,7 @@ public:
 
 	void OnExpChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxExpChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnPrevExpChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 
 	void OnStrengthChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnIntelligenceChanged(const FOnAttributeChangeData& OnAttributeChangeData);
@@ -36,6 +37,7 @@ public:
 
 private:
 	float Exp = 0.f;
+	float StartExp = 0.f;
 	float MaxExp = 0.f;
 
 	float GetCurrentHealthRegenNumber() const;

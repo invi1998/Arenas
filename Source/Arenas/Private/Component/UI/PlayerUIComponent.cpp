@@ -12,26 +12,24 @@
 
 void UPlayerUIComponent::OnExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	
 	Exp = OnAttributeChangeData.NewValue;
 	if (MaxExp <= 0.f)
 	{
 		return;
 	}
-	float HealthPercent = UKismetMathLibrary::SafeDivide(Exp, MaxExp);
+	float ExpPercent = UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp);
 	
-	OnExperiencePercentChanged.Broadcast(HealthPercent, Exp, MaxExp);
+	OnExperiencePercentChanged.Broadcast(ExpPercent, Exp, MaxExp);
 }
 
 void UPlayerUIComponent::OnMaxExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	MaxExp = OnAttributeChangeData.NewValue;
-	if (MaxExp <= 0.f)
-	{
-		return;
-	}
-	float HealthPercent = UKismetMathLibrary::SafeDivide(Exp, MaxExp);
-	OnExperiencePercentChanged.Broadcast(HealthPercent, Exp, MaxExp);
+}
+
+void UPlayerUIComponent::OnPrevExpChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	StartExp = OnAttributeChangeData.NewValue;
 }
 
 void UPlayerUIComponent::OnStrengthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -50,16 +48,18 @@ void UPlayerUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemCompon
 
 	bool bFound = false;
 	float CurrentExp = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetExperienceAttribute(), bFound);
+	float CurrentStartExp = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), bFound);
 	float CurrentMaxExp = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), bFound);
 
 	// 初始化当前属性值
 	if (bFound)
 	{
 		Exp = CurrentExp;
+		StartExp = CurrentStartExp;
 		MaxExp = CurrentMaxExp;
 			
 		// 广播当前属性值
-		OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp, MaxExp), Exp, MaxExp);
+		OnExperiencePercentChanged.Broadcast(UKismetMathLibrary::SafeDivide(Exp - StartExp, MaxExp - StartExp), Exp, MaxExp);
 	}
 	else
 	{
@@ -79,7 +79,8 @@ void UPlayerUIComponent::SetAndBoundAttributeDelegate(UArenasAbilitySystemCompon
 	// 绑定属性变化的委托
 	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::OnExpChanged);
 	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute()).AddUObject(this, &ThisClass::OnMaxExpChanged);
-
+	CachedArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute()).AddUObject(this, &ThisClass::OnPrevExpChanged);
+	
 	// 监听 Status_Dead，Status_Stun，Status_Health_Full，Status_Mana_Full，Status_Damaged 状态，来计算并广播当前英雄回血回蓝数值状态
 	CachedArenasASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::OnStatusTagChanged);
 	CachedArenasASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::OnStatusTagChanged);
