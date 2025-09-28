@@ -36,6 +36,17 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Launch")
 	float LaunchStrength_Air = 100.f; // 击飞力度（空中目标）
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat LaunchDamage; // 击飞伤害
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat ComboDamage; // 连招伤害
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat FinalBlowDamage; // 终结一击伤害
+
+	float GetDamageByCurveName(const FName& InCurveName) const;
 	
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);
