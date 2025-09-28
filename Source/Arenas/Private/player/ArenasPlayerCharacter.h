@@ -57,6 +57,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveInputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* UpgradeAbilityLeaderInputAction;	// 升级技能栏
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* GameplayInputMappingContext;
@@ -67,6 +70,10 @@ private:
 	void HandleLookInput(const FInputActionValue& Value);
 	void HandleMoveInput(const FInputActionValue& Value);
 	void HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID);
+	void LearnAbilityLeaderDown(const FInputActionValue& Value);
+	void LearnAbilityLeaderUp(const FInputActionValue& Value);
+
+	bool bIsLearnAbilityLeaderDown = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UPlayerUIComponent* PlayerUIComponent;
@@ -94,3 +101,4 @@ private:
 	void TickCameraLerp(FVector Goal);
 	
 };
+

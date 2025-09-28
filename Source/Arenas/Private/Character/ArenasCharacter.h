@@ -73,6 +73,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& Payload);
 
+protected:
+	void UpgradeAbilityWithInputID(EArenasAbilityInputID AbilityID);
+
 private:
 	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
 	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);

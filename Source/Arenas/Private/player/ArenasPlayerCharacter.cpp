@@ -65,7 +65,9 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleLookInput);
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleMoveInput);
-
+		EnhancedInputComponent->BindAction(UpgradeAbilityLeaderInputAction, ETriggerEvent::Started, this, &AArenasPlayerCharacter::LearnAbilityLeaderDown);
+		EnhancedInputComponent->BindAction(UpgradeAbilityLeaderInputAction, ETriggerEvent::Completed, this, &AArenasPlayerCharacter::LearnAbilityLeaderUp);
+		
 		// ability
 		for (const TPair<EArenasAbilityInputID, UInputAction*>& AbilityPair : GameplayAbilityInputActions)
 		{
@@ -116,7 +118,15 @@ void AArenasPlayerCharacter::HandleMoveInput(const FInputActionValue& Value)
 void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID)
 {
 	// 因为技能输入可能是按下就触发，也可能是按下后松开触发，所以这里通过检查bPressed来区别这两种情况
-	if (bool bPressed = Value.Get<bool>())
+	bool bPressed = Value.Get<bool>();
+	if (bPressed && bIsLearnAbilityLeaderDown)
+	{
+		// 如果当前正在升级技能，则不响应技能释放
+		UpgradeAbilityWithInputID(AbilityID);
+		return;
+	}
+	
+	if (bPressed)
 	{
 		// 执行本地技能触发(按下)
 		GetAbilitySystemComponent()->AbilityLocalInputPressed(static_cast<int32>(AbilityID));
@@ -135,6 +145,16 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 		Server_SendGameplayEventToSelf(ArenasGameplayTags::Ability_BasicAttack_Pressed, FGameplayEventData());
 	}
 	
+}
+
+void AArenasPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& Value)
+{
+	bIsLearnAbilityLeaderDown = true;
+}
+
+void AArenasPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& Value)
+{
+	bIsLearnAbilityLeaderDown = false;
 }
 
 void AArenasPlayerCharacter::OnDeath()

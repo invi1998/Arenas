@@ -19,6 +19,8 @@ class ARENAS_API UArenasGameplayAbility : public UGameplayAbility
 public:
 	UArenasGameplayAbility();
 
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UGameplayEffect> DefaultDamageEffect;	// 默认伤害GameplayEffect

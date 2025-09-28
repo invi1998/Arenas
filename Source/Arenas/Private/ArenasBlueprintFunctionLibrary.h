@@ -43,4 +43,6 @@ public:
 
 	static bool IsHeroActor(AActor* InActor);
 	static bool IsAlive(AActor* InActor);
+
+	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& InAbilitySpec);
 };

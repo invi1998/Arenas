@@ -139,3 +139,8 @@ bool UArenasBlueprintFunctionLibrary::IsAlive(AActor* InActor)
 	}
 	return false;
 }
+
+bool UArenasBlueprintFunctionLibrary::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& InAbilitySpec)
+{
+	return InAbilitySpec.Level >= 4;	// 假设最大等级为4
+}

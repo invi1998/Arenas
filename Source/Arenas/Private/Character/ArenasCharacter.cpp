@@ -159,6 +159,14 @@ bool AArenasCharacter::Server_SendGameplayEventToSelf_Validate(const FGameplayTa
 	return true;
 }
 
+void AArenasCharacter::UpgradeAbilityWithInputID(EArenasAbilityInputID AbilityID)
+{
+	if (ArenasAbilitySystemComponent)
+	{
+		ArenasAbilitySystemComponent->Server_UpgradeAbilityWithInputID(AbilityID);
+	}
+}
+
 void AArenasCharacter::DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount)
 {
 	if (NewCount != 0)

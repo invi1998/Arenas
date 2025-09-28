@@ -31,6 +31,12 @@ public:
 
 	bool IsAtMaxLevel() const;
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpgradeAbilityWithInputID(EArenasAbilityInputID AbilityID);
+
+	UFUNCTION(Client, Reliable)
+	void Client_AbilityUpgradeSuccess(FGameplayAbilitySpecHandle AbilitySpecHandle, int32 NewAbilityLevel);
+
 private:
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();

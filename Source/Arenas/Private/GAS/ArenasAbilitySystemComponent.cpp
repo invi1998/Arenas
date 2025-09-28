@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasAttributeSet.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "ArenasHeroAttributeSet.h"
 #include "GameplayEffectExtension.h"
@@ -110,6 +111,40 @@ bool UArenasAbilitySystemComponent::IsAtMaxLevel() const
 		}
 	}
 	return false;
+}
+
+void UArenasAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Implementation(EArenasAbilityInputID AbilityID)
+{
+	bool bFound = false;
+	float UpgradePoints = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), bFound);
+	
+	if (bFound && UpgradePoints >= 1.f)
+	{
+		if (FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromInputID(static_cast<int32>(AbilityID)))
+		{
+			// 如果技能已经达到最大等级，则不能再升级
+			if (UArenasBlueprintFunctionLibrary::IsAbilityAtMaxLevel(*AbilitySpec)) return;
+			
+			SetNumericAttributeBase(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), UpgradePoints - 1.f);
+			AbilitySpec->Level += 1;
+			// 标记AbilitySpec为已更改，以便在网络上同步
+			MarkAbilitySpecDirty(*AbilitySpec);
+		}
+	}
+}
+
+bool UArenasAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Validate(EArenasAbilityInputID AbilityID)
+{
+	return true;
+}
+
+void UArenasAbilitySystemComponent::Client_AbilityUpgradeSuccess_Implementation(FGameplayAbilitySpecHandle AbilitySpecHandle, int32 NewAbilityLevel)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle))
+	{
+		AbilitySpec->Level = NewAbilityLevel;
+		AbilitySpecDirtiedCallbacks.Broadcast(*AbilitySpec);
+	}
 }
 
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
