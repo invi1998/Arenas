@@ -8,6 +8,8 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "Engine/OverlapResult.h"
+#include "GameFramework/Character.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasHeroAttributeSet.h"
 
 UGAP_Dead::UGAP_Dead()
@@ -58,7 +60,7 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 		// 对于奖励发放，此处我们通过GE来实现，而非直接修改角色属性集，因为在某些情况下，当我们尝试奖励击杀者时，击杀者可能已经死亡
 		// 这种情况下，我们不应该发送任何奖励，GE可以很容易的阻止这种情况的发生
-
+		
 		if (Killer)
 		{
 			float KillerExpReward = TotalExpReward * KillerRewardPercent;
@@ -74,6 +76,27 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 				GetCurrentActivationInfo(),
 				EffectSpecHandle,
 				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Killer));
+
+			// 给击杀者执行金币获取特效 和 敌方死亡金币掉落特效（GameplayCue）
+			if (UArenasAbilitySystemComponent* KillerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(Killer))
+			{
+				if (ACharacter* SelfOwnerCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+				{
+					FGameplayCueParameters CueParameters;
+					CueParameters.Location = SelfOwnerCharacter->GetMesh()->GetSocketLocation("head"); // 敌方死亡金币掉落特效需要从头部骨骼位置掉落
+					KillerASC->ExecuteGameplayCue(GetDropCoinGameplayCueTag(), CueParameters);
+				}
+				
+				// 金币获取特效需要附着在击杀者头部骨骼上，所以这里需要传入击杀者Character的MeshComponent
+				if (ACharacter* KillerCharacter = Cast<ACharacter>(Killer))
+				{
+					FGameplayCueParameters CueParameters;
+					CueParameters.TargetAttachComponent = KillerCharacter->GetMesh();
+					KillerASC->ExecuteGameplayCue(GetGetCoinGameplayCueTag(), CueParameters);
+				}
+				
+			}
+			
 		}
 		
 		float TargetExpReward = TotalExpReward * (1.f - KillerRewardPercent) / RewardTargets.Num();
@@ -87,6 +110,16 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 		K2_EndAbility();
 	}
+}
+
+FGameplayTag UGAP_Dead::GetDropCoinGameplayCueTag()
+{
+	return FGameplayTag::RequestGameplayTag("GameplayCue.DropCoin");
+}
+
+FGameplayTag UGAP_Dead::GetGetCoinGameplayCueTag()
+{
+	return FGameplayTag::RequestGameplayTag("GameplayCue.GetCoin");
 }
 
 TArray<AActor*> UGAP_Dead::GetRewardTargets() const

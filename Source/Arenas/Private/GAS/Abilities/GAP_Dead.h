@@ -19,6 +19,9 @@ public:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	static FGameplayTag GetDropCoinGameplayCueTag();
+	static FGameplayTag GetGetCoinGameplayCueTag();
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Reward")
 	float RewardRange = 1000.f; // 奖励范围
@@ -42,6 +45,5 @@ private:
 	TSubclassOf<UGameplayEffect> RewardEffectClass; // 奖励效果类
 	
 	TArray<AActor*> GetRewardTargets() const;
-	
 	
 };
