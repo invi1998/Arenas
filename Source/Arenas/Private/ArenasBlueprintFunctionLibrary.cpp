@@ -80,18 +80,53 @@ float UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(cons
 	return 0.f;
 }
 
-float UArenasBlueprintFunctionLibrary::GetStaticCostFromAbility(const UGameplayAbility* InAbility)
+float UArenasBlueprintFunctionLibrary::GetAbilityManaCost(const UGameplayAbility* InAbility, const UArenasAbilitySystemComponent* InArenasASC, float AbilityLevel)
 {
-	if (!InAbility) return 0.f;
+	float ManaCost = 0.f;
+	if (!InAbility || !InArenasASC) return ManaCost;
 	if (const UGameplayEffect* CostGE = InAbility->GetCostGameplayEffect())
 	{
-		if (CostGE->Modifiers.Num() == 0) return 0.f; // 如果没有任何修饰符，说明没有消耗
+		FGameplayEffectSpecHandle EffectSpecHandle = InArenasASC->MakeOutgoingSpec(CostGE->GetClass(), AbilityLevel, InArenasASC->MakeEffectContext());
 		
-		float Cost = 0.f;
-		CostGE->Modifiers[0].ModifierMagnitude.GetStaticMagnitudeIfPossible(1, Cost);
-		return FMath::Abs(Cost);	// 消耗值应该是正数
+		CostGE->Modifiers[0].ModifierMagnitude.AttemptCalculateMagnitude(*EffectSpecHandle.Data.Get(), ManaCost);
+
 	}
-	return 0.f;
+
+	return FMath::Abs(ManaCost);
+	
+}
+
+float UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(const UGameplayAbility* InAbility, const UArenasAbilitySystemComponent* InArenasASC, float AbilityLevel)
+{
+	float Cooldown = 0.f;
+	if (!InAbility || !InArenasASC) return Cooldown;
+	if (const UGameplayEffect* CooldownGE = InAbility->GetCooldownGameplayEffect())
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle = InArenasASC->MakeOutgoingSpec(CooldownGE->GetClass(), AbilityLevel, InArenasASC->MakeEffectContext());
+		CooldownGE->DurationMagnitude.AttemptCalculateMagnitude(*EffectSpecHandle.Data.Get(), Cooldown);
+	}
+	return FMath::Abs(Cooldown);
+}
+
+float UArenasBlueprintFunctionLibrary::GetAbilityCooldownRemainingTime(const UGameplayAbility* InAbility, const UArenasAbilitySystemComponent* InArenasASC)
+{
+	if (!InAbility || !InArenasASC) return 0.f;
+
+	UGameplayEffect* CooldownGE = InAbility->GetCooldownGameplayEffect();
+	if (!CooldownGE) return 0.f;
+
+	FGameplayEffectQuery CooldownQuery;
+	CooldownQuery.EffectDefinition = CooldownGE->GetClass();
+	FJsonSerializableArrayFloat ActiveCooldowns = InArenasASC->GetActiveEffectsTimeRemaining(CooldownQuery);
+	float CooldownRemaining = 0.f;
+	for (float RemainingTime : ActiveCooldowns)
+	{
+		if (RemainingTime > CooldownRemaining)
+		{
+			CooldownRemaining = RemainingTime;
+		}
+	}
+	return CooldownRemaining;
 }
 
 TArray<FString> UArenasBlueprintFunctionLibrary::GetKeyNamesForInputAction(const APlayerController* PlayerController, const UInputAction* InputAction)
@@ -143,4 +178,12 @@ bool UArenasBlueprintFunctionLibrary::IsAlive(AActor* InActor)
 bool UArenasBlueprintFunctionLibrary::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& InAbilitySpec)
 {
 	return InAbilitySpec.Level >= 4;	// 假设最大等级为4
+}
+
+bool UArenasBlueprintFunctionLibrary::CheckAbilityCanCost(const FGameplayAbilitySpec& InAbilitySpec, const UArenasAbilitySystemComponent* InAbilitySystemComponent)
+{
+	const UGameplayAbility* AbilityCDO = InAbilitySpec.Ability;
+	if (!AbilityCDO || !InAbilitySystemComponent) return false;
+
+	return AbilityCDO->CheckCost(InAbilitySpec.Handle, InAbilitySystemComponent->AbilityActorInfo.Get());
 }

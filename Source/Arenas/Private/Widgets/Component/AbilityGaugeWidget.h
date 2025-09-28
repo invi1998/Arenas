@@ -42,6 +42,9 @@ private:
 	FName UpgradePointAvailableMaterialParamName = "UpgradePointAvailable";
 
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName HasEnoughManaMaterialParamName = "HasEnoughMana";	// 是否有足够的法力值施放技能
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	float CooldownUpdateInterval = 0.1f; // 冷却倒计时文本更新间隔
 	
 	UPROPERTY(meta=(BindWidget))
@@ -94,11 +97,12 @@ private:
 	const FGameplayAbilitySpec* GetAbilitySpec();
 
 	bool bIsAbilityLearned = false;
-	bool bIsAbilityAtMaxLevel = false;
-	// bool bCanAffordAbilityCost = true;
+	bool bIsCanUpgrade = true;
+	bool bCanAffordAbilityCost = true;
 
 	void OnAbilitySpecDirtied(const FGameplayAbilitySpec& GameplayAbilitySpec);
 	void UpgradePointUpdated(const FOnAttributeChangeData& OnAttributeChangeData);
+	void ManaUpdated(const FOnAttributeChangeData& OnAttributeChangeData);
 
 	void UpdateCanCastAbilityVisual();
 

@@ -8,6 +8,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+#include "GAS/ArenasAttributeSet.h"
 #include "GAS/ArenasHeroAttributeSet.h"
 
 void UAbilityGaugeWidget::NativeConstruct()
@@ -29,7 +30,8 @@ void UAbilityGaugeWidget::NativeConstruct()
 		OwnerASC->AbilityCommittedCallbacks.AddUObject(this, &UAbilityGaugeWidget::OnAbilityCommited);
 		OwnerASC->AbilitySpecDirtiedCallbacks.AddUObject(this, &UAbilityGaugeWidget::OnAbilitySpecDirtied);
 		OwnerASC->GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetUpgradePointsAttribute()).AddUObject(this, &UAbilityGaugeWidget::UpgradePointUpdated);
-
+		OwnerASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UAbilityGaugeWidget::ManaUpdated);
+		
 		bool bFound = false;
 		float UpgradePoints = OwnerASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetUpgradePointsAttribute(), bFound);
 		if (bFound)
@@ -73,13 +75,13 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	if (AbilityCDO && CostText && CooldownDurationText && LevelImage)
 	{
-		float StaticCooldown = UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(AbilityCDO);
-		float StaticCost = UArenasBlueprintFunctionLibrary::GetStaticCostFromAbility(AbilityCDO);
-
-		CooldownDurationText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCooldown)));
-		CostText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), StaticCost)));
-
 		const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec();
+		float Cooldown = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
+		float ManaCost = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
+
+		CooldownDurationText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Cooldown)));
+		CostText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), ManaCost)));
+		
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(LevelMaterialParamName, AbilitySpec->Level);
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(MaxLevelMaterialParamName, 4); // 假设最大等级为4
 		
@@ -160,19 +162,35 @@ void UAbilityGaugeWidget::OnAbilitySpecDirtied(const FGameplayAbilitySpec& Gamep
 
 void UAbilityGaugeWidget::UpgradePointUpdated(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	bool HasUpgradePoint = OnAttributeChangeData.NewValue > 0;
+	bIsCanUpgrade = OnAttributeChangeData.NewValue > 0;
 	if (const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec())
 	{
 		if (UArenasBlueprintFunctionLibrary::IsAbilityAtMaxLevel(*AbilitySpec))
 		{
-			Icon->GetDynamicMaterial()->SetScalarParameterValue(UpgradePointAvailableMaterialParamName, 0);
-			return;
+			bIsCanUpgrade = false;
 		}
 	}
-	Icon->GetDynamicMaterial()->SetScalarParameterValue(UpgradePointAvailableMaterialParamName, HasUpgradePoint ? 1.f : 0.f);
+
+	UpdateCanCastAbilityVisual();
+	
+}
+
+void UAbilityGaugeWidget::ManaUpdated(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec();
+	if (!AbilitySpec || !OwnerAbilitySystemComponent) return;
+	bCanAffordAbilityCost = UArenasBlueprintFunctionLibrary::CheckAbilityCanCost(*AbilitySpec, OwnerAbilitySystemComponent);
+	
+	Icon->GetDynamicMaterial()->SetScalarParameterValue(HasEnoughManaMaterialParamName, bCanAffordAbilityCost ? 1.f : 0.f);
+
 }
 
 void UAbilityGaugeWidget::UpdateCanCastAbilityVisual()
 {
+	const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec();
+	if (!AbilitySpec || !OwnerAbilitySystemComponent) return;
+	
 	Icon->GetDynamicMaterial()->SetScalarParameterValue(CanCastAbilityMaterialParamName, bIsAbilityLearned ? 1.f : 0.f);
+	Icon->GetDynamicMaterial()->SetScalarParameterValue(UpgradePointAvailableMaterialParamName, bIsCanUpgrade ? 1.f : 0.f);
+	
 }
