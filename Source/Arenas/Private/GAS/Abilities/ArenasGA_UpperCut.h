@@ -45,8 +45,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FScalableFloat FinalBlowDamage; // 终结一击伤害
-
-	float GetDamageByCurveName(const FName& InCurveName) const;
 	
 	UFUNCTION()
 	void OnUpperCutLaunch(FGameplayEventData Payload);
