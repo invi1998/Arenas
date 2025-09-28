@@ -79,8 +79,8 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		float Cooldown = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
 		float ManaCost = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
 
-		CooldownDurationText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Cooldown)));
-		CostText->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), ManaCost)));
+		CooldownDurationText->SetText(FText::AsNumber(Cooldown));
+		CostText->SetText(FText::AsNumber(ManaCost, &WholeNumberFormatOptions));
 		
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(LevelMaterialParamName, AbilitySpec->Level);
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(MaxLevelMaterialParamName, 4); // 假设最大等级为4
@@ -156,6 +156,12 @@ void UAbilityGaugeWidget::OnAbilitySpecDirtied(const FGameplayAbilitySpec& Gamep
 		bIsAbilityLearned = GameplayAbilitySpec.Level > 0;
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(LevelMaterialParamName, GameplayAbilitySpec.Level);
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(MaxLevelMaterialParamName, 4); // 假设最大等级为4
+
+		float NewCooldown = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, GameplayAbilitySpec.Level);
+		float NewManaCost = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, GameplayAbilitySpec.Level);
+		CooldownDurationText->SetText(FText::AsNumber(NewCooldown));
+		CostText->SetText(FText::AsNumber(NewManaCost, &WholeNumberFormatOptions));
+
 		UpdateCanCastAbilityVisual();
 	}
 }
