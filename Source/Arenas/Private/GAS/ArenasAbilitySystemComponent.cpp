@@ -129,6 +129,9 @@ void UArenasAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Implementat
 			AbilitySpec->Level += 1;
 			// 标记AbilitySpec为已更改，以便在网络上同步
 			MarkAbilitySpecDirty(*AbilitySpec);
+
+			// 通知客户端升级成功
+			Client_AbilityUpgradeSuccess(AbilitySpec->Handle, AbilitySpec->Level);
 		}
 	}
 }

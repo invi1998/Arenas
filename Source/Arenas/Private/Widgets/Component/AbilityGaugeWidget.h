@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
 #include "Types/ArenaStructTypes.h"
 #include "AbilityGaugeWidget.generated.h"
 
+class UArenasAbilitySystemComponent;
+struct FGameplayAbilitySpec;
 class UTextBlock;
 class UImage;
 /**
@@ -33,10 +36,25 @@ private:
 	FName CooldownMaterialParamName = "Percent";
 
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName CanCastAbilityMaterialParamName = "CanCast";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName UpgradePointAvailableMaterialParamName = "UpgradePointAvailable";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	float CooldownUpdateInterval = 0.1f; // 冷却倒计时文本更新间隔
 	
 	UPROPERTY(meta=(BindWidget))
 	UImage* Icon;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* LevelImage;		// 等级图标
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName LevelMaterialParamName = "Level";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName MaxLevelMaterialParamName = "MaxLevel";
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* CooldownCountdownText;	// 冷却倒计时文本
@@ -68,5 +86,21 @@ private:
 	float CachedCooldownTimeRemaining = 0.f;
 	FTimerHandle CooldownTimerHandle;
 	FTimerHandle CooldownUpdateTimerHandle;	// 用于更新倒计时文本(每0.1秒更新一次)
+
+	UPROPERTY()
+	const UArenasAbilitySystemComponent* OwnerAbilitySystemComponent;
+	const FGameplayAbilitySpec* CachedAbilitySpec;
+
+	const FGameplayAbilitySpec* GetAbilitySpec();
+
+	bool bIsAbilityLearned = false;
+	bool bIsAbilityAtMaxLevel = false;
+	// bool bCanAffordAbilityCost = true;
+
+	void OnAbilitySpecDirtied(const FGameplayAbilitySpec& GameplayAbilitySpec);
+	void UpgradePointUpdated(const FOnAttributeChangeData& OnAttributeChangeData);
+
+	void UpdateCanCastAbilityVisual();
+
 	
 };
