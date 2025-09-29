@@ -194,14 +194,18 @@ void AArenasPlayerCharacter::OnUnStun()
 
 void AArenasPlayerCharacter::OnAimStateChanged(bool bNewAiming)
 {
-	FVector Goal = bNewAiming ? CameraAimLocationOffset : FVector::ZeroVector;
-	LerpCameraToLocalOffsetLocation(Goal);
+	if (IsLocallyControlledByPlayer())
+	{
+		FVector Goal = bNewAiming ? CameraAimLocationOffset : FVector::ZeroVector;
+		LerpCameraToLocalOffsetLocation(Goal);
+	}
+	
 }
 
 void AArenasPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)
 {
 	GetWorldTimerManager().ClearTimer(CameraLerpTimerHandle);
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
+	CameraLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
 }
 
 void AArenasPlayerCharacter::TickCameraLerp(FVector Goal)
@@ -218,7 +222,7 @@ void AArenasPlayerCharacter::TickCameraLerp(FVector Goal)
 	FVector NewLocation = FMath::Lerp(CurrentLocation, Goal, LerpAlpha);
 	FollowCamera->SetRelativeLocation(NewLocation);
 
-	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
+	CameraLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &AArenasPlayerCharacter::TickCameraLerp, Goal));
 	
 }
 
