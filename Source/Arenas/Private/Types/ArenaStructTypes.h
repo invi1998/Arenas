@@ -50,6 +50,8 @@ struct FGenericDamageEffectData
 {
 	GENERATED_BODY()
 
+	FGenericDamageEffectData();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> DamageEffect;
 
@@ -63,6 +65,8 @@ USTRUCT(BlueprintType)
 struct FAbilityWidgetData : public FTableRowBase
 {
 	GENERATED_BODY()
+
+	FAbilityWidgetData();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayAbility> AbilityClass;
@@ -86,41 +90,43 @@ struct FHeroBaseStats : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	FHeroBaseStats();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AArenasPlayerCharacter> HeroClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseMaxHealth = 0.f;
+	float BaseMaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseMaxMana = 0.f;
+	float BaseMaxMana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseAttackDamage = 0.f;
+	float BaseAttackDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseArmor = 0.f;
+	float BaseArmor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseMoveSpeed = 0.f;
+	float BaseMoveSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Strength = 0;
+	float Strength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Intelligence = 0;
+	float Intelligence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float StrengthGrowthRate = 0.f;
+	float StrengthGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float IntelligenceGrowthRate = 0.f;
+	float IntelligenceGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ExpGrowthRate = 1.2f;
+	float ExpGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 StartingGold = 500;
+	int32 StartingGold;
 	
 };
 
