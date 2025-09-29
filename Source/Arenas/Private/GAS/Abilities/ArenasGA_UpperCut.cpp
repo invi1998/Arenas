@@ -8,6 +8,7 @@
 #include "ArenasGA_Combo.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "ProfilingDebugging/CookStats.h"
 
 UArenasGA_UpperCut::UArenasGA_UpperCut()
 {
@@ -76,23 +77,18 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 {
 	if (K2_HasAuthority())
 	{
-		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
-			Payload.TargetData,
-			ETeamAttitude::Hostile,
-			TargetSweepSphereRadius,
-			bShowSweepDebug,
-			true
-		);
+		int32 HitResultsCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(Payload.TargetData);
 
 		// 自己向上击飞
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Self);
 
-		for (FHitResult Hit : HitResults)
+		for (int32 i = 0; i < HitResultsCount; i++)
 		{
+			FHitResult Hit = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Payload.TargetData, i);
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
 			// 添加SetByCaller参数
-			float LaunchedDamage = LaunchDamage.GetValueAtLevel(GetAbilityLevel());
+			float LaunchedDamage = LaunchDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, LaunchedDamage);
 
 			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
@@ -192,24 +188,19 @@ void UArenasGA_UpperCut::HandleComboDamageEvent(FGameplayEventData Payload)
 {
 	if (K2_HasAuthority())
 	{
-		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
-			Payload.TargetData,
-			ETeamAttitude::Hostile,
-			TargetSweepSphereRadius,
-			bShowSweepDebug,
-			true
-		);
+		int32 HitResultsCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(Payload.TargetData);
 
 		// 自己向上击飞
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * LaunchStrength_Air);
 		int32 ComboIndex = GetCurrentComboIndex();
 		
-		for (FHitResult Hit : HitResults)
+		for (int32 i = 0; i < HitResultsCount; i++)
 		{
+			FHitResult Hit = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Payload.TargetData, i);
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
 			// 添加SetByCaller参数
-			float ComboDamageTemp = ComboDamage.GetValueAtLevel(GetAbilityLevel());
+			float ComboDamageTemp = ComboDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, ComboDamageTemp);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, ComboIndex);
 
@@ -234,20 +225,16 @@ void UArenasGA_UpperCut::HandleUpperCutFinalBlow(FGameplayEventData Payload)
 {
 	if (K2_HasAuthority())
 	{
-		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(
-			Payload.TargetData,
-			ETeamAttitude::Hostile,
-			TargetSweepSphereRadius,
-			bShowSweepDebug,
-			true
-		);
+		int32 HitResultsCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(Payload.TargetData);
 		
-		for (FHitResult Hit : HitResults)
+		for (int32 i = 0; i < HitResultsCount; i++)
 		{
+			FHitResult Hit = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Payload.TargetData, i);
+			
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
 			// 添加SetByCaller参数
-			float FinalBlowDamageTemp = FinalBlowDamage.GetValueAtLevel(GetAbilityLevel());
+			float FinalBlowDamageTemp = FinalBlowDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, FinalBlowDamageTemp);
 			
 			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());

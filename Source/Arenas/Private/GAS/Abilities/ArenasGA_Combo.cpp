@@ -10,6 +10,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
+#include "ProfilingDebugging/CookStats.h"
 
 UArenasGA_Combo::UArenasGA_Combo() : ComboMontage(nullptr)
 {
@@ -139,12 +140,16 @@ void UArenasGA_Combo::OnComboInputPressed(float TimeWaited)
 
 void UArenasGA_Combo::DoDamage(FGameplayEventData Payload)
 {
-	const TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Payload.TargetData, ETeamAttitude::Hostile, TargetSweepSphereRadius, bShowSweepDebug, true);
-
+	int32 HitResultsCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(Payload.TargetData);
+	
+	
 	float CurrentComboIndex = GetCurrentComboIndex();
 	
-	for (const FHitResult& Hit : HitResults)
+	for (int32 i = 0; i < HitResultsCount; i++)
 	{
+
+		FHitResult Hit = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Payload.TargetData, i);
+		
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
 		// 添加SetByCaller参数

@@ -73,7 +73,7 @@ void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHa
 		{
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 
-			float DamageValue = BlastDamage.GetValueAtLevel(GetAbilityLevel());
+			float DamageValue = BlastDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, DamageValue);
 
 			ApplyGameplayEffectSpecToTarget(
