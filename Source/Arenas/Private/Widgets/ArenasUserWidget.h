@@ -28,6 +28,8 @@ public:
 	void InitOverheadWidget(AActor* InActor);
 	void ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities);
 
+	void ToggleShopPopup();
+
 protected:
 	// NativeOnInitialized 先执行，NativeConstruct 后执行
 	virtual void NativeOnInitialized() override;
@@ -54,5 +56,10 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	UShopWidget* ShopWidget;
+
+	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
+	UWidgetAnimation* ShopPopupAnim;
+	
+	void PlayShopPopupAnim(bool bPlayForward);
 	
 };

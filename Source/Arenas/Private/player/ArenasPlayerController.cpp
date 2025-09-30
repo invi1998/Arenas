@@ -4,6 +4,8 @@
 #include "ArenasPlayerController.h"
 
 #include "ArenasPlayerCharacter.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/ArenasUserWidget.h"
@@ -49,6 +51,22 @@ FGenericTeamId AArenasPlayerController::GetGenericTeamId() const
 	return TeamID;
 }
 
+void AArenasPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+	{
+		InputSubsystem->RemoveMappingContext(UIInputMappingContext);
+		InputSubsystem->AddMappingContext(UIInputMappingContext, 1);
+	}
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(ShopToggleInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerController::OnShopToggleActionTriggered);
+	}
+}
+
 void AArenasPlayerController::SpawnPlayerUIWidget()
 {
 	if (!IsLocalPlayerController()) return;
@@ -60,4 +78,12 @@ void AArenasPlayerController::SpawnPlayerUIWidget()
 		PlayerUIWidget->ConfigureAbilities(ArenasPlayerCharacter->GetAbilities());
 	}
 	
+}
+
+void AArenasPlayerController::OnShopToggleActionTriggered()
+{
+	if (PlayerUIWidget)
+	{
+		PlayerUIWidget->ToggleShopPopup();
+	}
 }

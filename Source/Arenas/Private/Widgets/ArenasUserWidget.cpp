@@ -8,6 +8,7 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "Component/AbilityListView.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+#include "Shop/ShopWidget.h"
 
 void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
 {
@@ -41,6 +42,23 @@ void UArenasUserWidget::ConfigureAbilities(const TMap<EArenasAbilityInputID, TSu
 	}
 }
 
+void UArenasUserWidget::ToggleShopPopup()
+{
+	if (ShopWidget)
+	{
+		if (ShopWidget->GetVisibility() == ESlateVisibility::HitTestInvisible)
+		{
+			ShopWidget->SetVisibility(ESlateVisibility::Visible);
+			PlayShopPopupAnim(true);
+		}
+		else
+		{
+			ShopWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+			PlayShopPopupAnim(false);
+		}
+	}
+}
+
 void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -71,6 +89,21 @@ void UArenasUserWidget::NativeConstruct()
 			{
 				PlayerUIComponent->SetAndBoundAttributeDelegate(CachedArenasASC);
 			}
+		}
+	}
+}
+
+void UArenasUserWidget::PlayShopPopupAnim(bool bPlayForward)
+{
+	if (ShopPopupAnim)
+	{
+		if (bPlayForward)
+		{
+			PlayAnimationForward(ShopPopupAnim);
+		}
+		else
+		{
+			PlayAnimationReverse(ShopPopupAnim);
 		}
 	}
 }

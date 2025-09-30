@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "ArenasPlayerController.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
 class UArenasUserWidget;
 class AArenasPlayerCharacter;
 /**
@@ -27,6 +29,7 @@ public:
 
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual void SetupInputComponent() override;
 
 private:
 	UPROPERTY()
@@ -42,5 +45,14 @@ private:
 
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamID;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* UIInputMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ShopToggleInputAction;
+
+	UFUNCTION()
+	void OnShopToggleActionTriggered();
 	
 };
