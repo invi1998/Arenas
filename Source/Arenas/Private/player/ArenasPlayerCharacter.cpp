@@ -15,7 +15,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/ArenasHeroAttributeSet.h"
-#include "GAS/ArenasHeroAttributeSet.h"
+#include "Inventory/InventoryComponent.h"
 
 
 // Sets default values
@@ -38,6 +38,8 @@ AArenasPlayerCharacter::AArenasPlayerCharacter()
 	PlayerUIComponent = CreateDefaultSubobject<UPlayerUIComponent>(TEXT("PlayerUIComponent"));
 
 	HeroAttributeSet = CreateDefaultSubobject<UArenasHeroAttributeSet>(TEXT("HeroAttributeSet"));
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	
 }
 

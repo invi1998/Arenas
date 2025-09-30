@@ -3,15 +3,41 @@
 
 #include "InventoryComponent.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
+#include "PA_ShopItem.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
+#include "GAS/ArenasHeroAttributeSet.h"
+
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
+}
+
+void UInventoryComponent::TryPurchase(const UPA_ShopItem* ItemToPurchase)
+{
+	if (!OwnerArenasASC) return;
+
+	Server_Purchase(ItemToPurchase);
+	
+}
+
+float UInventoryComponent::GetGold() const
+{
+	if (OwnerArenasASC)
+	{
+		bool bFound = false;
+		float Gold = OwnerArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetGoldAttribute(), bFound);
+		if (bFound)
+		{
+			return Gold;
+		}
+	}
+
+	return 0.f;
 }
 
 
@@ -21,16 +47,27 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	OwnerArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(GetOwner());
 	
 }
 
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                        FActorComponentTickFunction* ThisTickFunction)
+bool UInventoryComponent::Server_Purchase_Validate(const UPA_ShopItem* ItemToPurchase)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	return true;
 }
+
+void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* ItemToPurchase)
+{
+	if (!ItemToPurchase) return;
+
+	if (GetGold() < ItemToPurchase->GetPrice())
+	{
+		return;
+	}
+
+	OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
+	
+	
+}
+
 

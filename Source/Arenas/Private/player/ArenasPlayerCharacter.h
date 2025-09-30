@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasPlayerCharacter.generated.h"
 
+class UInventoryComponent;
 class UArenasHeroAttributeSet;
 class UPlayerUIComponent;
 struct FInputActionValue;
@@ -99,6 +100,10 @@ private:
 	// 将相机位置差值到指定位置
 	void LerpCameraToLocalOffsetLocation(const FVector& Goal);
 	void TickCameraLerp(FVector Goal);
+
+
+	UPROPERTY()
+	UInventoryComponent* InventoryComponent;
 	
 };
 
