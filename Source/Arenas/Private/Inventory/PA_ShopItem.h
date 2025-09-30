@@ -73,7 +73,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	FText ItemDescription;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	// 物品效果的富文本描述，支持多行文本，meta = (MultiLine = true)
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem", meta = (MultiLine = true))
 	FText EffectRichText; // 物品效果的富文本描述
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
@@ -82,13 +83,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	FText ActiveAbilityCostRichText; // 主动技能的消耗富文本描述
 
-	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem", meta = (MultiLine = true))
 	FText ActiveAbilityRichText; // 主动技能的富文本描述
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	FText PassiveAbilityName; // 被动技能名称
 
-	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem", meta = (MultiLine = true))
 	FText PassiveAbilityRichText; // 被动技能的富文本描述
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
