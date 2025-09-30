@@ -50,11 +50,18 @@ void UArenasUserWidget::ToggleShopPopup()
 		{
 			ShopWidget->SetVisibility(ESlateVisibility::Visible);
 			PlayShopPopupAnim(true);
+			SetOwningPawnInputEnabled(false);
+			SetShowMouseCursor(true);
+			SetFocusToGameAndUI();
+			ShopWidget->SetFocus();
 		}
 		else
 		{
 			ShopWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 			PlayShopPopupAnim(false);
+			SetOwningPawnInputEnabled(true);
+			SetShowMouseCursor(false);
+			SetFocusToGameOnly();
 		}
 	}
 }
@@ -107,4 +114,36 @@ void UArenasUserWidget::PlayShopPopupAnim(bool bPlayForward)
 		}
 	}
 }
+
+void UArenasUserWidget::SetOwningPawnInputEnabled(bool bEnabled)
+{
+	if (bEnabled)
+	{
+		GetOwningPlayerPawn()->EnableInput(GetOwningPlayer());
+	}
+	else
+	{
+		GetOwningPlayerPawn()->DisableInput(GetOwningPlayer());
+	}
+}
+
+void UArenasUserWidget::SetShowMouseCursor(bool bShow)
+{
+	GetOwningPlayer()->bShowMouseCursor = bShow;
+}
+
+void UArenasUserWidget::SetFocusToGameAndUI()
+{
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetHideCursorDuringCapture(false);
+	GetOwningPlayer()->SetInputMode(InputMode);
+}
+
+void UArenasUserWidget::SetFocusToGameOnly()
+{
+	FInputModeGameOnly InputMode;
+	GetOwningPlayer()->SetInputMode(InputMode);
+}
+
 

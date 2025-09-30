@@ -61,5 +61,9 @@ private:
 	UWidgetAnimation* ShopPopupAnim;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
+	void SetOwningPawnInputEnabled(bool bEnabled);
+	void SetShowMouseCursor(bool bShow);
+	void SetFocusToGameAndUI();
+	void SetFocusToGameOnly();
 	
 };
