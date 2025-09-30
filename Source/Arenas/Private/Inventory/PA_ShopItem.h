@@ -43,6 +43,12 @@ public:
 	UTexture2D* GetIcon() const;
 	FText GetItemName() const { return ItemName; }
 	FText GetDescription() const { return ItemDescription; }
+	FText GetEffectRichText() const { return EffectRichText; }
+	FText GetActiveAbilityName() const { return ActiveAbilityName; }
+	FText GetActiveAbilityCostRichText() const { return ActiveAbilityCostRichText; }
+	FText GetActiveAbilityRichText() const { return ActiveAbilityRichText; }
+	FText GetPassiveAbilityName() const { return PassiveAbilityName; }
+	FText GetPassiveAbilityRichText() const { return PassiveAbilityRichText; }
 	float GetPrice() const { return Price; }
 	float GetSellPrice() const { return Price * 0.5f; } // 出售价格为购买价格的一半
 	bool IsConsumable() const { return bIsConsumable; }
@@ -66,6 +72,24 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	FText ItemDescription;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText EffectRichText; // 物品效果的富文本描述
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText ActiveAbilityName; // 主动技能名称
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText ActiveAbilityCostRichText; // 主动技能的消耗富文本描述
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText ActiveAbilityRichText; // 主动技能的富文本描述
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText PassiveAbilityName; // 被动技能名称
+
+	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
+	FText PassiveAbilityRichText; // 被动技能的富文本描述
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	bool bIsConsumable = false;		// 是否是消耗品
