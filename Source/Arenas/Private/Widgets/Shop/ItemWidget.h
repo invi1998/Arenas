@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ItemWidget.generated.h"
 
+class UPA_ShopItem;
+class UItemToolTip;
 class UImage;
 /**
  * 
@@ -22,6 +24,9 @@ public:
 	
 	virtual void SetIcon(UTexture2D* IconTexture);
 
+protected:
+	UItemToolTip* SetTooltipWidget(const UPA_ShopItem* InShopItem);
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	UImage* ImageIcon;
@@ -29,6 +34,7 @@ private:
 	virtual void RightButtonClicked();
 	virtual void LeftButtonClicked();
 
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Tooltip")
+	TSubclassOf<UItemToolTip> ItemTooltipWidgetClass;
 	
 };

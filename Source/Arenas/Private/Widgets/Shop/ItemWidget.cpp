@@ -3,6 +3,7 @@
 
 #include "ItemWidget.h"
 
+#include "ItemToolTip.h"
 #include "Components/Image.h"
 
 void UItemWidget::NativeConstruct()
@@ -60,6 +61,27 @@ FReply UItemWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPo
 void UItemWidget::SetIcon(UTexture2D* IconTexture)
 {
 	ImageIcon->SetBrushFromTexture(IconTexture);
+}
+
+UItemToolTip* UItemWidget::SetTooltipWidget(const UPA_ShopItem* InShopItem)
+{
+	if (!InShopItem)
+	{
+		return nullptr;
+	}
+
+	if (GetOwningPlayer() && ItemTooltipWidgetClass)
+	{
+		UItemToolTip* ToolTip = CreateWidget<UItemToolTip>(GetOwningPlayer(), ItemTooltipWidgetClass);
+		if (ToolTip)
+		{
+			ToolTip->SetItem(InShopItem);
+			SetToolTip(ToolTip);
+		}
+		return ToolTip;
+	}
+
+	return nullptr;
 }
 
 void UItemWidget::RightButtonClicked()

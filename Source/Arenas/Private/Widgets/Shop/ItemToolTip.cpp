@@ -15,7 +15,17 @@ void UItemToolTip::SetItem(const UPA_ShopItem* Item)
 	ItemNameText->SetText(Item->GetItemName());
 	DescriptionText->SetText(Item->GetDescription());
 	PriceText->SetText(FText::AsNumber(static_cast<int>(Item->GetPrice())));
-	EffectsRichText->SetText(Item->GetEffectRichText());
+
+	if (FText EffectText = Item->GetEffectRichText(); !EffectText.IsEmptyOrWhitespace())
+	{
+		EffectsRichText->SetVisibility(ESlateVisibility::Visible);
+		EffectsRichText->SetText(EffectText);
+	}
+	else
+	{
+		EffectsRichText->SetVisibility(ESlateVisibility::Collapsed);
+		EffectsRichText->SetText(FText::GetEmpty());
+	}
 
 	if (FText ActiveAbilityName = Item->GetActiveAbilityName(); !ActiveAbilityName.IsEmptyOrWhitespace())
 	{
