@@ -3,6 +3,9 @@
 
 #include "InventoryItem.h"
 
+#include "PA_ShopItem.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
+
 FInventoryItemHandle::FInventoryItemHandle()
 	: HandleID(GetInvalidID())
 {
@@ -61,4 +64,35 @@ void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInven
 {
 	Handle = InHandle;
 	ShopItem = InShopItem;
+}
+
+void UInventoryItem::ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
+{
+	if (!GetShopItem() || !OwningArenasASC) return;
+
+	// 确保我们只在服务器上应用GAS修改
+	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
+
+	if (TSubclassOf<UGameplayEffect> EquippedEquippedEffect = GetShopItem()->GetEquippedEffect())
+	{
+		AppliedEquippedEffectHandle = OwningArenasASC->BP_ApplyGameplayEffectToSelf(EquippedEquippedEffect, 1, OwningArenasASC->MakeEffectContext());
+		
+	}
+
+	if (TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility())
+	{
+		// 授予物品对应的能力，但是首先需要检查是否在GAS里已经拥有了该技能
+		const FGameplayAbilitySpec* FoundAbilitySpec = OwningArenasASC->FindAbilitySpecFromClass(GrantedAbility);
+		if (!FoundAbilitySpec)
+		{
+			// 如果没有找到该能力，则授予它
+			GrantedAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
+		}
+		else
+		{
+			GrantedAbilitySpecHandle = FoundAbilitySpec->Handle;
+		}
+		
+	}
+	
 }

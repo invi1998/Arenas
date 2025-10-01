@@ -70,6 +70,9 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 				NewInventoryItem->GetHandle().GetHandleId()));
 
 		Client_ItemAdded(NewHandle, ItemToPurchase);
+
+		// 应用物品的GAS修改
+		NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
 	}
 }
 

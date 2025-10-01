@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "UObject/Object.h"
 #include "InventoryItem.generated.h"
 
@@ -36,6 +38,8 @@
 
 */
 
+struct FActiveGameplayEffectHandle;
+class UArenasAbilitySystemComponent;
 class UPA_ShopItem;
 
 USTRUCT()
@@ -92,6 +96,7 @@ public:
 	const FInventoryItemHandle& GetHandle() const { return Handle; }
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle);
+	void ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
 
 private:
 	FInventoryItemHandle Handle;
@@ -99,7 +104,8 @@ private:
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
 	
-	
+	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;			// 应用的装备效果句柄
+	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;				// 授予的能力规范句柄
 	
 };
 
