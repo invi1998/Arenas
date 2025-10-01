@@ -36,6 +36,8 @@
 
 */
 
+class UPA_ShopItem;
+
 USTRUCT()
 struct FInventoryItemHandle
 {
@@ -85,4 +87,38 @@ UCLASS()
 class ARENAS_API UInventoryItem : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	const FInventoryItemHandle& GetHandle() const { return Handle; }
+	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
+	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle);
+
+private:
+	FInventoryItemHandle Handle;
+	
+	UPROPERTY()
+	const UPA_ShopItem* ShopItem;
+	
+	
+	
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

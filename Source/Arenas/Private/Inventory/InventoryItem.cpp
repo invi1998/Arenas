@@ -56,3 +56,9 @@ uint32 GetTypeHash(const FInventoryItemHandle& Handle)
 {
 	return Handle.GetHandleId();
 }
+
+void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle)
+{
+	Handle = InHandle;
+	ShopItem = InShopItem;
+}
