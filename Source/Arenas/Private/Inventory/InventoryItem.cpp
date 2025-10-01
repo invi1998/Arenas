@@ -60,6 +60,12 @@ uint32 GetTypeHash(const FInventoryItemHandle& Handle)
 	return Handle.GetHandleId();
 }
 
+UInventoryItem::UInventoryItem()
+	: ShopItem(nullptr)
+	, StackCount(1)
+{
+}
+
 void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle)
 {
 	Handle = InHandle;
@@ -95,4 +101,14 @@ void UInventoryItem::ApplyGASModifications(UArenasAbilitySystemComponent* Owning
 		
 	}
 	
+}
+
+bool UInventoryItem::IsValid() const
+{
+	return ShopItem != nullptr && Handle.IsValid();
+}
+
+void UInventoryItem::SetSlot(int InSlotNumber)
+{
+	Slot = InSlotNumber;
 }

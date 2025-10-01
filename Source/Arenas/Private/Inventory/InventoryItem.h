@@ -93,16 +93,24 @@ class ARENAS_API UInventoryItem : public UObject
 	GENERATED_BODY()
 
 public:
+	UInventoryItem();
+	
 	const FInventoryItemHandle& GetHandle() const { return Handle; }
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle);
 	void ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
+	bool IsValid() const;
+	FORCEINLINE int GetStackCount() const { return StackCount; }
+	void SetSlot(int InSlotNumber);
 
 private:
 	FInventoryItemHandle Handle;
 	
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
+
+	int StackCount;
+	int Slot;
 	
 	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;			// 应用的装备效果句柄
 	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;				// 授予的能力规范句柄
