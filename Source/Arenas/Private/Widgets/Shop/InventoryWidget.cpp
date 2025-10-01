@@ -54,7 +54,7 @@ UInventoryItemWidget* UInventoryWidget::GetNextAvailableSlot() const
 {
 	for (UInventoryItemWidget* Widget : InventoryItemsWidgets)
 	{
-		if (Widget && Widget->EmptySlot())
+		if (Widget && Widget->IsEmpty())
 		{
 			return Widget;
 		}

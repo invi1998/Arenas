@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Inventory/InventoryItem.h"
 #include "InventoryWidget.generated.h"
 
 class UInventoryItem;
-struct FInventoryItemHandle;
 class UInventoryComponent;
 class UInventoryItemWidget;
 class UWrapBox;

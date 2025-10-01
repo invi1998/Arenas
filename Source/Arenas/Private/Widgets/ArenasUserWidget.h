@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UInventoryWidget;
 class UShopWidget;
 class UHeroUserWidget;
 class UAbilityListView;
@@ -59,6 +60,9 @@ private:
 
 	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
 	UWidgetAnimation* ShopPopupAnim;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UInventoryWidget* InventoryWidget;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
 	void SetOwningPawnInputEnabled(bool bEnabled);

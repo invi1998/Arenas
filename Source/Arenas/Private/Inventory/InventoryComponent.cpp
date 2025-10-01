@@ -124,6 +124,11 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 		return;
 	}
 
+	if (GetCapacity() <= InventoryItemsMap.Num())
+	{
+		return;
+	}
+
 	OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
 
 	// 购买物品金币扣除成功，发放物品
