@@ -6,6 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidget.generated.h"
 
+class UInventoryItem;
+struct FInventoryItemHandle;
+class UInventoryComponent;
+class UInventoryItemWidget;
+class UWrapBox;
 /**
  * 
  */
@@ -13,4 +18,28 @@ UCLASS()
 class ARENAS_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	virtual void NativeConstruct() override;
+
+private:
+	UPROPERTY(meta=(BindWidget))
+	UWrapBox* ItemListWrapBox;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	TSubclassOf<UInventoryItemWidget> InventoryItemWidgetClass;
+
+	UPROPERTY()
+	UInventoryComponent* OwnerInventoryComponent;
+
+	UPROPERTY()
+	TArray<UInventoryItemWidget*> InventoryItemsWidgets;
+
+	UPROPERTY()
+	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgetsMap;		// 已填充的物品条目小部件映射表
+
+	void ItemAdded(const UInventoryItem* NewInventoryItem);
+
+	UInventoryItemWidget* GetNextAvailableSlot() const;		// 获取下一个可用的物品槽
+	
 };

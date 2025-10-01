@@ -29,12 +29,18 @@ public:
 
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase);
 	float GetGold() const;
+	FORCEINLINE int GetCapacity() const { return Capacity; }
+	void ItemSlotChanged(const FInventoryItemHandle& Handle, int InSlotNumber);
+	UInventoryItem* GetInventoryItemByHandle(const FInventoryItemHandle& Handle) const;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	int Capacity = 6;	// 最大库存容量
+	
 	UPROPERTY()
 	UArenasAbilitySystemComponent* OwnerArenasASC;
 	

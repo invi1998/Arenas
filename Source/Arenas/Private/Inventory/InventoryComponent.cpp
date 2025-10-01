@@ -41,6 +41,20 @@ float UInventoryComponent::GetGold() const
 }
 
 
+void UInventoryComponent::ItemSlotChanged(const FInventoryItemHandle& Handle, int InSlotNumber)
+{
+	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
+	{
+		FoundItem->SetSlot(InSlotNumber);
+	}
+}
+
+UInventoryItem* UInventoryComponent::GetInventoryItemByHandle(const FInventoryItemHandle& Handle) const
+{
+	UInventoryItem* const* FoundItem = InventoryItemsMap.Find(Handle);
+	return FoundItem ? *FoundItem : nullptr;
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {

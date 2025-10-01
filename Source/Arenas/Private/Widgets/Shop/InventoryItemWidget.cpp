@@ -32,7 +32,7 @@ void UInventoryItemWidget::EmptySlot()
 	ManaCostText->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UInventoryItemWidget::SetInventoryItem(UInventoryItem* NewInventoryItem)
+void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryItem)
 {
 	InventoryItem = NewInventoryItem;
 	if (!InventoryItem || !(InventoryItem->IsValid()) || InventoryItem->GetStackCount() <= 0)

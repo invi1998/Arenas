@@ -21,8 +21,9 @@ public:
 	
 	bool IsEmpty() const;
 	void EmptySlot();
-	void SetInventoryItem(UInventoryItem* NewInventoryItem);
+	void SetInventoryItem(const UInventoryItem* NewInventoryItem);
 	FORCEINLINE int GetSlotNumber() const { return SlotNumber; }
+	void SetSlotNumber(int InSlotNumber) { SlotNumber = InSlotNumber; }
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
@@ -41,8 +42,10 @@ private:
 	UTextBlock* ManaCostText;		// 法力消耗文本
 
 	UPROPERTY()
-	UInventoryItem* InventoryItem;	// 库存物品
+	const UInventoryItem* InventoryItem;	// 库存物品
 
+	// 该物品在库存中的槽位编号
+	// 该编号从0开始，到Capacity-1结束
 	int SlotNumber;
 
 	void UpdateStackCountText();

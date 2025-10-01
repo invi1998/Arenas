@@ -110,7 +110,7 @@ private:
 	const UPA_ShopItem* ShopItem;
 
 	int StackCount;
-	int Slot;
+	int Slot;		// 物品栏中的槽位
 	
 	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;			// 应用的装备效果句柄
 	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;				// 授予的能力规范句柄
