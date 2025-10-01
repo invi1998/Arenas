@@ -9,6 +9,78 @@
 /**
  * 库存物品基类
  */
+
+/*
+在这个类中我们需要存储相当多的东西。
+这基本上是我们在物品栏组件中存储的物品之一。
+以及账户，如果我们有的话。
+以及如果他们有一些，如果他们授予了一些能力，那就是能力句柄；以及如果它们正在拥有
+一些效果，则为效果句柄。
+我们需要处理所有这些，或者将所有这些存放在这个库存中。
+这就意味着这个类可能会非常庞大，嗯，包含许多成员。
+并且，通过网络通信来传输这些信息实际上会非常低效。
+所以，我们这里将尝试的另一种方法是不通过发送来进行通信。
+
+我们使用一种特定类型，称为库存原子句柄（inventory atom handle），它将是一个
+用于识别特定物品的唯一标识符。在客户端和服务器端，它们各自用那个特定的 ID 创建自己的特定的句柄副本。
+然后用它来沟通我们在说的是哪一个。
+我们在网络通信中就只需要提供那个句柄。
+
+其实不难发现，这种做法实际上类似于GAS里的游戏能力规范句柄（GameplayAbilitySpecHandle）。
+基本上内部存储的是一个整数，那个句柄变量。
+而且那个句柄每次都会是唯一的。
+然后你只需要通过网络通信传递它。
+然后你传输的基本上只是一个整数。
+就大小而言，这将更高效。
+所以我们将采用类似的方法。
+
+*/
+
+USTRUCT()
+struct FInventoryItemHandle
+{
+	GENERATED_BODY()
+
+public:
+	FInventoryItemHandle();
+
+	// 静态工厂函数，是唯一用来正确创建句柄应该调用的静态方法
+	static FInventoryItemHandle CreateHandle();
+
+	// 返回一个无效的句柄
+	static FInventoryItemHandle InvalidHandle();
+
+	bool IsValid() const;
+	uint32 GetHandleId() const { return HandleID; }
+
+private:
+	// 我们提供一个私有的带参数的构造函数，以确保句柄只能通过静态创建函数来生成 CreateHandle
+	// 同时，该构造函数被声明为 explicit，以防止隐式转换
+	// 例如：FInventoryItemHandle MyHandle = 5; // 错误
+	// 这样做可以防止意外地将整数转换为句柄，从而引发错误
+	// 现在只能通过 FInventoryItemHandle::CreateHandle() 来创建句柄
+	explicit FInventoryItemHandle(uint32 InHandleID);
+	
+	UPROPERTY()
+	uint32 HandleID;
+
+	// 我们的句柄ID需要一个唯一的无符号整形数
+	static uint32 GenerateNextHandleID();
+
+	// 返回一个无效ID
+	static uint32 GetInvalidID();
+	
+};
+
+// 重载比较运算符，以便我们可以直接比较两个 FInventoryItemHandle 实例
+bool operator==(const FInventoryItemHandle& A, const FInventoryItemHandle& B);
+bool operator!=(const FInventoryItemHandle& A, const FInventoryItemHandle& B);
+
+// 为了让 FInventoryItemHandle 能够作为 TMap 或 TSet 的键，我们需要为其定义一个哈希函数
+uint32 GetTypeHash(const FInventoryItemHandle& Handle);
+
+
+
 UCLASS()
 class ARENAS_API UInventoryItem : public UObject
 {
