@@ -42,5 +42,7 @@ private:
 	void ItemStackChanged(const FInventoryItemHandle& InInventoryItemHandle, int NewStackCount);
 
 	UInventoryItemWidget* GetNextAvailableSlot() const;		// 获取下一个可用的物品槽
+
+	void HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget, UInventoryItemWidget* SourceItemWidget);
 	
 };

@@ -36,7 +36,7 @@ public:
 	UTexture2D* GetIconTexture() const;
 
 	FORCEINLINE const UInventoryItem* GetInventoryItem() const { return InventoryItem; }
-	const FInventoryItemHandle& GetInventoryItemHandle() const;
+	FInventoryItemHandle GetInventoryItemHandle() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")

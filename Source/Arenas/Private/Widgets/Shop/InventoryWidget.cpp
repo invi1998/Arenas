@@ -30,6 +30,9 @@ void UInventoryWidget::NativeConstruct()
 					NewItemWidget->SetSlotNumber(i);
 					UWrapBoxSlot* NewSlot = ItemListWrapBox->AddChildToWrapBox(NewItemWidget);
 					InventoryItemsWidgets.Add(NewItemWidget);
+
+					// 订阅物品拖放事件
+					NewItemWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop);
 				}
 			}
 		}
@@ -71,4 +74,29 @@ UInventoryItemWidget* UInventoryWidget::GetNextAvailableSlot() const
 	}
 
 	return nullptr;
+}
+
+void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget, UInventoryItemWidget* SourceItemWidget)
+{
+	const UInventoryItem* SrcInventoryItem = SourceItemWidget->GetInventoryItem();
+	const UInventoryItem* DstInventoryItem = TargetItemWidget->GetInventoryItem();
+
+	TargetItemWidget->SetInventoryItem(SrcInventoryItem);
+	SourceItemWidget->SetInventoryItem(DstInventoryItem);
+
+	PopulatedItemEntryWidgetsMap[TargetItemWidget->GetInventoryItem()->GetHandle()] = TargetItemWidget;
+	if (OwnerInventoryComponent)
+	{
+		OwnerInventoryComponent->ItemSlotChanged(TargetItemWidget->GetInventoryItem()->GetHandle(), TargetItemWidget->GetSlotNumber());
+	}
+
+	if (!SourceItemWidget->IsEmpty())
+	{
+		PopulatedItemEntryWidgetsMap[SourceItemWidget->GetInventoryItem()->GetHandle()] = SourceItemWidget;
+		if (OwnerInventoryComponent)
+		{
+			OwnerInventoryComponent->ItemSlotChanged(SourceItemWidget->GetInventoryItem()->GetHandle(), SourceItemWidget->GetSlotNumber());
+		}
+	}
+	
 }

@@ -82,7 +82,7 @@ UTexture2D* UInventoryItemWidget::GetIconTexture() const
 	return nullptr;
 }
 
-const FInventoryItemHandle& UInventoryItemWidget::GetInventoryItemHandle() const
+FInventoryItemHandle UInventoryItemWidget::GetInventoryItemHandle() const
 {
 	return !IsEmpty() ? InventoryItem->GetHandle() : FInventoryItemHandle::InvalidHandle();
 }
