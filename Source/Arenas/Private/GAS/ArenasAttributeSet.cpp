@@ -23,7 +23,15 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DamageTaken, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackDamageEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, ArmorEx, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackSpeedEx, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackRange, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackRangeEx, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChanceEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
 }
 
@@ -181,6 +189,46 @@ void UArenasAttributeSet::OnRep_DamageTaken(const FGameplayAttributeData& OldVal
 void UArenasAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackDamage, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackDamageEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackDamageEx, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_ArmorEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, ArmorEx, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackSpeed(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackSpeed, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackSpeedEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackSpeedEx, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackRange(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackRange, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_AttackRangEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackRangeEx, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_DogeChance(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, DogeChance, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_DogeChanceEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, DogeChanceEx, OldValue);
 }
 
 void UArenasAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue) const

@@ -22,13 +22,20 @@ class ARENAS_API UArenasHeroAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	// 智力
 	UPROPERTY(ReplicatedUsing = OnRep_Intelligence)
 	FGameplayAttributeData Intelligence;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Intelligence);
 
+	// 力量
 	UPROPERTY(ReplicatedUsing = OnRep_Strength)
 	FGameplayAttributeData Strength;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Strength);
+
+	// 敏捷
+	UPROPERTY(ReplicatedUsing = OnRep_Agility)
+	FGameplayAttributeData Agility;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Agility);
 
 	UPROPERTY(ReplicatedUsing = OnRep_Experience)
 	FGameplayAttributeData Experience;
@@ -69,6 +76,10 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_IntelligenceGrowthRate)
 	FGameplayAttributeData IntelligenceGrowthRate;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, IntelligenceGrowthRate);
+
+	UPROPERTY(ReplicatedUsing = OnRep_AgilityGrowthRate)
+	FGameplayAttributeData AgilityGrowthRate;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, AgilityGrowthRate);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -77,6 +88,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Agility(const FGameplayAttributeData& OldValue);
 
 	UFUNCTION()
 	void OnRep_Experience(const FGameplayAttributeData& OldValue);
@@ -108,7 +122,8 @@ public:
 	UFUNCTION()
 	void OnRep_IntelligenceGrowthRate(const FGameplayAttributeData& OldValue);
 
-	
+	UFUNCTION()
+	void OnRep_AgilityGrowthRate(const FGameplayAttributeData& OldValue);
 	
 	
 };

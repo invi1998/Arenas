@@ -17,14 +17,18 @@ UMMC_BaseAttackDamage::UMMC_BaseAttackDamage()
 	*/
 
 	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().ArmorExDef);
 	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().AttackDamageDef);
+	RelevantAttributesToCapture.Add(GetMMCDamageCaptureStatics().AttackDamageExDef);
 	
 }
 
 float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
 	float AttackDamage = 0.f;
+	float AttackDamageEx = 0.f;
 	float Armor = 0.f;
+	float ArmorEx = 0.f;
 
 	// 获取攻击者的攻击力属性值
 	FAggregatorEvaluateParameters EvaluationParameters;
@@ -32,7 +36,9 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 	EvaluationParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().AttackDamageDef, Spec, EvaluationParameters, AttackDamage);
+	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().AttackDamageExDef, Spec, EvaluationParameters, AttackDamageEx);
 	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().ArmorDef, Spec, EvaluationParameters, Armor);
+	GetCapturedAttributeMagnitude(GetMMCDamageCaptureStatics().ArmorExDef, Spec, EvaluationParameters, ArmorEx);
 
 	float BaseDamage = 10.f;
 	
@@ -48,6 +54,8 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 			ComboIndex = FMath::RoundToInt(SetByCallerData.Value);
 		}
 	}
+	AttackDamage += AttackDamageEx;
+	Armor += ArmorEx;
 	AttackDamage += BaseDamage;
 	AttackDamage += AttackDamage * 0.1f * ComboIndex;
 	

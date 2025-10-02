@@ -15,6 +15,7 @@ void UHeroStatsGauge::NativePreConstruct()
 	{
 		Icon->SetBrushFromTexture(IconTexture);
 	}
+	
 }
 
 void UHeroStatsGauge::NativeConstruct()
@@ -24,6 +25,11 @@ void UHeroStatsGauge::NativeConstruct()
 	NumberFormattingOptions.MaximumFractionalDigits = 0;
 	GrowthRateNumberFormattingOptions.MaximumFractionalDigits = 1;
 	GrowthRateNumberFormattingOptions.AlwaysSign = true;	// 总是显示正负号
+
+	if (AttributeGrowthRateText)
+	{
+		AttributeGrowthRateText->SetVisibility(ESlateVisibility::Hidden);
+	}
 
 	if (APawn* OwnerPlayerPawn = GetOwningPlayerPawn())
 	{
@@ -58,6 +64,12 @@ void UHeroStatsGauge::SetValue(float NewValue)
 void UHeroStatsGauge::SetGrowthRateValue(float NewValue)
 {
 	// + number
+	if (NewValue == 0.f)
+	{
+		AttributeGrowthRateText->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+	AttributeGrowthRateText->SetVisibility(ESlateVisibility::Visible);
 	AttributeGrowthRateText->SetText(FText::AsNumber(NewValue, &GrowthRateNumberFormattingOptions));
 }
 

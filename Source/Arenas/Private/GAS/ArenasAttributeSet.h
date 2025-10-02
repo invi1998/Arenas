@@ -57,9 +57,41 @@ public:
 	FGameplayAttributeData AttackDamage;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackDamage);
 
+	UPROPERTY(ReplicatedUsing = OnRep_AttackDamageEx)
+	FGameplayAttributeData AttackDamageEx;	// 额外攻击力（来自物品等）
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackDamageEx);
+
 	UPROPERTY(ReplicatedUsing = OnRep_Armor)
 	FGameplayAttributeData Armor;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, Armor);
+
+	UPROPERTY(ReplicatedUsing = OnRep_ArmorEx)
+	FGameplayAttributeData ArmorEx;	// 额外护甲（来自物品等）
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, ArmorEx);
+
+	UPROPERTY(ReplicatedUsing = OnRep_AttackSpeed)
+	FGameplayAttributeData AttackSpeed;		// 攻击速度，百分比表示法，100表示1倍攻速，150表示1.5倍攻速
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackSpeed);
+
+	UPROPERTY(ReplicatedUsing = OnRep_AttackSpeedEx)
+	FGameplayAttributeData AttackSpeedEx;	// 额外攻击速度，百分比表示法，100表示1倍攻速，150表示1.5倍攻速
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackSpeedEx);
+
+	UPROPERTY(ReplicatedUsing = OnRep_AttackRange)
+	FGameplayAttributeData AttackRange;		// 攻击范围，单位：厘米
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackRange);
+
+	UPROPERTY(ReplicatedUsing = OnRep_AttackRangEx)
+	FGameplayAttributeData AttackRangeEx;	// 额外攻击范围，单位：厘米
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, AttackRangeEx);
+	
+	UPROPERTY(ReplicatedUsing = OnRep_DogeChance)
+	FGameplayAttributeData DogeChance;	// 闪避，百分比表示法，10表示10%几率闪避
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, DogeChance);
+
+	UPROPERTY(ReplicatedUsing = OnRep_DogeChanceEx)
+	FGameplayAttributeData DogeChanceEx;	// 额外闪避，百分比表示法，10表示10%几率闪避
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, DogeChanceEx);
 
 	UPROPERTY(ReplicatedUsing = OnRep_MoveSpeed)
 	FGameplayAttributeData MoveSpeed;
@@ -96,7 +128,31 @@ private:
 	void OnRep_AttackDamage(const FGameplayAttributeData& OldValue) const;
 
 	UFUNCTION()
+	void OnRep_AttackDamageEx(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_ArmorEx(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_AttackSpeed(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_AttackSpeedEx(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_AttackRange(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_AttackRangEx(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_DogeChance(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_DogeChanceEx(const FGameplayAttributeData& OldValue) const;
 
 	UFUNCTION()
 	void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const;

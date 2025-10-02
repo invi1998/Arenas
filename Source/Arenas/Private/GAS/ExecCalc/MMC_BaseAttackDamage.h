@@ -11,12 +11,16 @@
 struct FArenasDamageCaptureStatics_MMC
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArmorEx)
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackDamage)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackDamageEx)
 
 	FArenasDamageCaptureStatics_MMC()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, Armor, Target, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, ArmorEx, Target, true)
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, AttackDamage, Source, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, AttackDamageEx, Source, true)
 	}
 	
 };

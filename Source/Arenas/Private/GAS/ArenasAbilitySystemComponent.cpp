@@ -45,16 +45,21 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMaxManaAttribute(), BaseStats->BaseMaxMana);
 	SetNumericAttributeBase(UArenasAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
+	SetNumericAttributeBase(UArenasAttributeSet::GetAttackSpeedAttribute(), BaseStats->BaseAttackSpeed);
+	SetNumericAttributeBase(UArenasAttributeSet::GetAttackRangeAttribute(), BaseStats->BaseAttackRange);
+	SetNumericAttributeBase(UArenasAttributeSet::GetDogeChanceAttribute(), BaseStats->BaseDogeChance);
 	SetNumericAttributeBase(UArenasAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
 
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetAgilityAttribute(), BaseStats->Agility);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetExperienceAttribute(), 0.f);
 	
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetGoldAttribute(), BaseStats->StartingGold);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetAgilityGrowthRateAttribute(), BaseStats->AgilityGrowthRate);
 
 	if (const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetEXPCurve())
 	{

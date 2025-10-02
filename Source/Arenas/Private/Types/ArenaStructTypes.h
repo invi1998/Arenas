@@ -108,6 +108,15 @@ struct FHeroBaseStats : public FTableRowBase
 	float BaseArmor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseAttackSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseAttackRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseDogeChance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseMoveSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -117,10 +126,16 @@ struct FHeroBaseStats : public FTableRowBase
 	float Intelligence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Agility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StrengthGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float IntelligenceGrowthRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AgilityGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ExpGrowthRate;

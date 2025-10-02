@@ -19,10 +19,13 @@ FAbilityWidgetData::FAbilityWidgetData() : InputAction(nullptr)
 }
 
 FHeroBaseStats::FHeroBaseStats() : BaseMaxHealth(0), BaseMaxMana(0), BaseAttackDamage(0), BaseArmor(0),
+                                   BaseAttackSpeed(0),
+                                   BaseAttackRange(0),
+                                   BaseDogeChance(0),
                                    BaseMoveSpeed(0), Strength(0),
-                                   Intelligence(0),
+                                   Intelligence(0), Agility(0),
                                    StrengthGrowthRate(0),
-                                   IntelligenceGrowthRate(0),
+                                   IntelligenceGrowthRate(0), AgilityGrowthRate(0),
                                    ExpGrowthRate(0),
                                    StartingGold(0)
 {

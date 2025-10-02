@@ -11,6 +11,7 @@ void UArenasHeroAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Strength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Agility, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Experience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, PrevLevelExperience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, NextLevelExperience, COND_None, REPNOTIFY_Always);
@@ -24,6 +25,7 @@ void UArenasHeroAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	// 甚至这个增量数据只在服务端存在就行，但是因为方便客户端展示，所以这里还是选择同步到客户端
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, StrengthGrowthRate, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, IntelligenceGrowthRate, COND_None, REPNOTIFY_OnChanged);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, AgilityGrowthRate, COND_None, REPNOTIFY_OnChanged);
 	
 }
 
@@ -35,6 +37,11 @@ void UArenasHeroAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& O
 void UArenasHeroAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, Strength, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_Agility(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, Agility, OldValue);
 }
 
 void UArenasHeroAttributeSet::OnRep_Experience(const FGameplayAttributeData& OldValue)
@@ -85,4 +92,9 @@ void UArenasHeroAttributeSet::OnRep_StrengthGrowthRate(const FGameplayAttributeD
 void UArenasHeroAttributeSet::OnRep_IntelligenceGrowthRate(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, IntelligenceGrowthRate, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_AgilityGrowthRate(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, AgilityGrowthRate, OldValue);
 }
