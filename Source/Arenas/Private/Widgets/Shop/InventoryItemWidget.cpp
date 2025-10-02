@@ -71,3 +71,12 @@ void UInventoryItemWidget::UpdateStackCountText()
 	StackCountText->SetVisibility(ESlateVisibility::Visible);
 	StackCountText->SetText(FText::AsNumber(InventoryItem->GetStackCount()));
 }
+
+UTexture2D* UInventoryItemWidget::GetIconTexture() const
+{
+	if (InventoryItem && InventoryItem->IsValid() && InventoryItem->GetShopItem())
+	{
+		return InventoryItem->GetShopItem()->GetIcon();
+	}
+	return nullptr;
+}
