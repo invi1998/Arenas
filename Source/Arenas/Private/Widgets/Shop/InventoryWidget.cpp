@@ -18,6 +18,8 @@ void UInventoryWidget::NativeConstruct()
 		{
 			// 订阅库存组件的物品添加事件
 			OwnerInventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded);
+			// 订阅库存组件的物品移除事件
+			OwnerInventoryComponent->OnItemRemoved.AddUObject(this, &UInventoryWidget::ItemRemoved);
 			// 订阅库存物品堆叠数量变更事件
 			OwnerInventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackChanged);
 			int Capacity = OwnerInventoryComponent->GetCapacity();
@@ -33,6 +35,9 @@ void UInventoryWidget::NativeConstruct()
 
 					// 订阅物品拖放事件
 					NewItemWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop);
+					// 订阅物品点击事件
+					NewItemWidget->OnRightButtonClicked.AddUObject(this, &UInventoryWidget::OnItemRightButtonClicked);
+					NewItemWidget->OnLeftButtonClicked.AddUObject(this, &UInventoryWidget::OnItemLeftButtonClicked);
 				}
 			}
 		}
@@ -52,6 +57,15 @@ void UInventoryWidget::ItemAdded(const UInventoryItem* NewInventoryItem)
 		{
 			OwnerInventoryComponent->ItemSlotChanged(NewInventoryItem->GetHandle(), NextAvailableSlot->GetSlotNumber());
 		}
+	}
+}
+
+void UInventoryWidget::ItemRemoved(const FInventoryItemHandle& InventoryItemHandle)
+{
+	if (UInventoryItemWidget* InInventoryItemWidget = PopulatedItemEntryWidgetsMap.FindRef(InventoryItemHandle))
+	{
+		InInventoryItemWidget->EmptySlot();
+		PopulatedItemEntryWidgetsMap.Remove(InventoryItemHandle);
 	}
 }
 
@@ -99,4 +113,22 @@ void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget
 		}
 	}
 	
+}
+
+void UInventoryWidget::OnItemRightButtonClicked(const FInventoryItemHandle& InventoryItemHandle)
+{
+	// 右键点击物品时，尝试出售该物品
+	if (OwnerInventoryComponent)
+	{
+		// OwnerInventoryComponent->SellItem(InventoryItemHandle);
+	}
+}
+
+void UInventoryWidget::OnItemLeftButtonClicked(const FInventoryItemHandle& InventoryItemHandle)
+{
+	// 左键点击物品时，尝试使用该物品
+	if (OwnerInventoryComponent)
+	{
+		OwnerInventoryComponent->TryActivateItemAbility(InventoryItemHandle);
+	}
 }
