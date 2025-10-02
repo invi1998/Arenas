@@ -33,6 +33,11 @@ public:
 	void ItemSlotChanged(const FInventoryItemHandle& Handle, int InSlotNumber);
 	UInventoryItem* GetInventoryItemByHandle(const FInventoryItemHandle& Handle) const;
 
+	bool IsAllSlotsOccupied() const;	// 检查所有槽位是否已被占用
+	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* InShopItem) const;	// 获取一个可用的堆叠物品（如果有的话）
+
+	bool IsFullForItem(const UPA_ShopItem* InShopItem) const;	// 检查库存是否已满，无法再添加指定的物品
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

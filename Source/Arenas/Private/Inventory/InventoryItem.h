@@ -103,6 +103,14 @@ public:
 	FORCEINLINE int GetStackCount() const { return StackCount; }
 	void SetSlot(int InSlotNumber);
 
+	bool IsStackFull() const;	// 检查该物品堆叠是否已满
+	bool IsForItem(const UPA_ShopItem* InShopItem) const;	// 检查该库存物品是否属于指定的商店物品
+
+	bool AddStackCount();	// 增加堆叠数量，返回是否成功增加
+	bool ReduceStackCount();	// 减少堆叠数量，返回是否成功（如果减少后堆叠数量为0则返回false）
+
+	bool SetStackCount(int InStackCount);
+
 private:
 	FInventoryItemHandle Handle;
 	

@@ -112,3 +112,34 @@ void UInventoryItem::SetSlot(int InSlotNumber)
 {
 	Slot = InSlotNumber;
 }
+
+bool UInventoryItem::IsStackFull() const
+{
+	return StackCount >= GetShopItem()->GetMaxStackCount();
+}
+
+bool UInventoryItem::IsForItem(const UPA_ShopItem* InShopItem) const
+{
+	return InShopItem && GetShopItem() == InShopItem;
+}
+
+bool UInventoryItem::AddStackCount()
+{
+	if (IsStackFull()) return false;
+
+	++StackCount;
+	return true;
+}
+
+bool UInventoryItem::ReduceStackCount()
+{
+	--StackCount;
+	return StackCount > 0;
+}
+
+bool UInventoryItem::SetStackCount(int InStackCount)
+{
+	if (InStackCount <= 0 || InStackCount > GetShopItem()->GetMaxStackCount()) return false;
+	StackCount = InStackCount;
+	return true;
+}

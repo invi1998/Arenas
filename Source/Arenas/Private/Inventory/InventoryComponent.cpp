@@ -55,6 +55,38 @@ UInventoryItem* UInventoryComponent::GetInventoryItemByHandle(const FInventoryIt
 	return FoundItem ? *FoundItem : nullptr;
 }
 
+bool UInventoryComponent::IsAllSlotsOccupied() const
+{
+	return InventoryItemsMap.Num() >= GetCapacity();
+}
+
+UInventoryItem* UInventoryComponent::GetAvailableStackForItem(const UPA_ShopItem* InShopItem) const
+{
+	if (!InShopItem) return nullptr;
+
+	UInventoryItem* FoundItem = nullptr;
+	for (const auto& ItemPair : InventoryItemsMap)
+	{
+		// 查找是否有相同类型且未满的堆叠物品
+		// 注意这里还要检查ItemPair.Key是否有效，因为有可能存在无效的句柄（比如物品被移除后）
+		// 以及ItemPair.Value是否有效，因为有可能存在无效的库存物品对象（比如物品被移除后）
+		// 以及ItemPair.Value->IsForItem(InShopItem)来检查是否是同一种物品
+		// 最后还要检查ItemPair.Value->IsStackFull()来确保该堆叠物品未满
+		if (ItemPair.Key.IsValid() && ItemPair.Value && ItemPair.Value->IsForItem(InShopItem) && !ItemPair.Value->IsStackFull())
+		{
+			FoundItem = ItemPair.Value;
+			break;
+		}
+	}
+	return FoundItem;
+}
+
+bool UInventoryComponent::IsFullForItem(const UPA_ShopItem* InShopItem) const
+{
+	// 如果没有该物品，或者没有可用的堆叠槽位，并且所有槽位都已占用，则表示物品栏已满
+	return InShopItem && !GetAvailableStackForItem(InShopItem) && IsAllSlotsOccupied();
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
