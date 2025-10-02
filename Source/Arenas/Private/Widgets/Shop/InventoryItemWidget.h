@@ -13,6 +13,7 @@ class UInventoryItem;
 class UTextBlock;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemDropped, UInventoryItemWidget* /* TargetWidget */, UInventoryItemWidget* /* DraggedWidget */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnButtonClicked, const FInventoryItemHandle& /* ItemInventoryHandle */);
 
 /**
  * 
@@ -26,6 +27,8 @@ public:
 	virtual void NativeConstruct() override;
 
 	FOnInventoryItemDropped OnInventoryItemDropped;	// 当有物品被拖放到该物品上时触发的委托
+	FOnButtonClicked OnRightButtonClicked;			// 当右键点击该物品时触发的委托（通常用于出售物品）
+	FOnButtonClicked OnLeftButtonClicked;			// 当左键点击该物品时触发的委托（通常用于使用物品）
 	
 	bool IsEmpty() const;
 	void EmptySlot();
@@ -67,5 +70,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Drag Drop")
 	TSubclassOf<UInventoryItemDrapDropOP> DragDropOperationClass;	// 拖拽操作类
-	
+
+	virtual void RightButtonClicked() override;
+	virtual void LeftButtonClicked() override;
 };

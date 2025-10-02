@@ -103,6 +103,38 @@ void UInventoryItem::ApplyGASModifications(UArenasAbilitySystemComponent* Owning
 	
 }
 
+bool UInventoryItem::TryActivateGrantedAbility(UArenasAbilitySystemComponent* OwningArenasASC)
+{
+	if (!OwningArenasASC || !GrantedAbilitySpecHandle.IsValid()) return false;
+	return OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
+}
+
+void UInventoryItem::RemoveGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
+{
+	if (!GetShopItem() || !OwningArenasASC) return;
+	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
+	if (AppliedEquippedEffectHandle.IsValid())
+	{
+		OwningArenasASC->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle);
+		AppliedEquippedEffectHandle.Invalidate();
+	}
+	if (GrantedAbilitySpecHandle.IsValid())
+	{
+		// 对于授予的能力，我们不立即移除它们，而是在技能结束后才移除
+		OwningArenasASC->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle);
+	}
+}
+
+void UInventoryItem::ApplyConsumableGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
+{
+	if (!GetShopItem() || !OwningArenasASC) return;
+	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
+	if (TSubclassOf<UGameplayEffect> ConsumableEffect = GetShopItem()->GetConsumedEffect())
+	{
+		OwningArenasASC->BP_ApplyGameplayEffectToSelf(ConsumableEffect, 1, OwningArenasASC->MakeEffectContext());
+	}
+}
+
 bool UInventoryItem::IsValid() const
 {
 	return ShopItem != nullptr && Handle.IsValid();

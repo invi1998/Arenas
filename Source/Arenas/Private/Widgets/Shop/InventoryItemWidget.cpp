@@ -117,3 +117,19 @@ bool UInventoryItemWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
+
+void UInventoryItemWidget::RightButtonClicked()
+{
+	if (!IsEmpty())
+	{
+		OnRightButtonClicked.Broadcast(GetInventoryItemHandle());
+	}
+}
+
+void UInventoryItemWidget::LeftButtonClicked()
+{
+	if (!IsEmpty())
+	{
+		OnLeftButtonClicked.Broadcast(GetInventoryItemHandle());
+	}
+}

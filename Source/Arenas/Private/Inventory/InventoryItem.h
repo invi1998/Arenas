@@ -99,6 +99,10 @@ public:
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle);
 	void ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
+	bool TryActivateGrantedAbility(UArenasAbilitySystemComponent* OwningArenasASC);
+	void RemoveGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
+	void ApplyConsumableGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
+	
 	bool IsValid() const;
 	FORCEINLINE int GetStackCount() const { return StackCount; }
 	void SetSlot(int InSlotNumber);
