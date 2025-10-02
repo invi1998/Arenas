@@ -4,10 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "ItemWidget.h"
+#include "Inventory/InventoryItem.h"
 #include "InventoryItemWidget.generated.h"
 
+class UInventoryItemWidget;
+class UInventoryItemDrapDropOP;
 class UInventoryItem;
 class UTextBlock;
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemDropped, UInventoryItemWidget* /* TargetWidget */, UInventoryItemWidget* /* DraggedWidget */);
+
 /**
  * 
  */
@@ -18,6 +24,8 @@ class ARENAS_API UInventoryItemWidget : public UItemWidget
 
 public:
 	virtual void NativeConstruct() override;
+
+	FOnInventoryItemDropped OnInventoryItemDropped;	// 当有物品被拖放到该物品上时触发的委托
 	
 	bool IsEmpty() const;
 	void EmptySlot();
@@ -26,6 +34,9 @@ public:
 	void SetSlotNumber(int InSlotNumber) { SlotNumber = InSlotNumber; }
 	void UpdateStackCountText();
 	UTexture2D* GetIconTexture() const;
+
+	FORCEINLINE const UInventoryItem* GetInventoryItem() const { return InventoryItem; }
+	const FInventoryItemHandle& GetInventoryItemHandle() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
@@ -50,6 +61,11 @@ private:
 	// 该编号从0开始，到Capacity-1结束
 	int SlotNumber;
 
+	/* 物品拖拽相关  */
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Drag Drop")
+	TSubclassOf<UInventoryItemDrapDropOP> DragDropOperationClass;	// 拖拽操作类
 	
 };

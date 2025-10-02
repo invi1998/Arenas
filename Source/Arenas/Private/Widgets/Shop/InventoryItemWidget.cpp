@@ -3,6 +3,7 @@
 
 #include "InventoryItemWidget.h"
 
+#include "InventoryItemDrapDropOP.h"
 #include "ItemToolTip.h"
 #include "Components/TextBlock.h"
 #include "Inventory/InventoryItem.h"
@@ -79,4 +80,40 @@ UTexture2D* UInventoryItemWidget::GetIconTexture() const
 		return InventoryItem->GetShopItem()->GetIcon();
 	}
 	return nullptr;
+}
+
+const FInventoryItemHandle& UInventoryItemWidget::GetInventoryItemHandle() const
+{
+	return !IsEmpty() ? InventoryItem->GetHandle() : FInventoryItemHandle::InvalidHandle();
+}
+
+void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+
+	if (!IsEmpty() && DragDropOperationClass)
+	{
+		if (UInventoryItemDrapDropOP* DragDropOp = NewObject<UInventoryItemDrapDropOP>(this, DragDropOperationClass))
+		{
+			DragDropOp->SetDraggedItem(this);
+			OutOperation = DragDropOp;
+		}
+	}
+}
+
+bool UInventoryItemWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+
+	if (UInventoryItemWidget* OtherItemWidget = InOperation ? Cast<UInventoryItemWidget>(InOperation->Payload) : nullptr)
+	{
+		// 确保拖放的物品不是自己，并且拖放的物品不是空的
+		if (OtherItemWidget && OtherItemWidget != this && !OtherItemWidget->IsEmpty())
+		{
+			// 广播物品被放下的事件, 由监听该事件的对象（如物品栏组件）来处理物品交换或移动的逻辑
+			OnInventoryItemDropped.Broadcast(this, OtherItemWidget);
+			return true;
+		}
+	}
+	
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
