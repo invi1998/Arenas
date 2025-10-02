@@ -62,5 +62,12 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 void UInventoryItemWidget::UpdateStackCountText()
 {
 	if (!InventoryItem || !(InventoryItem->IsValid())) return;
+
+	if (InventoryItem->GetStackCount() <= 1)
+	{
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+	StackCountText->SetVisibility(ESlateVisibility::Visible);
 	StackCountText->SetText(FText::AsNumber(InventoryItem->GetStackCount()));
 }

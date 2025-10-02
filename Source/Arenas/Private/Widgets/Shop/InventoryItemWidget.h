@@ -24,6 +24,7 @@ public:
 	void SetInventoryItem(const UInventoryItem* NewInventoryItem);
 	FORCEINLINE int GetSlotNumber() const { return SlotNumber; }
 	void SetSlotNumber(int InSlotNumber) { SlotNumber = InSlotNumber; }
+	void UpdateStackCountText();
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
@@ -48,6 +49,6 @@ private:
 	// 该编号从0开始，到Capacity-1结束
 	int SlotNumber;
 
-	void UpdateStackCountText();
+
 	
 };

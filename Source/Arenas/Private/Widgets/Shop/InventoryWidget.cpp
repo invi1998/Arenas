@@ -18,6 +18,8 @@ void UInventoryWidget::NativeConstruct()
 		{
 			// 订阅库存组件的物品添加事件
 			OwnerInventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded);
+			// 订阅库存物品堆叠数量变更事件
+			OwnerInventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackChanged);
 			int Capacity = OwnerInventoryComponent->GetCapacity();
 			ItemListWrapBox->ClearChildren();
 			InventoryItemsWidgets.Empty();
@@ -47,6 +49,14 @@ void UInventoryWidget::ItemAdded(const UInventoryItem* NewInventoryItem)
 		{
 			OwnerInventoryComponent->ItemSlotChanged(NewInventoryItem->GetHandle(), NextAvailableSlot->GetSlotNumber());
 		}
+	}
+}
+
+void UInventoryWidget::ItemStackChanged(const FInventoryItemHandle& InInventoryItemHandle, int NewStackCount)
+{
+	if (UInventoryItemWidget* InInventoryItemWidget = PopulatedItemEntryWidgetsMap.FindRef(InInventoryItemHandle))
+	{
+		InInventoryItemWidget->UpdateStackCountText();
 	}
 }
 

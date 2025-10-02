@@ -12,6 +12,7 @@
  */
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /* NewItem */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangeDelegate, const FInventoryItemHandle& /* ItemInventoryHandle */, int /* NewCount */);
 
 class UPA_ShopItem;
 class UArenasAbilitySystemComponent;
@@ -26,6 +27,7 @@ public:
 	UInventoryComponent();
 
 	FOnItemAddedDelegate OnItemAdded;	// 当有新物品添加时触发的委托
+	FOnItemStackCountChangeDelegate OnItemStackCountChanged;	// 当物品堆叠数量变化时触发的委托
 
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase);
 	float GetGold() const;
@@ -56,7 +58,7 @@ private:
 	/*									Server										 */
 	/**********************************************************************************/
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_Purchase(const UPA_ShopItem* ItemToPurchase);
+	void Server_Purchase(const UPA_ShopItem* ItemToPurchase);	// 服务器端处理购买请求
 
 	void GrantItem(const UPA_ShopItem* ItemToPurchase);
 
@@ -64,6 +66,9 @@ private:
 	/*									Client										 */
 	/**********************************************************************************/
 	UFUNCTION(Client, Reliable)
-	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded);
+	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded);	// 客户端添加物品
+
+	UFUNCTION(Client, Reliable)
+	void Client_ItemStackCountChanged(FInventoryItemHandle Handle, int NewStackCount);	// 客户端更新物品堆叠数量
 	
 };

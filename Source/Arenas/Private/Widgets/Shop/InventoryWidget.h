@@ -39,6 +39,7 @@ private:
 	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgetsMap;		// 已填充的物品条目小部件映射表
 
 	void ItemAdded(const UInventoryItem* NewInventoryItem);
+	void ItemStackChanged(const FInventoryItemHandle& InInventoryItemHandle, int NewStackCount);
 
 	UInventoryItemWidget* GetNextAvailableSlot() const;		// 获取下一个可用的物品槽
 	

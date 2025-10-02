@@ -102,8 +102,21 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 	// 确保只在服务端进行
 	if (!GetOwner() || !ItemToPurchase || !GetOwner()->HasAuthority()) return;
 
-	if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
+	// 首先检查是否有可用的堆叠槽位
+	if (UInventoryItem* AvailableStackItem = GetAvailableStackForItem(ItemToPurchase))
 	{
+		// 如果有可用的堆叠槽位，则只需要增加堆叠数量，不需要创建新的库存物品对象
+		// 增加堆叠数量，并广播堆叠数量变化
+		if (AvailableStackItem->AddStackCount())
+		{
+			OnItemStackCountChanged.Broadcast(AvailableStackItem->GetHandle(), AvailableStackItem->GetStackCount());
+
+			Client_ItemStackCountChanged(AvailableStackItem->GetHandle(), AvailableStackItem->GetStackCount());
+		}
+	}
+	else if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
+	{
+		// 创建一个新的库存物品对象，并初始化它
 		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
 		NewInventoryItem->InitializeItem(ItemToPurchase, NewHandle);
 		InventoryItemsMap.Add(NewHandle, NewInventoryItem);
@@ -120,6 +133,19 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 		// 应用物品的GAS修改
 		NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
 	}
+}
+
+void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventoryItemHandle Handle, int NewStackCount)
+{
+	if (!GetOwner() || GetOwner()->HasAuthority()) return;
+
+	// 在客户端更新堆叠数量
+	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
+	{
+		FoundItem->SetStackCount(NewStackCount);
+		OnItemStackCountChanged.Broadcast(Handle, NewStackCount);
+	}
+	
 }
 
 void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded)
@@ -156,7 +182,7 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 		return;
 	}
 
-	if (GetCapacity() <= InventoryItemsMap.Num())
+	if (IsFullForItem(ItemToPurchase))
 	{
 		return;
 	}
