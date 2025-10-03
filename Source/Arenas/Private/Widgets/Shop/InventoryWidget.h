@@ -67,5 +67,9 @@ private:
 	void HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget, UInventoryItemWidget* SourceItemWidget);
 	void OnItemRightButtonClicked(const FInventoryItemHandle& InventoryItemHandle);
 	void OnItemLeftButtonClicked(const FInventoryItemHandle& InventoryItemHandle);
+
+	FInventoryItemHandle CurrentFocusedItemHandle;	// 当前右键点击的物品句柄
+
+	void ClearContextMenu();
 	
 };

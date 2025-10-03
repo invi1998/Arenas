@@ -5,8 +5,10 @@
 
 #include "InventoryContextMenuWidget.h"
 #include "InventoryItemWidget.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Components/WrapBox.h"
 #include "Inventory/InventoryComponent.h"
+#include "Inventory/PA_ShopItem.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -157,7 +159,28 @@ void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget
 void UInventoryWidget::OnItemRightButtonClicked(const FInventoryItemHandle& InventoryItemHandle)
 {
 	// 右键点击物品时，显示物品右键菜单
+	if (CurrentFocusedItemHandle == InventoryItemHandle && InventoryContextMenuWidget && InventoryContextMenuWidget->IsVisible())
+	{
+		// 如果当前已经是聚焦该物品，并且右键菜单已经可见，则隐藏右键菜单
+		ClearContextMenu();
+		return;
+	}
+	CurrentFocusedItemHandle = InventoryItemHandle;
+	UInventoryItemWidget* FocusedItemWidget = PopulatedItemEntryWidgetsMap.FindRef(InventoryItemHandle);
+	if (!FocusedItemWidget || !InventoryContextMenuWidget) return;
+	
+	// 显示右键菜单
 	SetInventoryContextMenuVisible(true);
+	// 将右键菜单位置设置为物品图标位置的右下角
+	// 注意这里使用 GetAbsolutePositionAtCoordinates 来获取物品图标的绝对位置
+	// 传入 FVector2D{1.f, 0.5f} 表示获取图标右侧中点的位置
+	// 这样可以确保右键菜单不会遮挡物品图标
+	// 然后再加上图标的宽度和高度，来将菜单位置设置在图标的右下角
+	// 这里假设菜单不会超出屏幕边界，如果有需要可以添加边界检查逻辑
+	FVector2D WidgetPosition = FocusedItemWidget->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D{1.f, 0.5f});
+	FVector2D ItemWidgetPixelPos, ItemWidgetViewportPos;
+	USlateBlueprintLibrary::AbsoluteToViewport(this, WidgetPosition, ItemWidgetPixelPos, ItemWidgetViewportPos);
+	InventoryContextMenuWidget->SetPositionInViewport(ItemWidgetPixelPos);
 }
 
 void UInventoryWidget::OnItemLeftButtonClicked(const FInventoryItemHandle& InventoryItemHandle)
@@ -167,4 +190,10 @@ void UInventoryWidget::OnItemLeftButtonClicked(const FInventoryItemHandle& Inven
 	{
 		OwnerInventoryComponent->TryActivateItemAbility(InventoryItemHandle);
 	}
+}
+
+void UInventoryWidget::ClearContextMenu()
+{
+	SetInventoryContextMenuVisible(false);
+	CurrentFocusedItemHandle = FInventoryItemHandle::InvalidHandle();
 }

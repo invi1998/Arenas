@@ -58,6 +58,7 @@ public:
 	bool IsStackable() const { return bIsStackable; }
 	int GetMaxStackCount() const { return MaxStackCount; }
 	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredientItems() const { return IngredientItems; }
+	bool CanCastActiveAbility() const;
 
 
 private:
