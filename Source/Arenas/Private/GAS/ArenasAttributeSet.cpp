@@ -33,6 +33,7 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChanceEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeedEx, COND_None, REPNOTIFY_Always);
 }
 
 void UArenasAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -239,4 +240,9 @@ void UArenasAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue) co
 void UArenasAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MoveSpeed, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_MoveSpeedEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MoveSpeedEx, OldValue);
 }

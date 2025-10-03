@@ -97,6 +97,10 @@ public:
 	FGameplayAttributeData MoveSpeed;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MoveSpeed);
 
+	UPROPERTY(ReplicatedUsing = OnRep_MoveSpeedEx)
+	FGameplayAttributeData MoveSpeedEx;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MoveSpeedEx);
+
 	// 缓存的血量和蓝量百分比，在最大血量和蓝量变化时，我们希望同步缩放血量和蓝量，该比例只存在服务端，不需要同步
 	UPROPERTY()
 	FGameplayAttributeData CachedHealthPercent;
@@ -156,5 +160,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_MoveSpeedEx(const FGameplayAttributeData& OldValue) const;
 	
 };

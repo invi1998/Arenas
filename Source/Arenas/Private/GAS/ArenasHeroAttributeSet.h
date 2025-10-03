@@ -80,6 +80,16 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_AgilityGrowthRate)
 	FGameplayAttributeData AgilityGrowthRate;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, AgilityGrowthRate);
+
+	// 魔法恢复
+	UPROPERTY(ReplicatedUsing = OnRep_ManaRegen)
+	FGameplayAttributeData ManaRegen;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, ManaRegen);
+
+	// 生命恢复
+	UPROPERTY(ReplicatedUsing = OnRep_HealthRegen)
+	FGameplayAttributeData HealthRegen;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, HealthRegen);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -124,6 +134,12 @@ public:
 
 	UFUNCTION()
 	void OnRep_AgilityGrowthRate(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_ManaRegen(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_HealthRegen(const FGameplayAttributeData& OldValue);
 	
 	
 };

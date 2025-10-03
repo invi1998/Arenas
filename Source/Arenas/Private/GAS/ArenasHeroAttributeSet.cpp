@@ -20,6 +20,8 @@ void UArenasHeroAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, MaxLevel, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, MaxLevelExperience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Gold, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, ManaRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);
 
 	// 实际上这两个属性在游戏中不会频繁变化，我们可以考虑使用 REPNOTIFY_OnChanged 来优化网络流量
 	// 甚至这个增量数据只在服务端存在就行，但是因为方便客户端展示，所以这里还是选择同步到客户端
@@ -97,4 +99,14 @@ void UArenasHeroAttributeSet::OnRep_IntelligenceGrowthRate(const FGameplayAttrib
 void UArenasHeroAttributeSet::OnRep_AgilityGrowthRate(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, AgilityGrowthRate, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_ManaRegen(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, ManaRegen, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_HealthRegen(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, HealthRegen, OldValue);
 }

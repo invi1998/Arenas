@@ -69,8 +69,15 @@ void UHeroStatsGauge::SetGrowthRateValue(float NewValue)
 		AttributeGrowthRateText->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
+	
 	AttributeGrowthRateText->SetVisibility(ESlateVisibility::Visible);
 	AttributeGrowthRateText->SetText(FText::AsNumber(NewValue, &GrowthRateNumberFormattingOptions));
+	if (bUseDiffColorForGrowthRate)
+	{
+		FSlateColor TextColor = NewValue > 0.f ? PositiveGrowthColor : NegativeGrowthColor;
+		AttributeGrowthRateText->SetColorAndOpacity(TextColor);
+	}
+	
 }
 
 void UHeroStatsGauge::AttributeChanged(const FOnAttributeChangeData& Data)

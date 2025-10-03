@@ -23,6 +23,16 @@ protected:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 
+	// 增益属性数值颜色（正数为绿色，负数为红色）
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FSlateColor PositiveGrowthColor = FSlateColor(FLinearColor::Green);
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FSlateColor NegativeGrowthColor = FSlateColor(FLinearColor::Red);
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	bool bUseDiffColorForGrowthRate = false;	// 是否对属性成长率使用不同的颜色
+
 private:
 	UPROPERTY()
 	UArenasAbilitySystemComponent* CachedArenasASC;

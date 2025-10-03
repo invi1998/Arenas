@@ -49,6 +49,9 @@ private:
 	UHeroStatsGauge* MoveSpeedGauge;
 
 	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* DogeChanceGauge;
+
+	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* StrengthGauge;
 
 	UPROPERTY(meta=(BindWidget))

@@ -85,7 +85,13 @@ private:
 	void OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMoveSpeedExChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void BindGASChangedDelegate();
+
+	void UpdateMoveSpeed();
+
+	float BaseMoveSpeed = 0;
+	float MoveSpeedEx = 0;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;
