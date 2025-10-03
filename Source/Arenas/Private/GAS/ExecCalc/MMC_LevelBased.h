@@ -15,7 +15,7 @@ struct FArenasLevelBasedCaptureStatics_MMC
 
 	FArenasLevelBasedCaptureStatics_MMC()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Level, Source, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Level, Target, false)
 	}
 	
 };

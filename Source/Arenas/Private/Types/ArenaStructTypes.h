@@ -141,6 +141,9 @@ struct FHeroBaseStats : public FTableRowBase
 	float ExpGrowthRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HeroType;	// 1 - 力量型，2 - 智力型，3 - 敏捷型，4 - 全才型
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StartingGold;
 	
 };

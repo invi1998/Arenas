@@ -42,6 +42,8 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	// 此处我们只筛选出英雄类的基础数据，小兵、建筑等其他类型的单位不在此处初始化属性
 	if (!BaseStats) return;
 
+	SetNumericAttributeBase(UArenasHeroAttributeSet::GetHeroTypeAttribute(), BaseStats->HeroType);
+	
 	SetNumericAttributeBase(UArenasAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMaxManaAttribute(), BaseStats->BaseMaxMana);
 	SetNumericAttributeBase(UArenasAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
@@ -60,7 +62,7 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetAgilityGrowthRateAttribute(), BaseStats->AgilityGrowthRate);
-
+	
 	if (const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetEXPCurve())
 	{
 		int32 MaxLevel = ExperienceCurve->GetNumKeys();

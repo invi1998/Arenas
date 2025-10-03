@@ -30,7 +30,7 @@ float UMMC_LevelBased::CalculateBaseMagnitude_Implementation(const FGameplayEffe
 	{
 		return 0.f;
 	}
-
+	
 	return (Level - 1) * RateAttributeValue;
 	
 }

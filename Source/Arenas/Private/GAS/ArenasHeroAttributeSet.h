@@ -90,6 +90,11 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_HealthRegen)
 	FGameplayAttributeData HealthRegen;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, HealthRegen);
+
+	// 英雄类型（力量，敏捷，智力，全才 -> 1, 2, 3，4）
+	UPROPERTY(ReplicatedUsing = OnRep_HeroType)
+	FGameplayAttributeData HeroType;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, HeroType);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -140,6 +145,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_HealthRegen(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_HeroType(const FGameplayAttributeData& OldValue);
 	
 	
 };
