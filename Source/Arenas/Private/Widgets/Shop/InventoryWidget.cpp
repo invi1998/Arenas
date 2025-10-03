@@ -3,6 +3,7 @@
 
 #include "InventoryWidget.h"
 
+#include "InventoryContextMenuWidget.h"
 #include "InventoryItemWidget.h"
 #include "Components/WrapBox.h"
 #include "Inventory/InventoryComponent.h"
@@ -40,9 +41,47 @@ void UInventoryWidget::NativeConstruct()
 					NewItemWidget->OnLeftButtonClicked.AddUObject(this, &UInventoryWidget::OnItemLeftButtonClicked);
 				}
 			}
+			SpawnInventoryContextMenuWidget();
 		}
 	}
 	
+}
+
+void UInventoryWidget::SellButtonClicked()
+{
+}
+
+void UInventoryWidget::UseButtonClicked()
+{
+}
+
+void UInventoryWidget::GetShowInShopButtonClickedEvent()
+{
+}
+
+void UInventoryWidget::SetInventoryContextMenuVisible(bool bVisible)
+{
+	if (InventoryContextMenuWidget)
+	{
+		InventoryContextMenuWidget->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
+
+void UInventoryWidget::SpawnInventoryContextMenuWidget()
+{
+	if (!InventoryContextMenuWidgetClass) return;
+
+	InventoryContextMenuWidget = CreateWidget<UInventoryContextMenuWidget>(this, InventoryContextMenuWidgetClass);
+	if (InventoryContextMenuWidget)
+	{
+		// 绑定右键菜单的事件
+		InventoryContextMenuWidget->GetSellButtonClickedEvent().AddDynamic(this, &UInventoryWidget::SellButtonClicked);
+		InventoryContextMenuWidget->GetUseButtonClickedEvent().AddDynamic(this, &UInventoryWidget::UseButtonClicked);
+		InventoryContextMenuWidget->GetShowInShopButtonClickedEvent().AddDynamic(this, &UInventoryWidget::GetShowInShopButtonClickedEvent);
+		
+		InventoryContextMenuWidget->AddToViewport(1);	// 添加到视口，层级为1
+		SetInventoryContextMenuVisible(false);	// 初始时隐藏
+	}
 }
 
 void UInventoryWidget::ItemAdded(const UInventoryItem* NewInventoryItem)
@@ -117,11 +156,8 @@ void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget
 
 void UInventoryWidget::OnItemRightButtonClicked(const FInventoryItemHandle& InventoryItemHandle)
 {
-	// 右键点击物品时，尝试出售该物品
-	if (OwnerInventoryComponent)
-	{
-		// OwnerInventoryComponent->SellItem(InventoryItemHandle);
-	}
+	// 右键点击物品时，显示物品右键菜单
+	SetInventoryContextMenuVisible(true);
 }
 
 void UInventoryWidget::OnItemLeftButtonClicked(const FInventoryItemHandle& InventoryItemHandle)

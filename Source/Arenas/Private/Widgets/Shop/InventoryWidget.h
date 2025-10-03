@@ -7,6 +7,7 @@
 #include "Inventory/InventoryItem.h"
 #include "InventoryWidget.generated.h"
 
+class UInventoryContextMenuWidget;
 class UInventoryItem;
 class UInventoryComponent;
 class UInventoryItemWidget;
@@ -23,6 +24,25 @@ public:
 	virtual void NativeConstruct() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	TSubclassOf<UInventoryContextMenuWidget> InventoryContextMenuWidgetClass;	// 物品右键菜单类
+
+	UPROPERTY()
+	UInventoryContextMenuWidget* InventoryContextMenuWidget;	// 物品右键菜单实例
+
+	UFUNCTION()
+	void SellButtonClicked();
+	
+	UFUNCTION()
+	void UseButtonClicked();
+
+	UFUNCTION()
+	void GetShowInShopButtonClickedEvent();
+
+	void SetInventoryContextMenuVisible(bool bVisible);
+	
+	void SpawnInventoryContextMenuWidget();
+	
 	UPROPERTY(meta=(BindWidget))
 	UWrapBox* ItemListWrapBox;
 
