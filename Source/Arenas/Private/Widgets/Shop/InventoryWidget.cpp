@@ -6,9 +6,9 @@
 #include "InventoryContextMenuWidget.h"
 #include "InventoryItemWidget.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/WrapBox.h"
 #include "Inventory/InventoryComponent.h"
-#include "Inventory/PA_ShopItem.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -47,6 +47,18 @@ void UInventoryWidget::NativeConstruct()
 		}
 	}
 	
+}
+
+void UInventoryWidget::NativeOnFocusChanging(const FWeakWidgetPath& PreviousFocusPath, const FWidgetPath& NewWidgetPath,
+	const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusChanging(PreviousFocusPath, NewWidgetPath, InFocusEvent);
+
+	if (!NewWidgetPath.ContainsWidget(InventoryContextMenuWidget->GetCachedWidget().Get()))
+	{
+		// 如果新的焦点路径不包含右键菜单，则隐藏右键菜单
+		ClearContextMenu();
+	}
 }
 
 void UInventoryWidget::SellButtonClicked()
@@ -180,6 +192,23 @@ void UInventoryWidget::OnItemRightButtonClicked(const FInventoryItemHandle& Inve
 	FVector2D WidgetPosition = FocusedItemWidget->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D{1.f, 0.5f});
 	FVector2D ItemWidgetPixelPos, ItemWidgetViewportPos;
 	USlateBlueprintLibrary::AbsoluteToViewport(this, WidgetPosition, ItemWidgetPixelPos, ItemWidgetViewportPos);
+	
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		int ViewportX, ViewportY;
+		PlayerController->GetViewportSize(ViewportX, ViewportY);
+		float Scale = UWidgetLayoutLibrary::GetViewportScale(this);
+		int Overshoot = ItemWidgetPixelPos.Y + InventoryContextMenuWidget->GetDesiredSize().Y * Scale - ViewportY;
+		if (Overshoot > 0)
+		{
+			ItemWidgetPixelPos.Y -= Overshoot;
+		}
+		int OvershootX = ItemWidgetPixelPos.X + InventoryContextMenuWidget->GetDesiredSize().X * Scale - ViewportX;
+		if (OvershootX > 0)
+		{
+			ItemWidgetPixelPos.X -= OvershootX;
+		}
+	}
 	InventoryContextMenuWidget->SetPositionInViewport(ItemWidgetPixelPos);
 }
 
