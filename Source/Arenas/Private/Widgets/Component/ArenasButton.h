@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "ArenasButton.generated.h"
 
-class UButton;
 /**
  * 
  */

@@ -98,6 +98,11 @@ void UInventoryComponent::TryActivateItemAbility(const FInventoryItemHandle& Han
 	}
 }
 
+void UInventoryComponent::SellItem(const FInventoryItemHandle& Handle)
+{
+	Server_SellItem(Handle);
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
@@ -177,6 +182,29 @@ void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
 		OnItemStackCountChanged.Broadcast(Item->GetHandle(), Item->GetStackCount());
 		Client_ItemStackCountChanged(Item->GetHandle(), Item->GetStackCount());
 	}
+}
+
+void UInventoryComponent::Server_SellItem_Implementation(FInventoryItemHandle Handle)
+{
+	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
+	{
+		if (!FoundItem->IsValid()) return;
+
+		const UPA_ShopItem* ShopItem = FoundItem->GetShopItem();
+		if (!ShopItem) return;
+
+		// 出售物品，获得金币
+		float SellPrice = ShopItem->GetSellPrice();	// 假设出售价格为购买价格的一半
+		OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, SellPrice * FoundItem->GetStackCount());
+
+		// 移除物品
+		RemoveItem(FoundItem);
+	}
+}
+
+bool UInventoryComponent::Server_SellItem_Validate(FInventoryItemHandle Handle)
+{
+	return true;
 }
 
 void UInventoryComponent::Server_ActivateItemAbility_Implementation(FInventoryItemHandle Handle)

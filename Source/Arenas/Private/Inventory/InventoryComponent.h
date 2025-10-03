@@ -43,6 +43,7 @@ public:
 	bool IsFullForItem(const UPA_ShopItem* InShopItem) const;	// 检查库存是否已满，无法再添加指定的物品
 
 	void TryActivateItemAbility(const FInventoryItemHandle& Handle);	// 尝试激活指定物品的能力
+	void SellItem(const FInventoryItemHandle& Handle);	// 出售指定的库存物品
 	
 protected:
 	// Called when the game starts
@@ -70,6 +71,9 @@ private:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ActivateItemAbility(FInventoryItemHandle Handle);	// 服务器端处理激活物品能力请求
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SellItem(FInventoryItemHandle Handle);	// 服务器端处理出售物品请求
 
 	/**********************************************************************************/
 	/*									Client										 */

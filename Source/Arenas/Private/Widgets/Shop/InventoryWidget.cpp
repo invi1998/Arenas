@@ -63,14 +63,21 @@ void UInventoryWidget::NativeOnFocusChanging(const FWeakWidgetPath& PreviousFocu
 
 void UInventoryWidget::SellButtonClicked()
 {
+	UE_LOG(LogTemp, Display, TEXT(" --------------- Sell Button Clicked"));
+	OwnerInventoryComponent->SellItem(CurrentFocusedItemHandle);
+	SetInventoryContextMenuVisible(false);
 }
 
 void UInventoryWidget::UseButtonClicked()
 {
+	OwnerInventoryComponent->TryActivateItemAbility(CurrentFocusedItemHandle);
+	SetInventoryContextMenuVisible(false);
 }
 
 void UInventoryWidget::GetShowInShopButtonClickedEvent()
 {
+	
+	SetInventoryContextMenuVisible(false);
 }
 
 void UInventoryWidget::SetInventoryContextMenuVisible(bool bVisible)
