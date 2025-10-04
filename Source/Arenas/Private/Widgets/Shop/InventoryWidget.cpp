@@ -25,6 +25,7 @@ void UInventoryWidget::NativeConstruct()
 			OwnerInventoryComponent->OnItemRemoved.AddUObject(this, &UInventoryWidget::ItemRemoved);
 			// 订阅库存物品堆叠数量变更事件
 			OwnerInventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackChanged);
+			
 			int Capacity = OwnerInventoryComponent->GetCapacity();
 			ItemListWrapBox->ClearChildren();
 			InventoryItemsWidgets.Empty();
@@ -75,6 +76,12 @@ void UInventoryWidget::UseButtonClicked()
 
 void UInventoryWidget::GetShowInShopButtonClickedEvent()
 {
+	// 显示物品在商店中的位置，以及物品的合成配方
+	if (OwnerInventoryComponent)
+	{
+		// 广播物品需要在商店中显示的事件，然后商店界面会订阅该事件并处理
+		OwnerInventoryComponent->OnItemNeedShowInShop.Broadcast(CurrentFocusedItemHandle);
+	}
 	
 	SetInventoryContextMenuVisible(false);
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Inventory/InventoryItem.h"
 #include "ShopWidget.generated.h"
 
 class UItemTreeWidget;
@@ -32,6 +33,7 @@ private:
 	void LoadShopItems();
 	void ShopItemLoadedComplete();
 	void HandleShopItemSelected(const UShopItemWidget* ShopItemWidget);
+	void HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& InventoryItemHandle);
 	void ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget);
 
 	UPROPERTY()

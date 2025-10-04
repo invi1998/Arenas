@@ -14,6 +14,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /* NewItem */);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedDelegate, const FInventoryItemHandle& /* ItemHandle */);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangeDelegate, const FInventoryItemHandle& /* ItemInventoryHandle */, int /* NewCount */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemNeedShowInShopDelegate, const FInventoryItemHandle& /* ItemHandle */);
 
 class UPA_ShopItem;
 class UArenasAbilitySystemComponent;
@@ -30,6 +31,7 @@ public:
 	FOnItemAddedDelegate OnItemAdded;	// 当有新物品添加时触发的委托
 	FOnItemRemovedDelegate OnItemRemoved;	// 当有物品被移除时触发的委托
 	FOnItemStackCountChangeDelegate OnItemStackCountChanged;	// 当物品堆叠数量变化时触发的委托
+	FOnItemNeedShowInShopDelegate OnItemNeedShowInShop;	// 当有物品需要在商店中显示时触发的委托
 
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase);
 	float GetGold() const;

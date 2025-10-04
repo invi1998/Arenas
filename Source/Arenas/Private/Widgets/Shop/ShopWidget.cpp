@@ -49,6 +49,16 @@ void UShopWidget::HandleShopItemSelected(const UShopItemWidget* ShopItemWidget)
 	
 }
 
+void UShopWidget::HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& InventoryItemHandle)
+{
+	const UShopItemWidget** FoundWidget = ShopItemWidgetMap.Find(OwnerInventoryComponent->GetInventoryItemByHandle(InventoryItemHandle)->GetShopItem());
+	if (FoundWidget && *FoundWidget)
+	{
+		ShopItemTileView->SetSelectedItem(*FoundWidget);
+		HandleShopItemSelected(*FoundWidget);
+	}
+}
+
 void UShopWidget::ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget)
 {
 	if (UShopItemWidget* ShopItemWidget = Cast<UShopItemWidget>(&NewShopItemWidget))
@@ -58,6 +68,8 @@ void UShopWidget::ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget)
 			// 此处购买物品的委托的发起时机是玩家点击物品时发出的
 			// 绑定物品购买时的委托，然后让库存组件去执行购买物品逻辑
 			ShopItemWidget->OnItemPurchaseIssued.AddUObject(OwnerInventoryComponent, &UInventoryComponent::TryPurchase);
+			// 订阅库存组件的物品需要在商店中显示的委托
+			OwnerInventoryComponent->OnItemNeedShowInShop.AddUObject(this, &UShopWidget::HandleInventoryItemNeedShowInShop);
 		}
 
 		ShopItemWidget->OnShopItemSelected.AddUObject(this, &UShopWidget::HandleShopItemSelected);
