@@ -136,14 +136,22 @@ bool UInventoryComponent::FindIngredientForItem(const UPA_ShopItem* Item, TArray
 {
 	const FItemCollectionEntry* Ingredients = UArenasAssetManager::Get().GetIngredientEntry(Item);
 	if (!Ingredients) return false;
-
+	
 	bool bAllFound = true;
+	TArray<FInventoryItemHandle> HasFoundHandle;	// 用于记录已经找到的物品句柄，避免重复找到同一个物品
+	HasFoundHandle.Empty();
+	TArray<const UPA_ShopItem*> CheckedIngredients; // 用于记录已经检查过的材料，避免重复检查
 	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
 	{
 		// 忽略指定的材料，避免与正在合成的物品冲突
-		if (IngredientToIgnore.Contains(Ingredient)) continue;
+		if (IngredientToIgnore.Contains(Ingredient) && !CheckedIngredients.Contains(Ingredient))
+		{
+			// 记录已经检查过的材料，如果再次遇到则必须进行后续检查（因为可能需要多个相同的材料）
+			CheckedIngredients.Add(Ingredient);
+			continue;
+		}
 		
-		if (UInventoryItem* FoundItem = GetItemByShopItem(Ingredient))
+		if (UInventoryItem* FoundItem = GetItemByShopItem(Ingredient, HasFoundHandle))
 		{
 			OutFoundIngredients.Add(FoundItem);
 		}
@@ -158,14 +166,18 @@ bool UInventoryComponent::FindIngredientForItem(const UPA_ShopItem* Item, TArray
 	
 }
 
-UInventoryItem* UInventoryComponent::GetItemByShopItem(const UPA_ShopItem* InShopItem) const
+
+UInventoryItem* UInventoryComponent::GetItemByShopItem(const UPA_ShopItem* InShopItem, TArray<FInventoryItemHandle>& HasFoundHandle) const
 {
 	if (!InShopItem) return nullptr;
-
-	for (const auto& ItemPair : InventoryItemsMap)
+	
+	for (const TPair<FInventoryItemHandle, UInventoryItem*>& ItemPair : InventoryItemsMap)
 	{
 		if (ItemPair.Value && ItemPair.Value->IsForItem(InShopItem))
 		{
+			// 确保没有重复找到同一个物品
+			if (HasFoundHandle.Contains(ItemPair.Key)) continue;
+			HasFoundHandle.Add(ItemPair.Key);
 			return ItemPair.Value;
 		}
 	}

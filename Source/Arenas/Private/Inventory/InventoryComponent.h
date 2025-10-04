@@ -47,7 +47,7 @@ public:
 
 	bool TryItemCombination(const UPA_ShopItem* Item);	// 尝试处理物品合成
 	bool FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{}) const;	// 查找物品的合成材料
-	UInventoryItem* GetItemByShopItem(const UPA_ShopItem* InShopItem) const;	// 通过商店物品查找库存物品
+	UInventoryItem* GetItemByShopItem(const UPA_ShopItem* InShopItem, TArray<FInventoryItemHandle>& HasFoundHandle) const;	// 通过商店物品查找库存物品
 	
 protected:
 	// Called when the game starts
