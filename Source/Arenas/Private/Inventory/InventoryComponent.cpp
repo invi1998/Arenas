@@ -211,7 +211,7 @@ void UInventoryComponent::Server_ActivateItemAbility_Implementation(FInventoryIt
 {
 	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
 	{
-		FoundItem->TryActivateGrantedAbility(OwnerArenasASC);
+		FoundItem->TryActivateActiveItemAbility(OwnerArenasASC);
 		const UPA_ShopItem* ShopItem = FoundItem->GetShopItem();
 		if (ShopItem && ShopItem->IsConsumable())
 		{

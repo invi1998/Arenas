@@ -93,10 +93,27 @@ void UInventoryItem::ApplyGASModifications(UArenasAbilitySystemComponent* Owning
 		{
 			// 如果没有找到该能力，则授予它
 			GrantedAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
+			// 对于被动技能，我们可以直接激活它
+			OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
 		}
 		else
 		{
 			GrantedAbilitySpecHandle = FoundAbilitySpec->Handle;
+		}
+		
+	}
+
+	if (TSubclassOf<UGameplayAbility> ActiveItemAbility = GetShopItem()->GetActiveAbility())
+	{
+		// 主动物品能力同样需要检查是否已经拥有
+		const FGameplayAbilitySpec* FoundAbilitySpec = OwningArenasASC->FindAbilitySpecFromClass(ActiveItemAbility);
+		if (!FoundAbilitySpec)
+		{
+			ActiveItemAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(ActiveItemAbility));
+		}
+		else
+		{
+			ActiveItemAbilitySpecHandle = FoundAbilitySpec->Handle;
 		}
 		
 	}
@@ -107,6 +124,12 @@ bool UInventoryItem::TryActivateGrantedAbility(UArenasAbilitySystemComponent* Ow
 {
 	if (!OwningArenasASC || !GrantedAbilitySpecHandle.IsValid()) return false;
 	return OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
+}
+
+bool UInventoryItem::TryActivateActiveItemAbility(UArenasAbilitySystemComponent* OwningArenasASC)
+{
+	if (!OwningArenasASC || !ActiveItemAbilitySpecHandle.IsValid()) return false;
+	return OwningArenasASC->TryActivateAbility(ActiveItemAbilitySpecHandle);
 }
 
 void UInventoryItem::RemoveGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
@@ -122,6 +145,10 @@ void UInventoryItem::RemoveGASModifications(UArenasAbilitySystemComponent* Ownin
 	{
 		// 对于授予的能力，我们不立即移除它们，而是在技能结束后才移除
 		OwningArenasASC->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle);
+	}
+	if (ActiveItemAbilitySpecHandle.IsValid())
+	{
+		OwningArenasASC->SetRemoveAbilityOnEnd(ActiveItemAbilitySpecHandle);
 	}
 }
 

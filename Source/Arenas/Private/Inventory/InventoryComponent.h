@@ -68,9 +68,9 @@ private:
 	void GrantItem(const UPA_ShopItem* ItemToPurchase);
 	void RemoveItem(UInventoryItem* Item);	// 移除指定的库存物品
 	void ConsumeItem(UInventoryItem* Item);
-
+	
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ActivateItemAbility(FInventoryItemHandle Handle);	// 服务器端处理激活物品能力请求
+	void Server_ActivateItemAbility(FInventoryItemHandle Handle);	// 服务器端处理激活物品能力请求（被动物品不需要调用此函数）
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SellItem(FInventoryItemHandle Handle);	// 服务器端处理出售物品请求
