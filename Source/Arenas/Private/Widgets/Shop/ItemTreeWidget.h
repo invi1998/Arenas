@@ -21,6 +21,7 @@ public:
 
 
 private:
+	void DrawSteam(bool bUpperSteam, const ITreeNodeInterface* StartNode, UUserWidget* StartWidget, UCanvasPanelSlot* StartNodeSlot, int StartNodeDepth, float& NextLeafXPos, TArray<UCanvasPanelSlot*>& OutSteamSlots);
 	void ClearTree();
 	UUserWidget* CreateWidgetForNode(const ITreeNodeInterface* Node, UCanvasPanelSlot*& OutCanvasPanelSlot);
 	void CreateConnection(const UUserWidget* From, const UUserWidget* To);
