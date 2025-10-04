@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ShopWidget.generated.h"
 
+class UItemTreeWidget;
 class UInventoryComponent;
 class UShopItemWidget;
 class UPA_ShopItem;
@@ -25,8 +26,12 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UTileView* ShopItemTileView;		// 商店物品列表
 
+	UPROPERTY(meta=(BindWidget))
+	UItemTreeWidget* ItemCombinationTreeWidget;		// 物品合成树
+
 	void LoadShopItems();
 	void ShopItemLoadedComplete();
+	void HandleShopItemSelected(const UShopItemWidget* ShopItemWidget);
 	void ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget);
 
 	UPROPERTY()

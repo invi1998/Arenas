@@ -3,6 +3,7 @@
 
 #include "ShopWidget.h"
 
+#include "ItemTreeWidget.h"
 #include "ShopItemWidget.h"
 #include "Components/TileView.h"
 #include "Framework/ArenasAssetManager.h"
@@ -39,6 +40,15 @@ void UShopWidget::ShopItemLoadedComplete()
 	}
 }
 
+void UShopWidget::HandleShopItemSelected(const UShopItemWidget* ShopItemWidget)
+{
+	if (ItemCombinationTreeWidget)
+	{
+		ItemCombinationTreeWidget->DrawFromNode(ShopItemWidget);
+	}
+	
+}
+
 void UShopWidget::ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget)
 {
 	if (UShopItemWidget* ShopItemWidget = Cast<UShopItemWidget>(&NewShopItemWidget))
@@ -49,6 +59,8 @@ void UShopWidget::ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget)
 			// 绑定物品购买时的委托，然后让库存组件去执行购买物品逻辑
 			ShopItemWidget->OnItemPurchaseIssued.AddUObject(OwnerInventoryComponent, &UInventoryComponent::TryPurchase);
 		}
+
+		ShopItemWidget->OnShopItemSelected.AddUObject(this, &UShopWidget::HandleShopItemSelected);
 		
 		ShopItemWidgetMap.Add(ShopItemWidget->GetShopItem(), ShopItemWidget);
 	}

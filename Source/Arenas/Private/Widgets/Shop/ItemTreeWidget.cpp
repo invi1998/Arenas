@@ -8,8 +8,46 @@
 #include "Components/CanvasPanelSlot.h"
 
 
+void UItemTreeWidget::DrawFromNode(const ITreeNodeInterface* StartNode)
+{
+	if (!StartNode) return;
+
+	if (CurrentCenterItem == StartNode->GetItemObject()) return;	// 如果当前中心物品没有变化，则不需要重新绘制
+
+	ClearTree();
+	CurrentCenterItem = StartNode->GetItemObject();
+
+	float NextLeafXPos = 0.f;	// 下一个叶节点的X位置
+	UCanvasPanelSlot* CenterWigetPanelSlot = nullptr;
+	UUserWidget* CenterNodeWidget = CreateWidgetForNode(StartNode, CenterWigetPanelSlot);	// 创建中心节点的Widget
+	TArray<UCanvasPanelSlot*> UpperSteamSlots, DownSteamSlots;	// 分别存储上游和下游的所有节点Slot
+	DrawSteam(false, StartNode, CenterNodeWidget, CenterWigetPanelSlot, 0, NextLeafXPos, DownSteamSlots);	// 绘制下游节点
+	float DownStreamXMax = NextLeafXPos - (NodeSize.X + NodeGap.X);	// 计算下游节点的最大X位置
+	float DownStreamMoveMat = 0.f - DownStreamXMax / 2.f;	// 计算下游节点的移动距离，使其居中对齐
+
+	for (UCanvasPanelSlot* DownSlot: DownSteamSlots)
+	{
+		// 移动下游节点，最后结果就是所有下游节点全部整体偏移，使其居中对齐
+		DownSlot->SetPosition(DownSlot->GetPosition() + FVector2D(DownStreamMoveMat, 0.f));
+	}
+
+	NextLeafXPos = 0.f;	// 重置下一个叶节点的X位置
+	DrawSteam(true, StartNode, CenterNodeWidget, CenterWigetPanelSlot, 0, NextLeafXPos, UpperSteamSlots);	// 绘制上游节点
+	float UpperStreamXMax = NextLeafXPos - (NodeSize.X + NodeGap.X);	// 计算上游节点的最大X位置
+	float UpperStreamMoveMat = 0.f - UpperStreamXMax / 2.f;	// 计算上游节点的移动距离，使其居中对齐
+	for (UCanvasPanelSlot* UpperSlot: UpperSteamSlots)
+	{
+		// 移动上游节点，最后结果就是所有上游节点全部整体偏移，使其居中对齐
+		UpperSlot->SetPosition(UpperSlot->GetPosition() + FVector2D(UpperStreamMoveMat, 0.f));
+	}
+
+
+	CenterWigetPanelSlot->SetPosition(FVector2D::Zero());
+	
+}
+
 void UItemTreeWidget::DrawSteam(bool bUpperSteam, const ITreeNodeInterface* StartNode, UUserWidget* StartWidget,
-	UCanvasPanelSlot* StartNodeSlot, int StartNodeDepth, float& NextLeafXPos, TArray<UCanvasPanelSlot*>& OutSteamSlots)
+                                UCanvasPanelSlot* StartNodeSlot, int StartNodeDepth, float& NextLeafXPos, TArray<UCanvasPanelSlot*>& OutSteamSlots)
 {
 	// 获取下一级节点，根据是上游还是下游来决定（上游取输入节点，输入节点存储的是当前装备可以合成哪些装备列表，下游取输出节点，输出节点存储的是当前装备的合成材料列表）
 	TArray<const ITreeNodeInterface*> NextTreeNodes = bUpperSteam ? StartNode->GetInputs() : StartNode->GetOutputs();
@@ -88,7 +126,7 @@ void UItemTreeWidget::CreateConnection(const UUserWidget* From, const UUserWidge
 		ConnectionPanelSlot->SetZOrder(0);
 	}
 
-	ConnectionSpline->SetupSpline(From, To, SourcePortLocationPos, DestinationPortDirection, SourcePortDirection, DestinationPortDirection);
+	ConnectionSpline->SetupSpline(From, To, SourcePortLocationPos, DestinationPortLocalPos, SourcePortDirection, DestinationPortDirection);
 	ConnectionSpline->SetSplineStyle(ConnectionColor, ConnectionThickness);
 	
 }

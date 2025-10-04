@@ -60,7 +60,7 @@ void UArenasAssetManager::AddToCombinationMap(const UPA_ShopItem* Ingredient, co
 	{
 		if (!Combinations->Contains(CombinationItem))
 		{
-			CombinationMap.Add(CombinationItem);
+			Combinations->AddItem(CombinationItem);
 		}
 	}
 	else
