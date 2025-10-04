@@ -23,6 +23,9 @@ public:
 	void LoadShopItems(const FStreamableDelegate& LoadFinishedCallback);
 	bool GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutShopItems) const;
 
+	const FItemCollectionEntry* GetCombinationEntry(const UPA_ShopItem* CombinationItem) const;		// 获取合成物品所需的材料条目
+	const FItemCollectionEntry* GetIngredientEntry(const UPA_ShopItem* IngredientItem) const;		// 获取材料物品可以合成的物品条目
+
 private:
 	void ShopItemLoadCompleted(FStreamableDelegate CallBack);
 	void BuildItemMaps();

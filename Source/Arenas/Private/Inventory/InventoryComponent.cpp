@@ -5,6 +5,7 @@
 
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "PA_ShopItem.h"
+#include "Framework/ArenasAssetManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/ArenasHeroAttributeSet.h"
 
@@ -103,6 +104,70 @@ void UInventoryComponent::SellItem(const FInventoryItemHandle& Handle)
 	Server_SellItem(Handle);
 }
 
+void UInventoryComponent::CheckItemCombination(const UInventoryItem* Item)
+{
+	if (!Item || !Item->IsValid() || !GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	// 获取该物品的合成条目
+	const FItemCollectionEntry* CombinationEntry = UArenasAssetManager::Get().GetCombinationEntry(Item->GetShopItem());
+	if (!CombinationEntry) return;
+
+	// 检查是否拥有所有合成所需的物品，如果有则移除这些物品（因为它们将被合成为新的物品）
+	for (const UPA_ShopItem* CombinationItem : CombinationEntry->GetItems())
+	{
+		TArray<UInventoryItem*> FoundIngredients;
+		if (FoundIngredientForItem(CombinationItem, FoundIngredients))
+		{
+			for (UInventoryItem* IngredientItem : FoundIngredients)
+			{
+				RemoveItem(IngredientItem);
+			}
+			// 给予合成后的物品
+			GrantItem(CombinationItem);
+			return;
+		}
+	}
+	
+}
+
+bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients) const
+{
+	const FItemCollectionEntry* Ingredients = UArenasAssetManager::Get().GetIngredientEntry(Item);
+	if (!Ingredients) return false;
+
+	bool bAllFound = true;
+	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
+	{
+		if (UInventoryItem* FoundItem = GetItemByShopItem(Ingredient))
+		{
+			OutFoundIngredients.Add(FoundItem);
+		}
+		else
+		{
+			bAllFound = false;
+			break;
+		}
+	}
+
+	return bAllFound;
+	
+}
+
+UInventoryItem* UInventoryComponent::GetItemByShopItem(const UPA_ShopItem* InShopItem) const
+{
+	if (!InShopItem) return nullptr;
+
+	for (const auto& ItemPair : InventoryItemsMap)
+	{
+		if (ItemPair.Value && ItemPair.Value->IsForItem(InShopItem))
+		{
+			return ItemPair.Value;
+		}
+	}
+
+	return nullptr;
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
@@ -148,6 +213,8 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 
 		// 应用物品的GAS修改
 		NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
+
+		CheckItemCombination(NewInventoryItem);
 	}
 }
 

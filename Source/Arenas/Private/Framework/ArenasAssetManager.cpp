@@ -38,6 +38,16 @@ bool UArenasAssetManager::GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutSho
 	return Loaded;
 }
 
+const FItemCollectionEntry* UArenasAssetManager::GetCombinationEntry(const UPA_ShopItem* CombinationItem) const
+{
+	return CombinationMap.Find(CombinationItem);
+}
+
+const FItemCollectionEntry* UArenasAssetManager::GetIngredientEntry(const UPA_ShopItem* IngredientItem) const
+{
+	return IngredientMap.Find(IngredientItem);
+}
+
 void UArenasAssetManager::ShopItemLoadCompleted(FStreamableDelegate CallBack)
 {
 	CallBack.ExecuteIfBound();
