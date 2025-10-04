@@ -56,8 +56,7 @@ void UArenasAssetManager::ShopItemLoadCompleted(FStreamableDelegate CallBack)
 
 void UArenasAssetManager::AddToCombinationMap(const UPA_ShopItem* Ingredient, const UPA_ShopItem* CombinationItem)
 {
-	FItemCollectionEntry* Combinations = CombinationMap.Find(Ingredient);
-	if (Combinations)
+	if (FItemCollectionEntry* Combinations = CombinationMap.Find(Ingredient))
 	{
 		if (!Combinations->Contains(CombinationItem))
 		{
