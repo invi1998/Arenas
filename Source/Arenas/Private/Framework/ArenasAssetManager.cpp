@@ -12,7 +12,6 @@ UArenasAssetManager& UArenasAssetManager::Get()
 		return *Singleton;
 	}
 
-	UE_LOG(LogTemp, Fatal, TEXT("UArenasAssetManager::Get(): Singleton is null! Please make sure to set the AssetManagerClassName in DefaultEngine.ini to point to your custom AssetManager class."));
 	return *NewObject<UArenasAssetManager>();
 }
 

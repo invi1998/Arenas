@@ -45,8 +45,8 @@ public:
 	void TryActivateItemAbility(const FInventoryItemHandle& Handle);	// 尝试激活指定物品的能力
 	void SellItem(const FInventoryItemHandle& Handle);	// 出售指定的库存物品
 
-	void CheckItemCombination(const UInventoryItem* Item);	// 检查并处理物品合成
-	bool FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients) const;	// 查找物品的合成材料
+	bool TryItemCombination(const UPA_ShopItem* Item);	// 尝试处理物品合成
+	bool FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{}) const;	// 查找物品的合成材料
 	UInventoryItem* GetItemByShopItem(const UPA_ShopItem* InShopItem) const;	// 通过商店物品查找库存物品
 	
 protected:

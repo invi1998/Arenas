@@ -104,19 +104,19 @@ void UInventoryComponent::SellItem(const FInventoryItemHandle& Handle)
 	Server_SellItem(Handle);
 }
 
-void UInventoryComponent::CheckItemCombination(const UInventoryItem* Item)
+bool UInventoryComponent::TryItemCombination(const UPA_ShopItem* Item)
 {
-	if (!Item || !Item->IsValid() || !GetOwner() || !GetOwner()->HasAuthority()) return;
+	if (!Item || !GetOwner() || !GetOwner()->HasAuthority()) return false;
 
 	// 获取该物品的合成条目
-	const FItemCollectionEntry* CombinationEntry = UArenasAssetManager::Get().GetCombinationEntry(Item->GetShopItem());
-	if (!CombinationEntry) return;
+	const FItemCollectionEntry* CombinationEntry = UArenasAssetManager::Get().GetCombinationEntry(Item);
+	if (!CombinationEntry) return false;
 
 	// 检查是否拥有所有合成所需的物品，如果有则移除这些物品（因为它们将被合成为新的物品）
 	for (const UPA_ShopItem* CombinationItem : CombinationEntry->GetItems())
 	{
 		TArray<UInventoryItem*> FoundIngredients;
-		if (FoundIngredientForItem(CombinationItem, FoundIngredients))
+		if (FindIngredientForItem(CombinationItem, FoundIngredients, TArray<const UPA_ShopItem*>{Item}))
 		{
 			for (UInventoryItem* IngredientItem : FoundIngredients)
 			{
@@ -124,13 +124,15 @@ void UInventoryComponent::CheckItemCombination(const UInventoryItem* Item)
 			}
 			// 给予合成后的物品
 			GrantItem(CombinationItem);
-			return;
+			return true;
 		}
 	}
+
+	return false;
 	
 }
 
-bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients) const
+bool UInventoryComponent::FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutFoundIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore) const
 {
 	const FItemCollectionEntry* Ingredients = UArenasAssetManager::Get().GetIngredientEntry(Item);
 	if (!Ingredients) return false;
@@ -138,6 +140,9 @@ bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArra
 	bool bAllFound = true;
 	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
 	{
+		// 忽略指定的材料，避免与正在合成的物品冲突
+		if (IngredientToIgnore.Contains(Ingredient)) continue;
+		
 		if (UInventoryItem* FoundItem = GetItemByShopItem(Ingredient))
 		{
 			OutFoundIngredients.Add(FoundItem);
@@ -195,26 +200,30 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 			Client_ItemStackCountChanged(AvailableStackItem->GetHandle(), AvailableStackItem->GetStackCount());
 		}
 	}
-	else if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
+	else
 	{
-		// 创建一个新的库存物品对象，并初始化它
-		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
-		NewInventoryItem->InitializeItem(ItemToPurchase, NewHandle);
-		InventoryItemsMap.Add(NewHandle, NewInventoryItem);
+		if (TryItemCombination(ItemToPurchase))
+			return;
 
-		OnItemAdded.Broadcast(NewInventoryItem);
+		if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
+		{
+			// 创建一个新的库存物品对象，并初始化它
+			FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
+			NewInventoryItem->InitializeItem(ItemToPurchase, NewHandle);
+			InventoryItemsMap.Add(NewHandle, NewInventoryItem);
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-			FString::Printf(TEXT("Server Added Item: %s, ID: %d"),
-				*NewInventoryItem->GetShopItem()->GetItemName().ToString(),
-				NewInventoryItem->GetHandle().GetHandleId()));
+			OnItemAdded.Broadcast(NewInventoryItem);
 
-		Client_ItemAdded(NewHandle, ItemToPurchase);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+				FString::Printf(TEXT("Server Added Item: %s, ID: %d"),
+					*NewInventoryItem->GetShopItem()->GetItemName().ToString(),
+					NewInventoryItem->GetHandle().GetHandleId()));
 
-		// 应用物品的GAS修改
-		NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
+			Client_ItemAdded(NewHandle, ItemToPurchase);
 
-		CheckItemCombination(NewInventoryItem);
+			// 应用物品的GAS修改
+			NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
+		}
 	}
 }
 
@@ -351,15 +360,22 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 		return;
 	}
 
-	if (IsFullForItem(ItemToPurchase))
+	if (!IsFullForItem(ItemToPurchase))
 	{
+		OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
+
+		// 购买物品金币扣除成功，发放物品
+		GrantItem(ItemToPurchase);
 		return;
 	}
 
-	OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
+	// 物品栏已满，尝试合成物品
+	if (TryItemCombination(ItemToPurchase))
+	{
+		OwnerArenasASC->ApplyModToAttribute(UArenasHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
 
-	// 购买物品金币扣除成功，发放物品
-	GrantItem(ItemToPurchase);
+	}
+	
 }
 
 
