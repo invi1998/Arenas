@@ -28,6 +28,9 @@ public:
 	virtual TArray<const ITreeNodeInterface*> GetInputs() const override;
 	virtual TArray<const ITreeNodeInterface*> GetOutputs() const override;
 	virtual const UObject* GetItemObject() const override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnItemSelected(bool bSelected);	// 当物品被选中时触发的事件
 	
 	FOnItemPurchaseIssued OnItemPurchaseIssued;		// 当已发出商品购买
 	FOnShopItemSelected OnShopItemSelected;			// 当商店物品被选中
@@ -35,6 +38,7 @@ public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	
 	FORCEINLINE const UPA_ShopItem* GetShopItem() const { return ShopItem; }
+	FORCEINLINE bool IsItemSelected() const { return bIsSelected; }
 
 private:
 	void CopyFromOther(const UShopItemWidget* Other);
@@ -50,5 +54,7 @@ private:
 
 	UPROPERTY()
 	const UListView* ParentListView;
+
+	bool bIsSelected = false;
 };
 

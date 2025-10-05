@@ -3,6 +3,7 @@
 
 #include "ItemTreeWidget.h"
 
+#include "ShopItemWidget.h"
 #include "SplineWidget.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -40,8 +41,7 @@ void UItemTreeWidget::DrawFromNode(const ITreeNodeInterface* StartNode)
 		// 移动上游节点，最后结果就是所有上游节点全部整体偏移，使其居中对齐
 		UpperSlot->SetPosition(UpperSlot->GetPosition() + FVector2D(UpperStreamMoveMat, 0.f));
 	}
-
-
+	
 	CenterWigetPanelSlot->SetPosition(FVector2D::Zero());
 	
 }
@@ -107,6 +107,12 @@ UUserWidget* UItemTreeWidget::CreateWidgetForNode(const ITreeNodeInterface* Node
 		OutCanvasPanelSlot->SetAnchors(FAnchors(0.5f, 0.5f));		// 设置锚点为中心
 		OutCanvasPanelSlot->SetAlignment(FVector2D(0.5f, 0.5f));	// 设置对齐方式为中心
 		OutCanvasPanelSlot->SetZOrder(1);
+	}
+
+	if (UShopItemWidget* ShopItemWidget = Cast<UShopItemWidget>(NodeWidget))
+	{
+		// 如果是商店物品节点，则更新选中状态
+		ShopItemWidget->OnItemSelected(ShopItemWidget->IsItemSelected());
 	}
 
 	return NodeWidget;

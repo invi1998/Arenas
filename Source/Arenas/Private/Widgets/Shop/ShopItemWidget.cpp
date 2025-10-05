@@ -44,6 +44,11 @@ const UObject* UShopItemWidget::GetItemObject() const
 	return ShopItem;
 }
 
+void UShopItemWidget::OnItemSelected_Implementation(bool bSelected)
+{
+	bIsSelected = bSelected;
+}
+
 void UShopItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
@@ -59,6 +64,7 @@ void UShopItemWidget::CopyFromOther(const UShopItemWidget* Other)
 	OnShopItemSelected = Other->OnShopItemSelected;
 	InitWithShopItem(Other->GetShopItem());
 	ParentListView = Other->ParentListView;
+	bIsSelected = Other->IsItemSelected();
 }
 
 void UShopItemWidget::InitWithShopItem(const UPA_ShopItem* NewShopItem)
@@ -91,4 +97,5 @@ void UShopItemWidget::RightButtonClicked()
 void UShopItemWidget::LeftButtonClicked()
 {
 	OnShopItemSelected.Broadcast(this);
+	OnItemSelected(true);
 }

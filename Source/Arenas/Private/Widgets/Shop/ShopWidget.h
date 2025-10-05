@@ -35,11 +35,15 @@ private:
 	void HandleShopItemSelected(const UShopItemWidget* ShopItemWidget);
 	void HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& InventoryItemHandle);
 	void ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget);
+	void HandleShopItemSelectedChanged(UObject* ItemWidgetObject);
 
 	UPROPERTY()
 	TMap<const UPA_ShopItem*, const UShopItemWidget*> ShopItemWidgetMap;
 
 	UPROPERTY()
 	UInventoryComponent* OwnerInventoryComponent;
+
+	UPROPERTY()
+	UShopItemWidget* CurrentSelectedShopItemWidget;
 	
 };

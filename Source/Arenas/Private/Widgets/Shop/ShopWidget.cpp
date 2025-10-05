@@ -17,7 +17,7 @@ void UShopWidget::NativeConstruct()
 
 	LoadShopItems();
 	ShopItemTileView->OnEntryWidgetGenerated().AddUObject(this, &UShopWidget::ShopItemWidgetsGenerated);
-
+	ShopItemTileView->OnItemSelectionChanged().AddUObject(this, &UShopWidget::HandleShopItemSelectedChanged);
 	if (APawn* OwnerPawn = GetOwningPlayerPawn())
 	{
 		OwnerInventoryComponent = OwnerPawn->GetComponentByClass<UInventoryComponent>();
@@ -42,11 +42,7 @@ void UShopWidget::ShopItemLoadedComplete()
 
 void UShopWidget::HandleShopItemSelected(const UShopItemWidget* ShopItemWidget)
 {
-	if (ItemCombinationTreeWidget)
-	{
-		ItemCombinationTreeWidget->DrawFromNode(ShopItemWidget);
-	}
-	
+	ShopItemTileView->SetSelectedItem(ShopItemWidget);
 }
 
 void UShopWidget::HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& InventoryItemHandle)
@@ -55,7 +51,7 @@ void UShopWidget::HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& 
 	if (FoundWidget && *FoundWidget)
 	{
 		ShopItemTileView->SetSelectedItem(*FoundWidget);
-		HandleShopItemSelected(*FoundWidget);
+		// HandleShopItemSelected(*FoundWidget);
 	}
 }
 
@@ -75,5 +71,22 @@ void UShopWidget::ShopItemWidgetsGenerated(UUserWidget& NewShopItemWidget)
 		ShopItemWidget->OnShopItemSelected.AddUObject(this, &UShopWidget::HandleShopItemSelected);
 		
 		ShopItemWidgetMap.Add(ShopItemWidget->GetShopItem(), ShopItemWidget);
+	}
+}
+
+void UShopWidget::HandleShopItemSelectedChanged(UObject* ItemWidgetObject)
+{
+	if (UShopItemWidget* SelectedItem = Cast<UShopItemWidget>(ItemWidgetObject))
+	{
+		if (CurrentSelectedShopItemWidget && CurrentSelectedShopItemWidget != SelectedItem)
+		{
+			CurrentSelectedShopItemWidget->OnItemSelected(false);
+		}
+		CurrentSelectedShopItemWidget = SelectedItem;
+		SelectedItem->OnItemSelected(true);
+		if (ItemCombinationTreeWidget)
+		{
+			ItemCombinationTreeWidget->DrawFromNode(SelectedItem);
+		}
 	}
 }
