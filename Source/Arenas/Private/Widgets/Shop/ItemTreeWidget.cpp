@@ -7,6 +7,7 @@
 #include "SplineWidget.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Inventory/PA_ShopItem.h"
 
 
 void UItemTreeWidget::DrawFromNode(const ITreeNodeInterface* StartNode)

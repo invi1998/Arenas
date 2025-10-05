@@ -11,6 +11,7 @@ UUserWidget* UShopItemWidget::GetWidget() const
 	UShopItemWidget* CopyWidget = CreateWidget<UShopItemWidget>(GetOwningPlayer(), GetClass());
 	if (!CopyWidget) return nullptr;
 	CopyWidget->CopyFromOther(this);		// 复制当前对象的属性到新创建的对象中
+	
 	return CopyWidget;
 }
 
@@ -96,6 +97,6 @@ void UShopItemWidget::RightButtonClicked()
 
 void UShopItemWidget::LeftButtonClicked()
 {
-	OnShopItemSelected.Broadcast(this);
 	OnItemSelected(true);
+	OnShopItemSelected.Broadcast(this);
 }

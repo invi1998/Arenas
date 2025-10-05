@@ -42,7 +42,11 @@ void UShopWidget::ShopItemLoadedComplete()
 
 void UShopWidget::HandleShopItemSelected(const UShopItemWidget* ShopItemWidget)
 {
-	ShopItemTileView->SetSelectedItem(ShopItemWidget);
+	const UShopItemWidget** FoundWidget = ShopItemWidgetMap.Find(ShopItemWidget->GetShopItem());
+	if (FoundWidget && *FoundWidget)
+	{
+		ShopItemTileView->SetSelectedItem(*FoundWidget);
+	}
 }
 
 void UShopWidget::HandleInventoryItemNeedShowInShop(const FInventoryItemHandle& InventoryItemHandle)
