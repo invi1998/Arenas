@@ -6,6 +6,7 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "PA_ShopItem.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+#include "GAS/ArenasAttributeSet.h"
 
 FInventoryItemHandle::FInventoryItemHandle()
 	: HandleID(GetInvalidID())
@@ -72,38 +73,45 @@ void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInven
 	Handle = InHandle;
 	ShopItem = InShopItem;
 	OwningArenasASC = InAbilitySystemComponent;
+	if (OwningArenasASC)
+	{
+		OwningArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UInventoryItem::OnManaChanged);
+	}
 	ApplyGASModifications();
 }
 
-bool UInventoryItem::TryActivateGrantedAbility()
+bool UInventoryItem::TryActivatePassiveAbility()
 {
-	if (!OwningArenasASC || !GrantedAbilitySpecHandle.IsValid()) return false;
-	return OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
+	if (!OwningArenasASC || !ItemPassiveAbilitySpecHandle.IsValid()) return false;
+	return OwningArenasASC->TryActivateAbility(ItemPassiveAbilitySpecHandle);
 }
 
 bool UInventoryItem::TryActivateActiveItemAbility()
 {
-	if (!OwningArenasASC || !ActiveItemAbilitySpecHandle.IsValid()) return false;
-	return OwningArenasASC->TryActivateAbility(ActiveItemAbilitySpecHandle);
+	if (!OwningArenasASC || !ItemActiveAbilitySpecHandle.IsValid()) return false;
+	return OwningArenasASC->TryActivateAbility(ItemActiveAbilitySpecHandle);
 }
 
 void UInventoryItem::RemoveGASModifications()
 {
 	if (!GetShopItem() || !OwningArenasASC) return;
+	OwningArenasASC->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).RemoveAll(this);
+
+	// 确保我们只在服务器上进行GAS修改
 	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
 	if (AppliedEquippedEffectHandle.IsValid())
 	{
 		OwningArenasASC->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle);
 		AppliedEquippedEffectHandle.Invalidate();
 	}
-	if (GrantedAbilitySpecHandle.IsValid())
+	if (ItemPassiveAbilitySpecHandle.IsValid())
 	{
 		// 对于授予的能力，我们不立即移除它们，而是在技能结束后才移除
-		OwningArenasASC->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle);
+		OwningArenasASC->SetRemoveAbilityOnEnd(ItemPassiveAbilitySpecHandle);
 	}
-	if (ActiveItemAbilitySpecHandle.IsValid())
+	if (ItemActiveAbilitySpecHandle.IsValid())
 	{
-		OwningArenasASC->SetRemoveAbilityOnEnd(ActiveItemAbilitySpecHandle);
+		OwningArenasASC->SetRemoveAbilityOnEnd(ItemActiveAbilitySpecHandle);
 	}
 }
 
@@ -217,14 +225,19 @@ void UInventoryItem::ApplyGASModifications()
 
 	if (TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility())
 	{
-		GrantedAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
+		ItemPassiveAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
 		// 对于被动技能，我们可以直接激活它
-		OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
+		OwningArenasASC->TryActivateAbility(ItemPassiveAbilitySpecHandle);
 	}
 
 	if (TSubclassOf<UGameplayAbility> ActiveItemAbility = GetShopItem()->GetActiveAbility())
 	{
-		ActiveItemAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(ActiveItemAbility));
+		ItemActiveAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(ActiveItemAbility));
 	}
 	
+}
+
+void UInventoryItem::OnManaChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	OnAbilityCanCastUpdated.Broadcast(CanCastItemAbility());
 }

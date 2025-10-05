@@ -102,5 +102,8 @@ private:
 	FNumberFormattingOptions CooldownFormattingOptions;
 
 	void UpdateCanCastVisual(bool bCanCast);
+
+	void BindCanCastUpdateDelegate();
+	void UnbindCanCastUpdateDelegate();
 	
 };

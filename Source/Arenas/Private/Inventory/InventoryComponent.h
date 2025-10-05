@@ -92,7 +92,7 @@ private:
 	/*									Client										 */
 	/**********************************************************************************/
 	UFUNCTION(Client, Reliable)
-	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded);	// 客户端添加物品
+	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded, FGameplayAbilitySpecHandle PassiveAbilitySpecHandle, FGameplayAbilitySpecHandle ActiveAbilitySpecHandle);	// 客户端添加物品
 
 	UFUNCTION(Client, Reliable)
 	void Client_ItemStackCountChanged(FInventoryItemHandle Handle, int NewStackCount);	// 客户端更新物品堆叠数量

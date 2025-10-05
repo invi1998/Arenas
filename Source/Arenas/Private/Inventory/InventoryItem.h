@@ -44,6 +44,8 @@ class UArenasAbilitySystemComponent;
 class UPA_ShopItem;
 class UGameplayAbility;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityCanCastUpdated, bool /* bCanCast */);
+
 USTRUCT()
 struct FInventoryItemHandle
 {
@@ -96,12 +98,15 @@ class ARENAS_API UInventoryItem : public UObject
 
 public:
 	UInventoryItem();
+
+	FOnAbilityCanCastUpdated OnAbilityCanCastUpdated; // 当物品的主动技能是否可以施放状态更新时触发的委托
 	
 	const FInventoryItemHandle& GetHandle() const { return Handle; }
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
+	
 	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle, UArenasAbilitySystemComponent* InAbilitySystemComponent);
 	
-	bool TryActivateGrantedAbility();		// 尝试激活物品授予的被动技能
+	bool TryActivatePassiveAbility();		// 尝试激活物品授予的被动技能
 	bool TryActivateActiveItemAbility();	// 尝试激活物品的主动技能
 	void RemoveGASModifications();
 	void ApplyConsumableGASModifications();
@@ -117,17 +122,23 @@ public:
 	bool ReduceStackCount();	// 减少堆叠数量，返回是否成功（如果减少后堆叠数量为0则返回false）
 
 	bool SetStackCount(int InStackCount);
-	bool IsGrantedActiveAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;
-	bool IsGrantedAnyActiveAbility() const;
+	bool IsGrantedActiveAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;	// 检查该物品是否授予了指定的主动技能
+	bool IsGrantedAnyActiveAbility() const;		// 检查该物品是否授予了任何主动技能
 
 	float GetAbilityCooldownTimeRemaining() const;	// 获取物品的主动技能的剩余冷却时间
 	float GetAbilityCooldownDuration() const;		// 获取物品的主动技能的冷却持续时间
 	float GetAbilityManaCost() const;				// 获取物品的主动技能的法力消耗
 
+	FGameplayAbilitySpecHandle GetPassiveAbilitySpecHandle() const { return ItemPassiveAbilitySpecHandle; }
+	FGameplayAbilitySpecHandle GetActiveActiveAbilitySpecHandle() const { return ItemActiveAbilitySpecHandle; }
+	void SetPassiveAbilitySpecHandle(FGameplayAbilitySpecHandle InHandle) { ItemPassiveAbilitySpecHandle = InHandle; }
+	void SetActiveAbilitySpecHandle(FGameplayAbilitySpecHandle InHandle) { ItemActiveAbilitySpecHandle = InHandle; }
 	bool CanCastItemAbility() const;	// 检查物品的主动技能是否可以施放（即是否有足够的法力值）
 
 private:
 	void ApplyGASModifications();
+
+	void OnManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	
 	UPROPERTY()
 	UArenasAbilitySystemComponent* OwningArenasASC;
@@ -141,8 +152,8 @@ private:
 	int Slot;		// 物品栏中的槽位
 	
 	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;			// 应用的装备效果句柄
-	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;				// 授予的能力规范句柄（被动技能）
-	FGameplayAbilitySpecHandle ActiveItemAbilitySpecHandle;				// 物品的主动技能能力规范句柄
+	FGameplayAbilitySpecHandle ItemPassiveAbilitySpecHandle;				// 授予的能力规范句柄（被动技能）
+	FGameplayAbilitySpecHandle ItemActiveAbilitySpecHandle;				// 物品的主动技能能力规范句柄
 	
 };
 

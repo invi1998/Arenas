@@ -253,12 +253,9 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 
 			OnItemAdded.Broadcast(NewInventoryItem);
 
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-				FString::Printf(TEXT("Server Added Item: %s, ID: %d"),
-					*NewInventoryItem->GetShopItem()->GetItemName().ToString(),
-					NewInventoryItem->GetHandle().GetHandleId()));
-
-			Client_ItemAdded(NewHandle, ItemToPurchase);
+			FGameplayAbilitySpecHandle GrantedAbilitySpecHandle = NewInventoryItem->GetPassiveAbilitySpecHandle();
+			FGameplayAbilitySpecHandle ActiveAbilitySpecHandle = NewInventoryItem->GetActiveActiveAbilitySpecHandle();
+			Client_ItemAdded(NewHandle, ItemToPurchase, GrantedAbilitySpecHandle, ActiveAbilitySpecHandle);
 			
 		}
 	}
@@ -345,6 +342,7 @@ void UInventoryComponent::Client_RemoveItem_Implementation(FInventoryItemHandle 
 	// 在客户端移除物品
 	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
 	{
+		FoundItem->RemoveGASModifications();
 		OnItemRemoved.Broadcast(Handle);
 		InventoryItemsMap.Remove(Handle);
 	}
@@ -363,7 +361,7 @@ void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventory
 	
 }
 
-void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded)
+void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* ItemAdded, FGameplayAbilitySpecHandle PassiveAbilitySpecHandle, FGameplayAbilitySpecHandle ActiveAbilitySpecHandle)
 {
 	// 确保只在客户端进行 （接收到服务端创建的库存句柄，然后客户端依据该句柄创建对应的库存物品对象副本）
 	if (!GetOwner() || GetOwner()->HasAuthority()) return;
@@ -371,6 +369,8 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 	if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
 	{
 		NewInventoryItem->InitializeItem(ItemAdded, AssignedHandle, OwnerArenasASC);
+		NewInventoryItem->SetPassiveAbilitySpecHandle(PassiveAbilitySpecHandle);
+		NewInventoryItem->SetActiveAbilitySpecHandle(ActiveAbilitySpecHandle);
 		InventoryItemsMap.Add(AssignedHandle, NewInventoryItem);
 
 		OnItemAdded.Broadcast(NewInventoryItem);

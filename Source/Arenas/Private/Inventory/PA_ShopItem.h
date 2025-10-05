@@ -54,7 +54,7 @@ public:
 	bool IsConsumable() const { return bIsConsumable; }
 	TSubclassOf<UGameplayEffect> GetEquippedEffect() const { return EquippedEffect; }
 	TSubclassOf<UGameplayEffect> GetConsumedEffect() const { return ConsumedEffect; }
-	TSubclassOf<UGameplayAbility> GetGrantedAbility() const { return GrantedAbility; }
+	TSubclassOf<UGameplayAbility> GetGrantedAbility() const { return PassiveAbility; }
 	bool IsStackable() const { return bIsStackable; }
 	int GetMaxStackCount() const { return MaxStackCount; }
 	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredientItems() const { return IngredientItems; }
@@ -103,7 +103,7 @@ private:
 	TSubclassOf<UGameplayEffect> ConsumedEffect;	// 使用后赋予的GameplayEffect
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
-	TSubclassOf<UGameplayAbility> GrantedAbility;	// 购买后赋予的技能（通常是被动技能）
+	TSubclassOf<UGameplayAbility> PassiveAbility;	// 购买后赋予的技能（通常是被动技能）
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
 	TSubclassOf<UGameplayAbility> ActiveAbility;	// 物品自带的主动技能

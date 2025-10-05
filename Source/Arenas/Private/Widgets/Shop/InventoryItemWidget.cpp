@@ -24,6 +24,8 @@ bool UInventoryItemWidget::IsEmpty() const
 
 void UInventoryItemWidget::EmptySlot()
 {
+	ClearCooldown();
+	UnbindCanCastUpdateDelegate();
 	InventoryItem = nullptr;
 	SetIcon(EmptyIcon);
 	SetToolTip(nullptr);
@@ -36,6 +38,8 @@ void UInventoryItemWidget::EmptySlot()
 
 void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryItem)
 {
+	UnbindCanCastUpdateDelegate();
+	
 	InventoryItem = NewInventoryItem;
 	if (!InventoryItem || !(InventoryItem->IsValid()) || InventoryItem->GetStackCount() <= 0)
 	{
@@ -78,7 +82,7 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 
 		CooldownDurabilityText->SetVisibility(AbilityCooldownDuration > 0.f ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 		CooldownDurabilityText->SetText(FText::AsNumber(AbilityCooldownDuration));
-		
+		BindCanCastUpdateDelegate();
 	}
 	else
 	{
@@ -218,5 +222,21 @@ void UInventoryItemWidget::UpdateCanCastVisual(bool bCanCast)
 	if (GetImageIcon() && GetImageIcon()->GetDynamicMaterial())
 	{
 		GetImageIcon()->GetDynamicMaterial()->SetScalarParameterValue(CanCastDynamicMaterialParamName, bCanCast ? 1.f : 0.f);
+	}
+}
+
+void UInventoryItemWidget::BindCanCastUpdateDelegate()
+{
+	if (InventoryItem)
+	{
+		const_cast<UInventoryItem*>(InventoryItem)->OnAbilityCanCastUpdated.AddUObject(this, &UInventoryItemWidget::UpdateCanCastVisual);
+	}
+}
+
+void UInventoryItemWidget::UnbindCanCastUpdateDelegate()
+{
+	if (InventoryItem)
+	{
+		const_cast<UInventoryItem*>(InventoryItem)->OnAbilityCanCastUpdated.RemoveAll(this);
 	}
 }
