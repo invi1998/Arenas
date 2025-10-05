@@ -187,3 +187,18 @@ bool UArenasBlueprintFunctionLibrary::CheckAbilityCanCost(const FGameplayAbility
 
 	return AbilityCDO->CheckCost(InAbilitySpec.Handle, InAbilitySystemComponent->AbilityActorInfo.Get());
 }
+
+// 客户端调用该方法检查物品类技能的消耗（原始数据）
+bool UArenasBlueprintFunctionLibrary::CheckAbilityCanCost_Static(const UGameplayAbility* InAbilityCDO,
+	const UArenasAbilitySystemComponent* InAbilitySystemComponent)
+{
+	if (!InAbilitySystemComponent || !InAbilityCDO) return false;
+	
+	// 使用该方法主要是用于检查物品类的技能消耗，因为物品类的技能没有在检查消耗的时候，如果使用该方法，没有传递技能Spec
+	// （AbilitySpec只存在于服务端，因为技能生效应用都只发生在服务端，如果要通过AbilitySpec来检查消耗，必须要在服务端调用，然后将结果返回给客户端，
+	// 这样会增加网络开销，特别是出现延迟），所以客户端传递空的AbilitySpecHandle，
+	// 然后在CheckCost内部，如果遇到AbilitySpecHandle为空，则会使用AbilityActorInfo来创建一个临时的AbilitySpec来进行检查
+	// 这种方式虽然不够严谨（因为AbilitySpec可能包含一些额外的信息，比如技能等级等），但对于大多数简单的装备物品技能消耗检查来说是足够的
+	// 而且这样可以避免不必要的网络开销和延迟
+	return InAbilityCDO->CheckCost(FGameplayAbilitySpecHandle(), InAbilitySystemComponent->AbilityActorInfo.Get());
+}

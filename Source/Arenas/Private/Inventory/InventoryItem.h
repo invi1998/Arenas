@@ -124,6 +124,8 @@ public:
 	float GetAbilityCooldownDuration() const;		// 获取物品的主动技能的冷却持续时间
 	float GetAbilityManaCost() const;				// 获取物品的主动技能的法力消耗
 
+	bool CanCastItemAbility() const;	// 检查物品的主动技能是否可以施放（即是否有足够的法力值）
+
 private:
 	void ApplyGASModifications();
 	

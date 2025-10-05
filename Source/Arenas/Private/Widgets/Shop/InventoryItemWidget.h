@@ -95,10 +95,12 @@ private:
 	FName IconTextureDynamicMaterialParamName = "AbilityIcon";		// 图标纹理动态材质参数名称
 
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
-	FName CanCastDynamicMaterialParamName = "CanCast";		// 能否施放动态材质参数名称
+	FName CanCastDynamicMaterialParamName = "HasEnoughMana";		// 能否施放动态材质参数名称
 
 	virtual void SetIcon(UTexture2D* IconTexture) override;
 
 	FNumberFormattingOptions CooldownFormattingOptions;
+
+	void UpdateCanCastVisual(bool bCanCast);
 	
 };

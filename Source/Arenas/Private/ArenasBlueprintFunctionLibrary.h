@@ -51,5 +51,6 @@ public:
 	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& InAbilitySpec);
 
 	static bool CheckAbilityCanCost(const FGameplayAbilitySpec& InAbilitySpec, const UArenasAbilitySystemComponent* InAbilitySystemComponent);
+	static bool CheckAbilityCanCost_Static(const UGameplayAbility* InAbilityCDO, const UArenasAbilitySystemComponent* InAbilitySystemComponent);
 	
 };

@@ -190,6 +190,18 @@ float UInventoryItem::GetAbilityManaCost() const
 	return UArenasBlueprintFunctionLibrary::GetAbilityManaCost(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC, 1);
 }
 
+bool UInventoryItem::CanCastItemAbility() const
+{
+	if (!OwningArenasASC || !IsGrantedAnyActiveAbility()) return false;
+
+	if (FGameplayAbilitySpec* AbilitySpec = OwningArenasASC->FindAbilitySpecFromClass(GetShopItem()->GetActiveAbility()))
+	{
+		return UArenasBlueprintFunctionLibrary::CheckAbilityCanCost(*AbilitySpec, OwningArenasASC);
+	}
+	return UArenasBlueprintFunctionLibrary::CheckAbilityCanCost_Static(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC);
+	
+}
+
 void UInventoryItem::ApplyGASModifications()
 {
 	if (!GetShopItem() || !OwningArenasASC) return;

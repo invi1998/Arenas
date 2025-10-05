@@ -63,6 +63,7 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 	ClearCooldown();
 	if (InventoryItem->IsGrantedAnyActiveAbility())
 	{
+		UpdateCanCastVisual(InventoryItem->CanCastItemAbility());
 		float AbilityCooldownTimeRemaining = InventoryItem->GetAbilityCooldownTimeRemaining();
 		float AbilityCooldownDuration = InventoryItem->GetAbilityCooldownDuration();
 		if (AbilityCooldownTimeRemaining > 0.f && AbilityCooldownDuration > 0.f)
@@ -81,6 +82,7 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 	}
 	else
 	{
+		UpdateCanCastVisual(true);
 		ManaCostText->SetVisibility(ESlateVisibility::Hidden);
 		CooldownDurabilityText->SetVisibility(ESlateVisibility::Hidden);
 		CooldownText->SetVisibility(ESlateVisibility::Hidden);
@@ -209,4 +211,12 @@ void UInventoryItemWidget::SetIcon(UTexture2D* IconTexture)
 	}
 
 	Super::SetIcon(IconTexture);
+}
+
+void UInventoryItemWidget::UpdateCanCastVisual(bool bCanCast)
+{
+	if (GetImageIcon() && GetImageIcon()->GetDynamicMaterial())
+	{
+		GetImageIcon()->GetDynamicMaterial()->SetScalarParameterValue(CanCastDynamicMaterialParamName, bCanCast ? 1.f : 0.f);
+	}
 }
