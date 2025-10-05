@@ -75,4 +75,30 @@ private:
 
 	virtual void RightButtonClicked() override;
 	virtual void LeftButtonClicked() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	float CooldownUpdateInterval = 0.1f;	// 冷却时间更新间隔
+
+	void CooldownFinished();
+	void UpdateCooldown();
+	void ClearCooldown();
+
+	FTimerHandle CooldownDurationTimerHandle;
+	FTimerHandle CooldownUpdateTimerHandle;
+	float CurrentCooldownTimeRemaining = 0.f;	// 当前冷却剩余时间
+	float CurrentCooldownDuration = 0.f;		// 当前冷却持续时间
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName CooldownAmtDynamicMaterialParamName = "Percent";	// 冷却进度动态材质参数名称
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName IconTextureDynamicMaterialParamName = "AbilityIcon";		// 图标纹理动态材质参数名称
+
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FName CanCastDynamicMaterialParamName = "CanCast";		// 能否施放动态材质参数名称
+
+	virtual void SetIcon(UTexture2D* IconTexture) override;
+
+	FNumberFormattingOptions CooldownFormattingOptions;
+	
 };

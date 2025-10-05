@@ -5,6 +5,7 @@
 
 #include "InventoryItemDrapDropOP.h"
 #include "ItemToolTip.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Inventory/InventoryItem.h"
 #include "Inventory/PA_ShopItem.h"
@@ -12,7 +13,7 @@
 void UInventoryItemWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	
 	EmptySlot();
 }
 
@@ -89,6 +90,13 @@ FInventoryItemHandle UInventoryItemWidget::GetInventoryItemHandle() const
 
 void UInventoryItemWidget::StartCooldown(float CooldownDuration, float CooldownTimeRemaining)
 {
+	CurrentCooldownDuration = CooldownDuration;
+	CurrentCooldownTimeRemaining = CooldownTimeRemaining;
+	GetWorld()->GetTimerManager().SetTimer(CooldownDurationTimerHandle, this, &UInventoryItemWidget::CooldownFinished, CooldownTimeRemaining, false);
+	GetWorld()->GetTimerManager().SetTimer(CooldownUpdateTimerHandle, this, &UInventoryItemWidget::UpdateCooldown, CooldownUpdateInterval, true);
+
+	CooldownText->SetVisibility(ESlateVisibility::Visible);
+
 }
 
 void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -136,4 +144,42 @@ void UInventoryItemWidget::LeftButtonClicked()
 	{
 		OnLeftButtonClicked.Broadcast(GetInventoryItemHandle());
 	}
+}
+
+void UInventoryItemWidget::CooldownFinished()
+{
+	GetWorld()->GetTimerManager().ClearTimer(CooldownUpdateTimerHandle);
+	CooldownText->SetVisibility(ESlateVisibility::Hidden);
+	if (GetImageIcon() && GetImageIcon()->GetDynamicMaterial())
+	{
+		GetImageIcon()->GetDynamicMaterial()->SetScalarParameterValue(CooldownAmtDynamicMaterialParamName, 1.f);
+	}
+}
+
+void UInventoryItemWidget::UpdateCooldown()
+{
+	CurrentCooldownTimeRemaining -= CooldownUpdateInterval;
+	float CooldownAmt = 1.f - (CurrentCooldownTimeRemaining / CurrentCooldownDuration);
+	CooldownFormattingOptions.MaximumFractionalDigits = CurrentCooldownTimeRemaining > 1.f ? 0 : 1;
+	CooldownText->SetText(FText::AsNumber(CurrentCooldownTimeRemaining, &CooldownFormattingOptions));
+	if (GetImageIcon() && GetImageIcon()->GetDynamicMaterial())
+	{
+		GetImageIcon()->GetDynamicMaterial()->SetScalarParameterValue(CooldownAmtDynamicMaterialParamName, CooldownAmt);
+	}
+}
+
+void UInventoryItemWidget::ClearCooldown()
+{
+	CooldownFinished();
+}
+
+void UInventoryItemWidget::SetIcon(UTexture2D* IconTexture)
+{
+	if (GetImageIcon() && GetImageIcon()->GetDynamicMaterial())
+	{
+		GetImageIcon()->GetDynamicMaterial()->SetTextureParameterValue(IconTextureDynamicMaterialParamName, IconTexture);
+		return;
+	}
+
+	Super::SetIcon(IconTexture);
 }
