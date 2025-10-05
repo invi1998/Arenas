@@ -212,7 +212,7 @@ void UInventoryComponent::OnAbilityCommitted(UGameplayAbility* GameplayAbility)
 	{
 		if (ItemPair.Value && ItemPair.Value->IsValid())
 		{
-			if (ItemPair.Value->IsGrantedAbility(GameplayAbility->GetClass()))
+			if (ItemPair.Value->IsGrantedActiveAbility(GameplayAbility->GetClass()))
 			{
 				// 如果匹配，则广播物品能力已被激活的事件
 				OnItemActiveAbilityCommitted.Broadcast(ItemPair.Key, CooldownDuration, CooldownTimeRemaining);

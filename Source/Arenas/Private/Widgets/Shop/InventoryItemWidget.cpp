@@ -59,6 +59,33 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 	{
 		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	ClearCooldown();
+	if (InventoryItem->IsGrantedAnyActiveAbility())
+	{
+		float AbilityCooldownTimeRemaining = InventoryItem->GetAbilityCooldownTimeRemaining();
+		float AbilityCooldownDuration = InventoryItem->GetAbilityCooldownDuration();
+		if (AbilityCooldownTimeRemaining > 0.f && AbilityCooldownDuration > 0.f)
+		{
+			StartCooldown(AbilityCooldownDuration, AbilityCooldownTimeRemaining);
+		}
+
+		// 显示冷却时间和法力消耗
+		float ManaCost = InventoryItem->GetAbilityManaCost();
+		ManaCostText->SetVisibility(ManaCost > 0.f ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+		ManaCostText->SetText(FText::AsNumber(ManaCost));
+
+		CooldownDurabilityText->SetVisibility(AbilityCooldownDuration > 0.f ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+		CooldownDurabilityText->SetText(FText::AsNumber(AbilityCooldownDuration));
+		
+	}
+	else
+	{
+		ManaCostText->SetVisibility(ESlateVisibility::Hidden);
+		CooldownDurabilityText->SetVisibility(ESlateVisibility::Hidden);
+		CooldownText->SetVisibility(ESlateVisibility::Hidden);
+	}
+	
 }
 
 void UInventoryItemWidget::UpdateStackCountText()

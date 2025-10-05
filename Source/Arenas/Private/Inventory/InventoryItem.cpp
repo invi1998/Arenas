@@ -158,14 +158,14 @@ bool UInventoryItem::SetStackCount(int InStackCount)
 	return true;
 }
 
-bool UInventoryItem::IsGrantedAbility(TSubclassOf<UGameplayAbility> AbilityClass) const
+bool UInventoryItem::IsGrantedActiveAbility(TSubclassOf<UGameplayAbility> AbilityClass) const
 {
 	if (!ShopItem) return false;
 	TSubclassOf<UGameplayAbility> GrantedAbility = ShopItem->GetActiveAbility();
 	return GrantedAbility && GrantedAbility == AbilityClass;
 }
 
-bool UInventoryItem::IsGrantedAnyAbility() const
+bool UInventoryItem::IsGrantedAnyActiveAbility() const
 {
 	if (!ShopItem) return false;
 	return ShopItem->GetActiveAbility() != nullptr;
@@ -173,20 +173,20 @@ bool UInventoryItem::IsGrantedAnyAbility() const
 
 float UInventoryItem::GetAbilityCooldownTimeRemaining() const
 {
-	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+	if (!OwningArenasASC || !IsGrantedAnyActiveAbility()) return 0.f;
 
 	return UArenasBlueprintFunctionLibrary::GetAbilityCooldownRemainingTime(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC);
 }
 
 float UInventoryItem::GetAbilityCooldownDuration() const
 {
-	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+	if (!OwningArenasASC || !IsGrantedAnyActiveAbility()) return 0.f;
 	return UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC, 1);
 }
 
 float UInventoryItem::GetAbilityManaCost() const
 {
-	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+	if (!OwningArenasASC || !IsGrantedAnyActiveAbility()) return 0.f;
 	return UArenasBlueprintFunctionLibrary::GetAbilityManaCost(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC, 1);
 }
 

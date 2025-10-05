@@ -117,8 +117,8 @@ public:
 	bool ReduceStackCount();	// 减少堆叠数量，返回是否成功（如果减少后堆叠数量为0则返回false）
 
 	bool SetStackCount(int InStackCount);
-	bool IsGrantedAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;
-	bool IsGrantedAnyAbility() const;
+	bool IsGrantedActiveAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;
+	bool IsGrantedAnyActiveAbility() const;
 
 	float GetAbilityCooldownTimeRemaining() const;	// 获取物品的主动技能的剩余冷却时间
 	float GetAbilityCooldownDuration() const;		// 获取物品的主动技能的冷却持续时间
