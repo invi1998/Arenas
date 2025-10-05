@@ -240,7 +240,14 @@ void UInventoryWidget::ItemActiveAbilityCommitted(const FInventoryItemHandle& In
 {
 	if (UInventoryItemWidget* InInventoryItemWidget = PopulatedItemEntryWidgetsMap.FindRef(InventoryItemHandle))
 	{
-		InInventoryItemWidget->StartCooldown(CooldownDuration, CooldownTimeRemaining);
+		// 遍历当前物品栏中所有的物品，找到对应的物品类型的小部件，开始冷却 (比如果使用了一个治疗药水，那么所有的治疗药水图标都应该开始冷却)
+		for (const TPair<FInventoryItemHandle, UInventoryItemWidget*>& ItemPair : PopulatedItemEntryWidgetsMap)
+		{
+			if (ItemPair.Value && ItemPair.Value->GetInventoryItem() && ItemPair.Value->GetInventoryItem()->IsForItem(InInventoryItemWidget->GetInventoryItem()->GetShopItem()))
+			{
+				ItemPair.Value->StartCooldown(CooldownDuration, CooldownTimeRemaining);
+			}
+		}
 	}
 }
 
