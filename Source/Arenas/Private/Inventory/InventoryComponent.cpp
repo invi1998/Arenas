@@ -185,6 +185,18 @@ UInventoryItem* UInventoryComponent::GetItemByShopItem(const UPA_ShopItem* InSho
 	return nullptr;
 }
 
+void UInventoryComponent::TryActivateItemAbilityInSlot(int SlotNumber)
+{
+	for (const TPair<FInventoryItemHandle, UInventoryItem*>& ItemPair : InventoryItemsMap)
+	{
+		if (ItemPair.Value && ItemPair.Value->GetItemSlot() == SlotNumber)
+		{
+			Server_ActivateItemAbility(ItemPair.Key);
+			return;
+		}
+	}
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {

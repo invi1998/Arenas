@@ -61,6 +61,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* UpgradeAbilityLeaderInputAction;	// 升级技能栏
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* UseInventoryItemInputAction;	// 使用物品栏
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* GameplayInputMappingContext;
@@ -73,6 +76,7 @@ private:
 	void HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID);
 	void LearnAbilityLeaderDown(const FInputActionValue& Value);
 	void LearnAbilityLeaderUp(const FInputActionValue& Value);
+	void UseInventoryItem(const FInputActionValue& InputActionValue);
 
 	bool bIsLearnAbilityLeaderDown = false;
 	

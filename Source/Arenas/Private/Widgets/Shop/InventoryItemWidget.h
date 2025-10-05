@@ -46,6 +46,9 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	UTexture2D* EmptyIcon;			// 空图标
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* InventoryItemUseInputKey;	// 物品使用按键
 	
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* StackCountText;		// 堆叠数量文本

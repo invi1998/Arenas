@@ -76,6 +76,8 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 			EnhancedInputComponent->BindAction(AbilityPair.Value, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleAbilityInput, AbilityPair.Key);
 		}
 
+		EnhancedInputComponent->BindAction(UseInventoryItemInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::UseInventoryItem);
+
 	}
 	
 }
@@ -157,6 +159,12 @@ void AArenasPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& Val
 void AArenasPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& Value)
 {
 	bIsLearnAbilityLeaderDown = false;
+}
+
+void AArenasPlayerCharacter::UseInventoryItem(const FInputActionValue& InputActionValue)
+{
+	int Value = FMath::RoundToInt(InputActionValue.Get<float>());
+	InventoryComponent->TryActivateItemAbilityInSlot(Value - 1);
 }
 
 void AArenasPlayerCharacter::OnDeath()

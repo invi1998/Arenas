@@ -34,6 +34,7 @@ void UInventoryItemWidget::EmptySlot()
 	CooldownText->SetVisibility(ESlateVisibility::Hidden);
 	CooldownDurabilityText->SetVisibility(ESlateVisibility::Hidden);
 	ManaCostText->SetVisibility(ESlateVisibility::Hidden);
+	InventoryItemUseInputKey->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryItem)
@@ -67,6 +68,12 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 	ClearCooldown();
 	if (InventoryItem->IsGrantedAnyActiveAbility())
 	{
+		// 如果有主动技能，则显示使用按键
+		InventoryItemUseInputKey->SetVisibility(ESlateVisibility::Visible);
+		// 物品栏使用的按键组合按键为 Alt+(SlotNumber+1)
+		FString UseInputKeyString = FString::Printf(TEXT("Alt+%d"), SlotNumber + 1);
+		InventoryItemUseInputKey->SetText(FText::FromString(UseInputKeyString));
+		
 		UpdateCanCastVisual(InventoryItem->CanCastItemAbility());
 		float AbilityCooldownTimeRemaining = InventoryItem->GetAbilityCooldownTimeRemaining();
 		float AbilityCooldownDuration = InventoryItem->GetAbilityCooldownDuration();
@@ -90,6 +97,7 @@ void UInventoryItemWidget::SetInventoryItem(const UInventoryItem* NewInventoryIt
 		ManaCostText->SetVisibility(ESlateVisibility::Hidden);
 		CooldownDurabilityText->SetVisibility(ESlateVisibility::Hidden);
 		CooldownText->SetVisibility(ESlateVisibility::Hidden);
+		InventoryItemUseInputKey->SetVisibility(ESlateVisibility::Hidden);
 	}
 	
 }
