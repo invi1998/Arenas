@@ -68,6 +68,7 @@ private:
 	void HandleItemDragDrop(UInventoryItemWidget* TargetItemWidget, UInventoryItemWidget* SourceItemWidget);
 	void OnItemRightButtonClicked(const FInventoryItemHandle& InventoryItemHandle);
 	void OnItemLeftButtonClicked(const FInventoryItemHandle& InventoryItemHandle);
+	void ItemActiveAbilityCommitted(const FInventoryItemHandle& InventoryItemHandle, float CooldownDuration, float CooldownTimeRemaining);
 
 	FInventoryItemHandle CurrentFocusedItemHandle;	// 当前右键点击的物品句柄
 

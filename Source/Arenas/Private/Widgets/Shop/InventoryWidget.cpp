@@ -25,6 +25,8 @@ void UInventoryWidget::NativeConstruct()
 			OwnerInventoryComponent->OnItemRemoved.AddUObject(this, &UInventoryWidget::ItemRemoved);
 			// 订阅库存物品堆叠数量变更事件
 			OwnerInventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackChanged);
+			// 订阅物品主动技能释放事件
+			OwnerInventoryComponent->OnItemActiveAbilityCommitted.AddUObject(this, &UInventoryWidget::ItemActiveAbilityCommitted);
 			
 			int Capacity = OwnerInventoryComponent->GetCapacity();
 			ItemListWrapBox->ClearChildren();
@@ -231,6 +233,14 @@ void UInventoryWidget::OnItemLeftButtonClicked(const FInventoryItemHandle& Inven
 	if (OwnerInventoryComponent)
 	{
 		OwnerInventoryComponent->TryActivateItemAbility(InventoryItemHandle);
+	}
+}
+
+void UInventoryWidget::ItemActiveAbilityCommitted(const FInventoryItemHandle& InventoryItemHandle, float CooldownDuration, float CooldownTimeRemaining)
+{
+	if (UInventoryItemWidget* InInventoryItemWidget = PopulatedItemEntryWidgetsMap.FindRef(InventoryItemHandle))
+	{
+		InInventoryItemWidget->StartCooldown(CooldownDuration, CooldownTimeRemaining);
 	}
 }
 

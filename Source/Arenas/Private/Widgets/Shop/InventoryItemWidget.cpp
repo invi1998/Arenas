@@ -87,6 +87,10 @@ FInventoryItemHandle UInventoryItemWidget::GetInventoryItemHandle() const
 	return !IsEmpty() ? InventoryItem->GetHandle() : FInventoryItemHandle::InvalidHandle();
 }
 
+void UInventoryItemWidget::StartCooldown(float CooldownDuration, float CooldownTimeRemaining)
+{
+}
+
 void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);

@@ -41,6 +41,8 @@ public:
 	FORCEINLINE const UInventoryItem* GetInventoryItem() const { return InventoryItem; }
 	FInventoryItemHandle GetInventoryItemHandle() const;
 
+	void StartCooldown(float CooldownDuration, float CooldownTimeRemaining);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	UTexture2D* EmptyIcon;			// 空图标

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InventoryItem.h"
+#include "Abilities/GameplayAbility.h"
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
@@ -15,9 +16,11 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedDelegate, const FInventoryItemHandle& /* ItemHandle */);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangeDelegate, const FInventoryItemHandle& /* ItemInventoryHandle */, int /* NewCount */);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemNeedShowInShopDelegate, const FInventoryItemHandle& /* ItemHandle */);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemActiveAbilityCommittedDelegate, const FInventoryItemHandle& /* ItemHandle */, float /* CooldownDuration */, float /* CooldownTimeRemaining */);
 
 class UPA_ShopItem;
 class UArenasAbilitySystemComponent;
+class UGameplayAbility;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ARENAS_API UInventoryComponent : public UActorComponent
@@ -32,6 +35,7 @@ public:
 	FOnItemRemovedDelegate OnItemRemoved;	// 当有物品被移除时触发的委托
 	FOnItemStackCountChangeDelegate OnItemStackCountChanged;	// 当物品堆叠数量变化时触发的委托
 	FOnItemNeedShowInShopDelegate OnItemNeedShowInShop;	// 当有物品需要在商店中显示时触发的委托
+	FOnItemActiveAbilityCommittedDelegate OnItemActiveAbilityCommitted;	// 当物品的主动能力被成功激活时触发的委托
 
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase);
 	float GetGold() const;
@@ -52,6 +56,7 @@ public:
 	UInventoryItem* GetItemByShopItem(const UPA_ShopItem* InShopItem, TArray<FInventoryItemHandle>& HasFoundHandle) const;	// 通过商店物品查找库存物品
 	
 protected:
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -65,6 +70,8 @@ private:
 	UPROPERTY()
 	TMap<FInventoryItemHandle, UInventoryItem*> InventoryItemsMap;	// 库存物品映射表，Key为库存物品句柄，Value为库存物品对象
 
+	void OnAbilityCommitted(UGameplayAbility* GameplayAbility);
+	
 	/**********************************************************************************/
 	/*									Server										 */
 	/**********************************************************************************/

@@ -202,3 +202,16 @@ bool UInventoryItem::SetStackCount(int InStackCount)
 	StackCount = InStackCount;
 	return true;
 }
+
+bool UInventoryItem::IsGrantedAbility(TSubclassOf<UGameplayAbility> AbilityClass) const
+{
+	if (!ShopItem) return false;
+	TSubclassOf<UGameplayAbility> GrantedAbility = ShopItem->GetActiveAbility();
+	return GrantedAbility && GrantedAbility == AbilityClass;
+}
+
+bool UInventoryItem::IsGrantedAnyAbility() const
+{
+	if (!ShopItem) return false;
+	return ShopItem->GetActiveAbility() != nullptr;
+}

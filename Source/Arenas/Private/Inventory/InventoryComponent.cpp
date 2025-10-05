@@ -192,7 +192,34 @@ void UInventoryComponent::BeginPlay()
 
 	// ...
 	OwnerArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(GetOwner());
+	if (OwnerArenasASC)
+	{
+		OwnerArenasASC->AbilityCommittedCallbacks.AddUObject(this, &UInventoryComponent::OnAbilityCommitted);
+	}
 	
+}
+
+void UInventoryComponent::OnAbilityCommitted(UGameplayAbility* GameplayAbility)
+{
+	if (!GameplayAbility) return;
+
+	float CooldownDuration = 0.f;
+	float CooldownTimeRemaining = 0.f;
+	GameplayAbility->GetCooldownTimeRemainingAndDuration(GameplayAbility->GetCurrentAbilitySpecHandle(), GameplayAbility->GetCurrentActorInfo(), CooldownTimeRemaining, CooldownDuration);
+	
+	// 遍历所有库存物品，检查是否有物品的激活能力与提交的能力匹配
+	for (TPair<FInventoryItemHandle, UInventoryItem*>& ItemPair : InventoryItemsMap)
+	{
+		if (ItemPair.Value && ItemPair.Value->IsValid())
+		{
+			if (ItemPair.Value->IsGrantedAbility(GameplayAbility->GetClass()))
+			{
+				// 如果匹配，则广播物品能力已被激活的事件
+				OnItemActiveAbilityCommitted.Broadcast(ItemPair.Key, CooldownDuration, CooldownTimeRemaining);
+				break;	// 假设一个能力只会对应一个物品，找到后即可退出循环
+			}
+		}
+	}
 }
 
 void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)

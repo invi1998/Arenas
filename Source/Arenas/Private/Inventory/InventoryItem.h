@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "Abilities/GameplayAbility.h"
 #include "UObject/Object.h"
 #include "InventoryItem.generated.h"
 
@@ -41,6 +42,7 @@
 struct FActiveGameplayEffectHandle;
 class UArenasAbilitySystemComponent;
 class UPA_ShopItem;
+class UGameplayAbility;
 
 USTRUCT()
 struct FInventoryItemHandle
@@ -115,6 +117,8 @@ public:
 	bool ReduceStackCount();	// 减少堆叠数量，返回是否成功（如果减少后堆叠数量为0则返回false）
 
 	bool SetStackCount(int InStackCount);
+	bool IsGrantedAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;
+	bool IsGrantedAnyAbility() const;
 
 private:
 	FInventoryItemHandle Handle;
