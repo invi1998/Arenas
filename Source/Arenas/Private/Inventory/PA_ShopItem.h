@@ -59,7 +59,7 @@ public:
 	int GetMaxStackCount() const { return MaxStackCount; }
 	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredientItems() const { return IngredientItems; }
 	TSubclassOf<UGameplayAbility> GetActiveAbility() const { return ActiveAbility; }
-
+	UGameplayAbility* GetActiveAbilityCDO() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")

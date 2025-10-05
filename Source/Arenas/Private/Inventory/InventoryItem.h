@@ -99,12 +99,12 @@ public:
 	
 	const FInventoryItemHandle& GetHandle() const { return Handle; }
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
-	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle);
-	void ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
-	bool TryActivateGrantedAbility(UArenasAbilitySystemComponent* OwningArenasASC);		// 尝试激活物品授予的被动技能
-	bool TryActivateActiveItemAbility(UArenasAbilitySystemComponent* OwningArenasASC);	// 尝试激活物品的主动技能
-	void RemoveGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
-	void ApplyConsumableGASModifications(UArenasAbilitySystemComponent* OwningArenasASC);
+	void InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle, UArenasAbilitySystemComponent* InAbilitySystemComponent);
+	
+	bool TryActivateGrantedAbility();		// 尝试激活物品授予的被动技能
+	bool TryActivateActiveItemAbility();	// 尝试激活物品的主动技能
+	void RemoveGASModifications();
+	void ApplyConsumableGASModifications();
 	
 	bool IsValid() const;
 	FORCEINLINE int GetStackCount() const { return StackCount; }
@@ -120,7 +120,16 @@ public:
 	bool IsGrantedAbility(TSubclassOf<UGameplayAbility> AbilityClass) const;
 	bool IsGrantedAnyAbility() const;
 
+	float GetAbilityCooldownTimeRemaining() const;	// 获取物品的主动技能的剩余冷却时间
+	float GetAbilityCooldownDuration() const;		// 获取物品的主动技能的冷却持续时间
+	float GetAbilityManaCost() const;				// 获取物品的主动技能的法力消耗
+
 private:
+	void ApplyGASModifications();
+	
+	UPROPERTY()
+	UArenasAbilitySystemComponent* OwningArenasASC;
+	
 	FInventoryItemHandle Handle;
 	
 	UPROPERTY()

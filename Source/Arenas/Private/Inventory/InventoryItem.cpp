@@ -3,6 +3,7 @@
 
 #include "InventoryItem.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "PA_ShopItem.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 
@@ -66,73 +67,27 @@ UInventoryItem::UInventoryItem()
 {
 }
 
-void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle)
+void UInventoryItem::InitializeItem(const UPA_ShopItem* InShopItem, const FInventoryItemHandle& InHandle, UArenasAbilitySystemComponent* InAbilitySystemComponent)
 {
 	Handle = InHandle;
 	ShopItem = InShopItem;
+	OwningArenasASC = InAbilitySystemComponent;
+	ApplyGASModifications();
 }
 
-void UInventoryItem::ApplyGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
-{
-	if (!GetShopItem() || !OwningArenasASC) return;
-
-	// 确保我们只在服务器上应用GAS修改
-	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
-
-	if (TSubclassOf<UGameplayEffect> EquippedEquippedEffect = GetShopItem()->GetEquippedEffect())
-	{
-		AppliedEquippedEffectHandle = OwningArenasASC->BP_ApplyGameplayEffectToSelf(EquippedEquippedEffect, 1, OwningArenasASC->MakeEffectContext());
-		
-	}
-
-	if (TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility())
-	{
-		// 授予物品对应的能力，但是首先需要检查是否在GAS里已经拥有了该技能
-		const FGameplayAbilitySpec* FoundAbilitySpec = OwningArenasASC->FindAbilitySpecFromClass(GrantedAbility);
-		if (!FoundAbilitySpec)
-		{
-			// 如果没有找到该能力，则授予它
-			GrantedAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
-			// 对于被动技能，我们可以直接激活它
-			OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
-		}
-		else
-		{
-			GrantedAbilitySpecHandle = FoundAbilitySpec->Handle;
-		}
-		
-	}
-
-	if (TSubclassOf<UGameplayAbility> ActiveItemAbility = GetShopItem()->GetActiveAbility())
-	{
-		// 主动物品能力同样需要检查是否已经拥有
-		const FGameplayAbilitySpec* FoundAbilitySpec = OwningArenasASC->FindAbilitySpecFromClass(ActiveItemAbility);
-		if (!FoundAbilitySpec)
-		{
-			ActiveItemAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(ActiveItemAbility));
-		}
-		else
-		{
-			ActiveItemAbilitySpecHandle = FoundAbilitySpec->Handle;
-		}
-		
-	}
-	
-}
-
-bool UInventoryItem::TryActivateGrantedAbility(UArenasAbilitySystemComponent* OwningArenasASC)
+bool UInventoryItem::TryActivateGrantedAbility()
 {
 	if (!OwningArenasASC || !GrantedAbilitySpecHandle.IsValid()) return false;
 	return OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
 }
 
-bool UInventoryItem::TryActivateActiveItemAbility(UArenasAbilitySystemComponent* OwningArenasASC)
+bool UInventoryItem::TryActivateActiveItemAbility()
 {
 	if (!OwningArenasASC || !ActiveItemAbilitySpecHandle.IsValid()) return false;
 	return OwningArenasASC->TryActivateAbility(ActiveItemAbilitySpecHandle);
 }
 
-void UInventoryItem::RemoveGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
+void UInventoryItem::RemoveGASModifications()
 {
 	if (!GetShopItem() || !OwningArenasASC) return;
 	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
@@ -152,7 +107,7 @@ void UInventoryItem::RemoveGASModifications(UArenasAbilitySystemComponent* Ownin
 	}
 }
 
-void UInventoryItem::ApplyConsumableGASModifications(UArenasAbilitySystemComponent* OwningArenasASC)
+void UInventoryItem::ApplyConsumableGASModifications()
 {
 	if (!GetShopItem() || !OwningArenasASC) return;
 	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
@@ -214,4 +169,50 @@ bool UInventoryItem::IsGrantedAnyAbility() const
 {
 	if (!ShopItem) return false;
 	return ShopItem->GetActiveAbility() != nullptr;
+}
+
+float UInventoryItem::GetAbilityCooldownTimeRemaining() const
+{
+	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+
+	return UArenasBlueprintFunctionLibrary::GetAbilityCooldownRemainingTime(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC);
+}
+
+float UInventoryItem::GetAbilityCooldownDuration() const
+{
+	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+	return UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC, 1);
+}
+
+float UInventoryItem::GetAbilityManaCost() const
+{
+	if (!OwningArenasASC || !IsGrantedAnyAbility()) return 0.f;
+	return UArenasBlueprintFunctionLibrary::GetAbilityManaCost(GetShopItem()->GetActiveAbilityCDO(), OwningArenasASC, 1);
+}
+
+void UInventoryItem::ApplyGASModifications()
+{
+	if (!GetShopItem() || !OwningArenasASC) return;
+
+	// 确保我们只在服务器上应用GAS修改
+	if (!OwningArenasASC->GetOwner() || !OwningArenasASC->GetOwner()->HasAuthority()) return;
+
+	if (TSubclassOf<UGameplayEffect> EquippedEquippedEffect = GetShopItem()->GetEquippedEffect())
+	{
+		AppliedEquippedEffectHandle = OwningArenasASC->BP_ApplyGameplayEffectToSelf(EquippedEquippedEffect, 1, OwningArenasASC->MakeEffectContext());
+		
+	}
+
+	if (TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility())
+	{
+		GrantedAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
+		// 对于被动技能，我们可以直接激活它
+		OwningArenasASC->TryActivateAbility(GrantedAbilitySpecHandle);
+	}
+
+	if (TSubclassOf<UGameplayAbility> ActiveItemAbility = GetShopItem()->GetActiveAbility())
+	{
+		ActiveItemAbilitySpecHandle = OwningArenasASC->GiveAbility(FGameplayAbilitySpec(ActiveItemAbility));
+	}
+	
 }

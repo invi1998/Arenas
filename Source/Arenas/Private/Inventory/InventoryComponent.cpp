@@ -248,7 +248,7 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 		{
 			// 创建一个新的库存物品对象，并初始化它
 			FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
-			NewInventoryItem->InitializeItem(ItemToPurchase, NewHandle);
+			NewInventoryItem->InitializeItem(ItemToPurchase, NewHandle, OwnerArenasASC);
 			InventoryItemsMap.Add(NewHandle, NewInventoryItem);
 
 			OnItemAdded.Broadcast(NewInventoryItem);
@@ -259,9 +259,7 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* ItemToPurchase)
 					NewInventoryItem->GetHandle().GetHandleId()));
 
 			Client_ItemAdded(NewHandle, ItemToPurchase);
-
-			// 应用物品的GAS修改
-			NewInventoryItem->ApplyGASModifications(OwnerArenasASC);
+			
 		}
 	}
 }
@@ -270,7 +268,7 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 {
 	if (!Item || !GetOwner() || !GetOwner()->HasAuthority()) return;
 	// 首先移除物品的GAS修改
-	Item->RemoveGASModifications(OwnerArenasASC);
+	Item->RemoveGASModifications();
 	// 服务端广播
 	OnItemRemoved.Broadcast(Item->GetHandle());
 	// 从映射表中移除该物品
@@ -284,7 +282,7 @@ void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
 	if (!Item || !GetOwner() || !GetOwner()->HasAuthority()) return;
 
 	// 首先应用消耗品的GAS修改
-	Item->ApplyConsumableGASModifications(OwnerArenasASC);
+	Item->ApplyConsumableGASModifications();
 
 	if (!Item->ReduceStackCount())
 	{
@@ -326,7 +324,7 @@ void UInventoryComponent::Server_ActivateItemAbility_Implementation(FInventoryIt
 {
 	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
 	{
-		FoundItem->TryActivateActiveItemAbility(OwnerArenasASC);
+		FoundItem->TryActivateActiveItemAbility();
 		const UPA_ShopItem* ShopItem = FoundItem->GetShopItem();
 		if (ShopItem && ShopItem->IsConsumable())
 		{
@@ -372,15 +370,11 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 	
 	if (UInventoryItem* NewInventoryItem = NewObject<UInventoryItem>(this))
 	{
-		NewInventoryItem->InitializeItem(ItemAdded, AssignedHandle);
+		NewInventoryItem->InitializeItem(ItemAdded, AssignedHandle, OwnerArenasASC);
 		InventoryItemsMap.Add(AssignedHandle, NewInventoryItem);
 
 		OnItemAdded.Broadcast(NewInventoryItem);
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange,
-			FString::Printf(TEXT("Client Received Item: %s, ID: %d"),
-				*NewInventoryItem->GetShopItem()->GetItemName().ToString(),
-				NewInventoryItem->GetHandle().GetHandleId()));
+		
 	}
 	
 }
