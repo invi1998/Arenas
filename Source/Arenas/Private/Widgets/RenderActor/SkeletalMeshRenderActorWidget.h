@@ -7,6 +7,7 @@
 #include "SkeletalMeshRenderActorWidget.generated.h"
 
 class ASkeletalMeshRenderActor;
+class UAnimInstance;
 /**
  * 
  */
@@ -19,6 +20,8 @@ public:
 	virtual void NativeConstruct() override;
 
 private:
+	void SetMeshAnimInstance();
+	
 	virtual void SpawnRenderActor() override;
 	virtual ARenderActor* GetRenderActor() const override;
 	

@@ -15,9 +15,6 @@ ASkeletalMeshRenderActor::ASkeletalMeshRenderActor()
 
 void ASkeletalMeshRenderActor::ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimationAsset> AnimBlueprintClass)
 {
-	// 打印 AnimBlueprintClass
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("AnimBlueprintClass: %s"), *GetNameSafe(AnimBlueprintClass)));
-	
 	MeshComp->SetSkeletalMeshAsset(InSkeletalMesh);
 	MeshComp->SetAnimInstanceClass(AnimBlueprintClass);
 }

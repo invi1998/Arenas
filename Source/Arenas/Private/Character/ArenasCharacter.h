@@ -20,6 +20,8 @@ class UWidgetComponent;
 class UArenasAttributeSet;
 class UArenasAbilitySystemComponent;
 
+DECLARE_MULTICAST_DELEGATE(FOnAnimInstanceReady);
+
 UCLASS()
 class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface, public IGenericTeamAgentInterface
 {
@@ -28,6 +30,8 @@ class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInte
 public:
 	// Sets default values for this character's properties
 	AArenasCharacter();
+
+	FOnAnimInstanceReady OnAnimInstanceReady;
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	

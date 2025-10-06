@@ -4,21 +4,28 @@
 #include "SkeletalMeshRenderActorWidget.h"
 
 #include "SkeletalMeshRenderActor.h"
-#include "GameFramework/Character.h"
+#include "Character/ArenasCharacter.h"
 
 void USkeletalMeshRenderActorWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ACharacter* PlayerCharacter = GetOwningPlayerPawn<ACharacter>();
+	AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>();
 	
-	if (PlayerCharacter && SkeletalMeshRenderActor)
+	if (ArenasCharacter)
 	{
-		SkeletalMeshRenderActor->ConfigureSkeletalMeshComponent(PlayerCharacter->GetMesh()->GetSkeletalMeshAsset(), PlayerCharacter->GetMesh()->GetAnimClass());
-		USceneCaptureComponent2D* SceneCaptureComponent = SkeletalMeshRenderActor->GetSceneCaptureComponent();
-		
+		ArenasCharacter->OnAnimInstanceReady.AddUObject(this, &USkeletalMeshRenderActorWidget::SetMeshAnimInstance);
 	}
 	
+}
+
+void USkeletalMeshRenderActorWidget::SetMeshAnimInstance()
+{
+	AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>();
+	if (ArenasCharacter && SkeletalMeshRenderActor)
+	{
+		SkeletalMeshRenderActor->ConfigureSkeletalMeshComponent(ArenasCharacter->GetMesh()->GetSkeletalMeshAsset(), ArenasCharacter->GetMesh()->GetAnimClass());
+	}
 }
 
 void USkeletalMeshRenderActorWidget::SpawnRenderActor()
