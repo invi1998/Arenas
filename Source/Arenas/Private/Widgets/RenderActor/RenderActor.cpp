@@ -47,7 +47,7 @@ void ARenderActor::BeginPlay()
 
 	// 只显示该Actor的组件，环境中其他物体都不显示
 	SceneCaptureComponent->ShowOnlyActorComponents(this);
-	SetActorLocation(FVector(0, 100000.f, 0));	// 将渲染Actor放置在远离场景的位置
+	SetActorLocation(FVector(0, 0.f, 0.f));	// 将渲染Actor放置在远离场景的位置
 }
 
 
