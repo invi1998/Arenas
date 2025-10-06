@@ -25,6 +25,7 @@ public:
 
 	void SetRenderTarget(UTextureRenderTarget2D* NewRenderTarget);
 	void UpdateRender();
+	USceneCaptureComponent2D* GetSceneCaptureComponent();
 
 protected:
 	// Called when the game starts or when spawned

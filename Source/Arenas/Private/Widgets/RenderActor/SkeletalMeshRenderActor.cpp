@@ -15,16 +15,11 @@ ASkeletalMeshRenderActor::ASkeletalMeshRenderActor()
 
 void ASkeletalMeshRenderActor::ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimationAsset> AnimBlueprintClass)
 {
-	MeshComp->SetSkeletalMesh(InSkeletalMesh);
-	if (AnimBlueprintClass)
-	{
-		MeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-		MeshComp->SetAnimInstanceClass(AnimBlueprintClass);
-	}
-	else
-	{
-		MeshComp->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-	}
+	// 打印 AnimBlueprintClass
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("AnimBlueprintClass: %s"), *GetNameSafe(AnimBlueprintClass)));
+	
+	MeshComp->SetSkeletalMeshAsset(InSkeletalMesh);
+	MeshComp->SetAnimInstanceClass(AnimBlueprintClass);
 }
 
 void ASkeletalMeshRenderActor::BeginPlay()

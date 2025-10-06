@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HeroUserWidget.generated.h"
 
+class USkeletalMeshRenderActorWidget;
 class UHeroStatsGauge;
 class UTextBlock;
 class UImage;
@@ -59,5 +60,8 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* AgilityGauge;
+
+	UPROPERTY(meta=(BindWidget))
+	USkeletalMeshRenderActorWidget* HeadShotWidget;
 
 };

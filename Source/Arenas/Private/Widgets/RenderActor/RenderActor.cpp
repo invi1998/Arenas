@@ -35,6 +35,11 @@ void ARenderActor::UpdateRender()
 	}
 }
 
+USceneCaptureComponent2D* ARenderActor::GetSceneCaptureComponent()
+{
+	return SceneCaptureComponent;
+}
+
 // Called when the game starts or when spawned
 void ARenderActor::BeginPlay()
 {
