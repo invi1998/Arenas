@@ -25,11 +25,11 @@ protected:
 	virtual void BeginDestroy() override;
 	
 private:
+	void ConfigureRenderActor();
 	// 如果想在UUserWidget中定义一个纯虚函数，该类必须是一个Abstract（抽象类）
 	virtual void SpawnRenderActor() PURE_VIRTUAL(URenderActorWidget::SpawnRenderActor, );
 	virtual ARenderActor* GetRenderActor() const PURE_VIRTUAL(URenderActorWidget::GetRenderActor, return nullptr;);
-
-	void ConfigureRenderActor();
+	
 	void BeginRenderCapture();
 	void UpdateRender();
 	void StopRenderCapture();
