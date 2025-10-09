@@ -60,6 +60,7 @@ namespace ArenasGameplayTags
 	// RoleType
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RoleType_Hero, "RoleType.Hero", "英雄角色" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RoleType_Minion, "RoleType.Minion", "小兵角色" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RoleType_Tower, "RoleType.Tower", "防御塔角色" );
 	
 }
 

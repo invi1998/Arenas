@@ -67,5 +67,6 @@ namespace ArenasGameplayTags
 	// Role Type
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RoleType_Hero);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RoleType_Minion);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RoleType_Tower);
 	
 }
