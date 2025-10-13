@@ -70,9 +70,6 @@ ETeamAttitude::Type AArenasAIController::GetTeamAttitudeTowards(const AActor& Ot
 		FGenericTeamId OtherTeamID = OtherTeamAgent->GetGenericTeamId();
 		FGenericTeamId MyTeamID = GetGenericTeamId();
         
-		UE_LOG(LogTemp, Warning, TEXT("Team Attitude: MyTeam(%d) vs OtherTeam(%d)"), 
-			   MyTeamID.GetId(), OtherTeamID.GetId());
-        
 		if (MyTeamID == OtherTeamID) 
 			return ETeamAttitude::Friendly;
 		else if (MyTeamID == FGenericTeamId::NoTeam || OtherTeamID == FGenericTeamId::NoTeam)
