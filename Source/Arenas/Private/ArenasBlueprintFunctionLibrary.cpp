@@ -166,6 +166,15 @@ bool UArenasBlueprintFunctionLibrary::IsHeroActor(AActor* InActor)
 	
 }
 
+bool UArenasBlueprintFunctionLibrary::IsTowerActor(AActor* InActor)
+{
+	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))
+	{
+		return ArenasASC->HasMatchingGameplayTag(ArenasGameplayTags::RoleType_Tower);
+	}
+	return false;
+}
+
 bool UArenasBlueprintFunctionLibrary::IsAlive(AActor* InActor)
 {
 	if (UArenasAbilitySystemComponent* ArenasASC = NativeGetArenasASCFromActor(InActor))

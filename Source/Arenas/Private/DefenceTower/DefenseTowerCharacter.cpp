@@ -10,6 +10,10 @@
 void ADefenseTowerCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 {
 	Super::SetGenericTeamId(InTeamID);
+	if (AArenasAIController* AIController = Cast<AArenasAIController>(GetController()))
+	{
+		AIController->SetGenericTeamId(InTeamID);
+	}
 }
 
 void ADefenseTowerCharacter::SetTowerAttackRange(float NewRange)

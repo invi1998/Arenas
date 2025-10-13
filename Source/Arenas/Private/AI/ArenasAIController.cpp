@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -60,6 +61,34 @@ void AArenasAIController::OnPossess(APawn* InPawn)
 		OwnerASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasAIController::OnOwnerStunTagChanged);
 	}
 	
+}
+
+ETeamAttitude::Type AArenasAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	if (const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(&Other))
+	{
+		FGenericTeamId OtherTeamID = OtherTeamAgent->GetGenericTeamId();
+		FGenericTeamId MyTeamID = GetGenericTeamId();
+        
+		UE_LOG(LogTemp, Warning, TEXT("Team Attitude: MyTeam(%d) vs OtherTeam(%d)"), 
+			   MyTeamID.GetId(), OtherTeamID.GetId());
+        
+		if (MyTeamID == OtherTeamID) 
+			return ETeamAttitude::Friendly;
+		else if (MyTeamID == FGenericTeamId::NoTeam || OtherTeamID == FGenericTeamId::NoTeam)
+			return ETeamAttitude::Neutral;
+		else
+			return ETeamAttitude::Hostile;
+	}
+	return ETeamAttitude::Neutral;
+}
+
+void AArenasAIController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	Super::SetGenericTeamId(InTeamID);
+
+	ClearAndDisablePerception();
+	EnableAllPerception();
 }
 
 void AArenasAIController::BeginPlay()
@@ -176,6 +205,11 @@ void AArenasAIController::OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Co
 void AArenasAIController::OnOwnerStunTagChanged(FGameplayTag GameplayTag, int Count)
 {
 	if (bIsPawnDead) return; // 如果角色已经死亡，则不处理眩晕状态
+
+	if (UArenasBlueprintFunctionLibrary::IsTowerActor(GetPawn()))
+	{
+		return; // 如果是防御塔，不处理眩晕状态
+	}
 	
 	if (Count != 0)
 	{

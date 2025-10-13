@@ -24,6 +24,9 @@ public:
 	
 	virtual void OnPossess(APawn* InPawn);
 
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+
 protected:
 	virtual void BeginPlay() override;
 

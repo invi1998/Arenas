@@ -46,6 +46,7 @@ public:
 	static FGameplayTag GetCameraShakeGameplayCueTag();
 
 	static bool IsHeroActor(AActor* InActor);
+	static bool IsTowerActor(AActor* InActor);
 	static bool IsAlive(AActor* InActor);
 
 	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& InAbilitySpec);
