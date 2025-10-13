@@ -3,38 +3,54 @@
 
 #include "DefenseTowerCharacter.h"
 
-#include "Arenas/Arenas.h"
+#include "AI/ArenasAIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
-// Sets default values
-ADefenseTowerCharacter::ADefenseTowerCharacter()
+void ADefenseTowerCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	TowerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TowerMesh"));
-	TowerMesh->SetupAttachment(GetRootComponent());
-	TowerMesh->SetCollisionResponseToChannel(ECC_SpringArm, ECR_Ignore); // 胶囊体忽略摄像机碰撞
-	TowerMesh->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
+	Super::SetGenericTeamId(InTeamID);
 }
 
-// Called every frame
-void ADefenseTowerCharacter::Tick(float DeltaTime)
+void ADefenseTowerCharacter::SetTowerAttackRange(float NewRange)
 {
-	Super::Tick(DeltaTime);
+	if (AArenasAIController* AIController = Cast<AArenasAIController>(GetController()))
+	{
+		if (UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent())
+		{
+			BlackboardComp->SetValueAsFloat(DefenseTowerAttackRange, NewRange);
+		}
+	}
 }
 
-// Called to bind functionality to input
-void ADefenseTowerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ADefenseTowerCharacter::SetDefenseTowerFaceGoal(AActor* NewFaceGoal)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (AArenasAIController* AIController = Cast<AArenasAIController>(GetController()))
+	{
+		if (UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent())
+		{
+			BlackboardComp->SetValueAsObject(TowerDefaultFaceGoalName, NewFaceGoal);
+		}
+	}
 }
 
-// Called when the game starts or when spawned
-void ADefenseTowerCharacter::BeginPlay()
+void ADefenseTowerCharacter::OnRep_TeamID()
 {
-	Super::BeginPlay();
-	
+	PickSkinBasedOnTeamID();
+}
+
+void ADefenseTowerCharacter::PickSkinBasedOnTeamID()
+{
+	if (TowerMaterialMap.Contains(GetGenericTeamId()))
+	{
+		if (UMaterialInstance* MaterialInstance = TowerMaterialMap[GetGenericTeamId()])
+		{
+			if (GetMesh())
+			{
+				GetMesh()->SetMaterial(0, MaterialInstance);
+			}
+		}
+	}
 }
 
 

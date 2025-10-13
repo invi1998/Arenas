@@ -34,7 +34,7 @@ private:
 	FGenericTeamId BarrackTeamID;
 
 	// 预生成的兵营小兵池
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	UPROPERTY()
 	TArray<AMinionCharacter*> SpawnedMinionPool;
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
