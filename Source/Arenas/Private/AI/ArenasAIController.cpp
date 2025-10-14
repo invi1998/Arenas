@@ -33,7 +33,7 @@ AArenasAIController::AArenasAIController()
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
 	AIPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());	// 设置主要感官为视觉
 
-	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AArenasAIController::OnTargetPerceptionUpdated);	// 绑定感知更新事件
+	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AArenasAIController::OnTargetPerceptionUpdated);		// 绑定感知更新事件
 	AIPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &AArenasAIController::OnPerceptionForgottenTarget);		// 绑定感知遗忘事件
 	
 }
@@ -88,6 +88,14 @@ void AArenasAIController::SetGenericTeamId(const FGenericTeamId& InTeamID)
 	EnableAllPerception();
 }
 
+void AArenasAIController::SetSight(float SightRadius, float LoseSightRadius, float PeripheralVisionAngleDegrees)
+{
+	SightConfig->SightRadius = SightRadius;
+	SightConfig->LoseSightRadius = LoseSightRadius;
+	SightConfig->PeripheralVisionAngleDegrees = PeripheralVisionAngleDegrees;
+	AIPerceptionComponent->RequestStimuliListenerUpdate();		// 请求更新感知监听器
+}
+
 void AArenasAIController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -100,6 +108,7 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	// 当感知到目标时将目标设置为黑板中的目标
 	if (UpdateInfo.Stimulus.WasSuccessfullySensed())	// 感知到
 	{
+		OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get());
 		if (!GetCurrentTargetActor())
 		{
 			SetCurrentTargetActor(UpdateInfo.Target.Get());
@@ -107,6 +116,7 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	}
 	else
 	{
+		OnPerceptionForgotten.Broadcast(UpdateInfo.Target.Get());
 		ForgetActorIfDead(UpdateInfo.Target.Get());
 	}
 }
@@ -114,9 +124,11 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 void AArenasAIController::OnPerceptionForgottenTarget(AActor* Actor)
 {
 	if (!Actor) return;
-
+	
 	if (GetCurrentTargetActor() == Actor)
 	{
+		OnPerceptionForgotten.Broadcast(Actor);
+		// 如果当前目标被遗忘了，那么尝试设置下一个感知到的目标
 		SetCurrentTargetActor(GetNextPerceivedActor());
 	}
 }

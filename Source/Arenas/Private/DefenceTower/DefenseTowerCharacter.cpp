@@ -3,9 +3,40 @@
 
 #include "DefenseTowerCharacter.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "AI/ArenasAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/DecalComponent.h"
+#include "player/ArenasPlayerCharacter.h"
+#include "player/ArenasPlayerController.h"
 
+
+ADefenseTowerCharacter::ADefenseTowerCharacter()
+{
+
+	GroundDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("GroundDecalComponent"));
+	GroundDecalComponent->SetupAttachment(RootComponent);
+
+}
+
+void ADefenseTowerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 仅在服务器上执行
+	if (!HasAuthority()) return;
+	
+	OwnerAIC = Cast<AArenasAIController>(NewController);
+	if (OwnerAIC)
+	{
+		// 设置AIC的感知范围为防御塔的攻击范围
+		OwnerAIC->SetSight(DefaultAttackRange, DefaultAttackRange, 180.f);
+	
+		// 监听AI控制器的感知更新事件
+		OwnerAIC->OnPerceptionUpdated.AddUObject(this, &ADefenseTowerCharacter::TowerBeginAttack);
+		OwnerAIC->OnPerceptionForgotten.AddUObject(this, &ADefenseTowerCharacter::TowerStopAttack);
+	}
+}
 
 void ADefenseTowerCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 {
@@ -38,6 +69,25 @@ void ADefenseTowerCharacter::SetDefenseTowerFaceGoal(AActor* NewFaceGoal)
 	}
 }
 
+void ADefenseTowerCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(ADefenseTowerCharacter, DefaultAttackRange))
+	{
+		FVector DecalSize = GroundDecalComponent->DecalSize;
+		GroundDecalComponent->DecalSize = FVector(DecalSize.X, DefaultAttackRange, DefaultAttackRange);
+	}
+}
+
+void ADefenseTowerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 隐藏贴花
+	GroundDecalComponent->SetVisibility(false);
+}
+
 void ADefenseTowerCharacter::OnRep_TeamID()
 {
 	PickSkinBasedOnTeamID();
@@ -56,5 +106,63 @@ void ADefenseTowerCharacter::PickSkinBasedOnTeamID()
 		}
 	}
 }
+
+void ADefenseTowerCharacter::TowerBeginAttack(AActor* Actor)
+{
+	if (!HasAuthority()) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT(" ---------------- Server TowerBeginAttack: %s"), *Actor->GetName());
+	// 如果感知到的目标是玩家角色，并且该角色是当前玩家客户端控制的角色，则进行处理
+	if (!UArenasBlueprintFunctionLibrary::IsHeroActor(Actor)) return;
+	if (!UArenasBlueprintFunctionLibrary::IsAlive(Actor)) return;
+	ClientTowerBeginAttack(Actor);
+	
+}
+
+void ADefenseTowerCharacter::TowerStopAttack(AActor* Actor)
+{
+	if (!HasAuthority()) return;
+	if (!UArenasBlueprintFunctionLibrary::IsHeroActor(Actor)) return;
+	ClientTowerStopAttack(Actor);
+}
+
+void ADefenseTowerCharacter::ClientTowerBeginAttack_Implementation(AActor* Actor)
+{
+	// 确保组件有效
+	if (!GroundDecalComponent)
+	{
+		return;
+	}
+    
+	// 确保材质有效
+	if (!GroundDecalComponent->GetDecalMaterial())
+	{
+		return;
+	}
+    
+	// 确保大小合理
+	if (GroundDecalComponent->DecalSize.Y <= 0 || GroundDecalComponent->DecalSize.Z <= 0)
+	{
+		GroundDecalComponent->DecalSize = FVector(500.f, DefaultAttackRange, DefaultAttackRange);
+	}
+    
+	// 显示贴花
+	GroundDecalComponent->SetVisibility(true);
+    
+	// 强制更新渲染状态
+	GroundDecalComponent->MarkRenderStateDirty();
+}
+
+void ADefenseTowerCharacter::ClientTowerStopAttack_Implementation(AActor* Actor)
+{
+	if (APawn* LocalPawn = GetWorld()->GetFirstPlayerController()->GetPawn())
+	{
+		if (Actor == LocalPawn)
+		{
+			GroundDecalComponent->SetVisibility(false);
+		}
+	}
+}
+
 
 

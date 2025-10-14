@@ -27,6 +27,9 @@ AArenasCharacter::AArenasCharacter()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_SpringArm, ECR_Ignore); // 胶囊体忽略摄像机碰撞
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
+
+	// 角色骨骼不接收贴花
+	GetMesh()->SetReceivesDecals(false);
 	
 	ArenasAbilitySystemComponent = CreateDefaultSubobject<UArenasAbilitySystemComponent>(TEXT("ArenasAbilitySystemComponent"));
 	// ArenasAbilitySystemComponent->SetIsReplicated(true);
