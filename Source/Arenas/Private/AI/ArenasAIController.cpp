@@ -108,10 +108,14 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	// 当感知到目标时将目标设置为黑板中的目标
 	if (UpdateInfo.Stimulus.WasSuccessfullySensed())	// 感知到
 	{
-		OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get());
 		if (!GetCurrentTargetActor())
 		{
+			OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get(), true);
 			SetCurrentTargetActor(UpdateInfo.Target.Get());
+		}
+		else
+		{
+			OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get(), false);
 		}
 	}
 	else

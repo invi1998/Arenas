@@ -7,10 +7,12 @@
 #include "GameFramework/PlayerController.h"
 #include "ArenasPlayerController.generated.h"
 
+class AAttackRangeDecal;
 class UInputAction;
 class UInputMappingContext;
 class UArenasUserWidget;
 class AArenasPlayerCharacter;
+class UMaterialInterface;
 /**
  * 
  */
@@ -30,6 +32,9 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual void SetupInputComponent() override;
+
+	void DrawDefenseTowerRangeDecal(const FName& DefenseTowerName, const FVector& Location, float Range, bool bUnderAttack);
+	void ClearDefenseTowerRangeDecal(const FName& DefenseTowerName);
 
 private:
 	UPROPERTY()
@@ -54,5 +59,28 @@ private:
 
 	UFUNCTION()
 	void OnShopToggleActionTriggered();
+
+	// Decal 
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	TSubclassOf<AAttackRangeDecal> AttackRangeDecalClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	FName DecalDynamicMaterialColorParamName = "Color";
+	
+	UPROPERTY()
+	TMap<FName, TObjectPtr<AAttackRangeDecal>> ActiveDefenseTowerAttackRangeDecals;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	FLinearColor AttackColor = FLinearColor::Red;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	FLinearColor InRangeColor = FLinearColor::Yellow;
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowTowerAttackRangeDecal(const FName& DefenseTowerName, const FVector& GroundLocation, float Range, bool bUnderAttack);
+
+	UFUNCTION(Client, Reliable)
+	void Client_HideTowerAttackRangeDecal(const FName& DefenseTowerName);
+
 	
 };

@@ -55,14 +55,7 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	UDecalComponent* GroundDecalComponent;
 
-	void TowerBeginAttack(AActor* Actor);
+	void TowerBeginAttack(AActor* Actor, bool bIsAttackTarget);
 	void TowerStopAttack(AActor* Actor);
-
-	// Client
-	UFUNCTION(Client, Reliable)
-	void ClientTowerBeginAttack(AActor* Actor);
-
-	UFUNCTION(Client, Reliable)
-	void ClientTowerStopAttack(AActor* Actor);
 
 };

@@ -13,6 +13,7 @@ class UAIPerceptionComponent;
 class UBehaviorTree;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPerceptionUpdate, AActor*);	// 感知更新事件委托
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPerceptionUpdateWithAttack, AActor*, bool);	// 感知更新事件委托，附带是否是攻击目标参数
 
 UCLASS()
 class ARENAS_API AArenasAIController : public AAIController
@@ -31,7 +32,7 @@ public:
 
 	void SetSight(float SightRadius, float LoseSightRadius, float PeripheralVisionAngleDegrees);
 
-	FOnPerceptionUpdate OnPerceptionUpdated;		// 感知更新事件
+	FOnPerceptionUpdateWithAttack OnPerceptionUpdated;		// 感知更新事件
 	FOnPerceptionUpdate OnPerceptionForgotten;		// 感知遗忘事件
 
 protected:

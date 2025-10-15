@@ -31,7 +31,7 @@ void ADefenseTowerCharacter::PossessedBy(AController* NewController)
 	{
 		// 设置AIC的感知范围为防御塔的攻击范围
 		OwnerAIC->SetSight(DefaultAttackRange, DefaultAttackRange, 180.f);
-	
+		
 		// 监听AI控制器的感知更新事件
 		OwnerAIC->OnPerceptionUpdated.AddUObject(this, &ADefenseTowerCharacter::TowerBeginAttack);
 		OwnerAIC->OnPerceptionForgotten.AddUObject(this, &ADefenseTowerCharacter::TowerStopAttack);
@@ -107,15 +107,21 @@ void ADefenseTowerCharacter::PickSkinBasedOnTeamID()
 	}
 }
 
-void ADefenseTowerCharacter::TowerBeginAttack(AActor* Actor)
+void ADefenseTowerCharacter::TowerBeginAttack(AActor* Actor, bool bIsAttackTarget)
 {
 	if (!HasAuthority()) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT(" ---------------- Server TowerBeginAttack: %s"), *Actor->GetName());
 	// 如果感知到的目标是玩家角色，并且该角色是当前玩家客户端控制的角色，则进行处理
 	if (!UArenasBlueprintFunctionLibrary::IsHeroActor(Actor)) return;
 	if (!UArenasBlueprintFunctionLibrary::IsAlive(Actor)) return;
-	ClientTowerBeginAttack(Actor);
+	// 通知玩家角色绘制防御塔攻击范围贴花
+	if (AArenasPlayerCharacter* PlayerCharacter = Cast<AArenasPlayerCharacter>(Actor))
+	{
+		if (AArenasPlayerController* PlayerController = Cast<AArenasPlayerController>(PlayerCharacter->GetController()))
+		{
+			PlayerController->DrawDefenseTowerRangeDecal(GetFName(), GetActorLocation(), DefaultAttackRange, bIsAttackTarget);
+		}
+	}
 	
 }
 
@@ -123,46 +129,19 @@ void ADefenseTowerCharacter::TowerStopAttack(AActor* Actor)
 {
 	if (!HasAuthority()) return;
 	if (!UArenasBlueprintFunctionLibrary::IsHeroActor(Actor)) return;
-	ClientTowerStopAttack(Actor);
-}
-
-void ADefenseTowerCharacter::ClientTowerBeginAttack_Implementation(AActor* Actor)
-{
-	// 确保组件有效
-	if (!GroundDecalComponent)
+	// 通知玩家角色隐藏防御塔攻击范围贴花
+	if (AArenasPlayerCharacter* PlayerCharacter = Cast<AArenasPlayerCharacter>(Actor))
 	{
-		return;
-	}
-    
-	// 确保材质有效
-	if (!GroundDecalComponent->GetDecalMaterial())
-	{
-		return;
-	}
-    
-	// 确保大小合理
-	if (GroundDecalComponent->DecalSize.Y <= 0 || GroundDecalComponent->DecalSize.Z <= 0)
-	{
-		GroundDecalComponent->DecalSize = FVector(500.f, DefaultAttackRange, DefaultAttackRange);
-	}
-    
-	// 显示贴花
-	GroundDecalComponent->SetVisibility(true);
-    
-	// 强制更新渲染状态
-	GroundDecalComponent->MarkRenderStateDirty();
-}
-
-void ADefenseTowerCharacter::ClientTowerStopAttack_Implementation(AActor* Actor)
-{
-	if (APawn* LocalPawn = GetWorld()->GetFirstPlayerController()->GetPawn())
-	{
-		if (Actor == LocalPawn)
+		if (AArenasPlayerController* PlayerController = Cast<AArenasPlayerController>(PlayerCharacter->GetController()))
 		{
-			GroundDecalComponent->SetVisibility(false);
+			// 获取防御塔的唯一标识符
+			FName TowerName = GetFName();
+			PlayerController->ClearDefenseTowerRangeDecal(TowerName);
 		}
+		
 	}
 }
+
 
 
 

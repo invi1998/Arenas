@@ -12,6 +12,7 @@
 #include "EnhancedInputComponent.h"
 #include "Arenas/Arenas.h"
 #include "Component/UI/PlayerUIComponent.h"
+#include "Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/ArenasHeroAttributeSet.h"
