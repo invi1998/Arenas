@@ -8,7 +8,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Actor/AttackRangeDecal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/DecalComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/ArenasUserWidget.h"
 
@@ -71,7 +70,6 @@ void AArenasPlayerController::SetupInputComponent()
 
 void AArenasPlayerController::DrawDefenseTowerRangeDecal(const FName& DefenseTowerName, const FVector& Location, float Range, bool bUnderAttack)
 {
-	if (!GetOwner() || !GetOwner()->HasAuthority()) return
 	Client_ShowTowerAttackRangeDecal(DefenseTowerName, Location, Range, bUnderAttack);
 }
 

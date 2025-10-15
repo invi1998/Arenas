@@ -138,6 +138,8 @@ void ADefenseTowerCharacter::WhileSameTeamHeroInRangeTakeDamage(AActor* DamageSo
 {
 	if (!HasAuthority()) return;
 	if (!DamageSourceActor) return;
+	// 如果当前防御塔已经有攻击目标，并且该目标是英雄角色，则不进行切换
+	if (UArenasBlueprintFunctionLibrary::IsHeroActor(CurrentTargetActor)) return;
 	// 如果伤害来源角色不是英雄角色或者不是敌方英雄角色或者该角色已经不再防御塔范围内，则直接返回
 	if (!EnemyTeamHeroesInRange.Contains(DamageSourceActor)) return;
 	if (UArenasBlueprintFunctionLibrary::IsAlive(DamageSourceActor))
@@ -188,7 +190,23 @@ void ADefenseTowerCharacter::SelectAttackTarget()
 {
 	if (!HasAuthority()) return;
 	// 如果当前已经有攻击目标，则不进行选择
-	if (CurrentTargetActor) return;
+	if (CurrentTargetActor)
+	{
+		for (AActor* EnemyHero : EnemyTeamHeroesInRange)
+		{
+			// 通知范围内的敌方英雄角色绘制防御塔攻击范围贴花
+			if (EnemyHero == CurrentTargetActor)
+			{
+				TowerBeginAttack(EnemyHero, true);
+			}
+			else
+			{
+				TowerBeginAttack(EnemyHero, false);
+			}
+		}
+		return;
+	}
+	
 	// 优先选择敌方小兵作为攻击目标
 	if (EnemyTeamMinionsInRange.Num() > 0)
 	{
@@ -213,6 +231,7 @@ void ADefenseTowerCharacter::SelectAttackTarget()
 			// 如果没有敌方小兵和英雄角色，则清空当前攻击目标
 			if (TowerAIController)
 			{
+				CurrentTargetActor = nullptr;
 				TowerAIController->SetCurrentTargetActor(nullptr);
 			}
 		}
@@ -230,6 +249,7 @@ void ADefenseTowerCharacter::SelectAttackTarget()
 			TowerBeginAttack(EnemyHero, false);
 		}
 	}
+	
 }
 
 void ADefenseTowerCharacter::ActorEnterTowerAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -285,7 +305,11 @@ void ADefenseTowerCharacter::ActorExitTowerAttackRange(UPrimitiveComponent* Over
 		{
 			if (bIsHero)
 			{
-				SameTeamHeroInRange.Remove(OtherActor);
+				if (SameTeamHeroInRange.Contains(OtherActor))
+				{
+					SameTeamHeroInRange.Remove(OtherActor);
+				}
+				
 				// 同时移除对该角色伤害事件的监听
 				if (UArenasAbilitySystemComponent* HeroASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(OtherActor))
 				{
@@ -302,11 +326,18 @@ void ADefenseTowerCharacter::ActorExitTowerAttackRange(UPrimitiveComponent* Over
 			
 			if (bIsHero)
 			{
-				EnemyTeamHeroesInRange.Remove(OtherActor);
+				if (EnemyTeamHeroesInRange.Contains(OtherActor))
+				{
+					EnemyTeamHeroesInRange.Remove(OtherActor);
+				}
+				
 			}
 			else
 			{
-				EnemyTeamMinionsInRange.Remove(OtherActor);
+				if (EnemyTeamMinionsInRange.Contains(OtherActor))
+				{
+					EnemyTeamMinionsInRange.Remove(OtherActor);
+				}
 			}
 		}
 	}
