@@ -77,7 +77,6 @@ void AArenasPlayerController::DrawDefenseTowerRangeDecal(const FName& DefenseTow
 
 void AArenasPlayerController::ClearDefenseTowerRangeDecal(const FName& DefenseTowerName)
 {
-	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 	Client_HideTowerAttackRangeDecal(DefenseTowerName);
 }
 

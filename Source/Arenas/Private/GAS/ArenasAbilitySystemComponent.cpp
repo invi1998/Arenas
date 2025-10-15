@@ -215,9 +215,22 @@ void UArenasAbilitySystemComponent::AuthApplyGameplayEffectToSelf(TSubclassOf<UG
 void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	// 是否是受到伤害
+	if (Data.NewValue < Data.OldValue)
+	{
+		// 广播触发受伤事件
+		if (Data.GEModData)
+		{
+			AActor* DamageSource = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
+			float DamageAmount = Data.OldValue - Data.NewValue;
+			OnAnyDamageTaken.Broadcast(DamageSource, DamageAmount);
+		}
+	}
 	
 	if (Data.NewValue <= 0.f)
 	{
+		OnActorDeath.Broadcast(GetOwner());
 		AddGameplayTagToActorIfNotHas(ArenasGameplayTags::Status_Health_Empty);
 		RemoveGameplayTagFromActorIfHas(ArenasGameplayTags::Status_Health_Full);
 		if (AbilitySystemGenerics->GetDeathEffectClass())

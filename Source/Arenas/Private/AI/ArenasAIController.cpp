@@ -110,17 +110,11 @@ void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdate
 	{
 		if (!GetCurrentTargetActor())
 		{
-			OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get(), true);
 			SetCurrentTargetActor(UpdateInfo.Target.Get());
-		}
-		else
-		{
-			OnPerceptionUpdated.Broadcast(UpdateInfo.Target.Get(), false);
 		}
 	}
 	else
 	{
-		OnPerceptionForgotten.Broadcast(UpdateInfo.Target.Get());
 		ForgetActorIfDead(UpdateInfo.Target.Get());
 	}
 }
@@ -131,7 +125,6 @@ void AArenasAIController::OnPerceptionForgottenTarget(AActor* Actor)
 	
 	if (GetCurrentTargetActor() == Actor)
 	{
-		OnPerceptionForgotten.Broadcast(Actor);
 		// 如果当前目标被遗忘了，那么尝试设置下一个感知到的目标
 		SetCurrentTargetActor(GetNextPerceivedActor());
 	}

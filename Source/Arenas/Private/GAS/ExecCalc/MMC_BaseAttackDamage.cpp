@@ -4,7 +4,6 @@
 #include "GAS/ExecCalc/MMC_BaseAttackDamage.h"
 
 #include "ArenasGameplayTags.h"
-#include "GAS/ArenasAttributeSet.h"
 
 UMMC_BaseAttackDamage::UMMC_BaseAttackDamage()
 {

@@ -9,6 +9,11 @@
 
 class UPA_AbilitySystemGenerics;
 class IPawnUIInterface;
+
+// 伤害变化委托（伤害来源，伤害数值）
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnAnyDamageTakenDelegate, AActor*, float);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnActorDeathDelegate, AActor*);
+
 /**
  * 
  */
@@ -19,6 +24,9 @@ class UArenasAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	UArenasAbilitySystemComponent();
+
+	FOnAnyDamageTakenDelegate OnAnyDamageTaken;
+	FOnActorDeathDelegate OnActorDeath;
 
 	void InitializeBaseAttributes();
 	void ServerSideInit();

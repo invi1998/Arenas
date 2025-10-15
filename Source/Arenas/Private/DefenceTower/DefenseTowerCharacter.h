@@ -6,7 +6,7 @@
 #include "Character/ArenasCharacter.h"
 #include "DefenseTowerCharacter.generated.h"
 
-class AArenasAIController;
+class AArenasTowerAIController;
 class UCameraComponent;
 class USphereComponent;
 
@@ -21,8 +21,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
-
-	void SetTowerAttackRange(float NewRange);
 
 	void SetDefenseTowerFaceGoal(AActor* NewFaceGoal);
 
@@ -50,12 +48,39 @@ private:
 	FName TowerDefaultFaceGoalName = "TowerDefaultFaceGoal"; // 防御塔默认面向目标的标签
 
 	UPROPERTY()
-	AArenasAIController* OwnerAIC;
+	AArenasTowerAIController* TowerAIController;
 
+	UPROPERTY(VisibleAnywhere, Category = "Range")
+	USphereComponent* AttackRangeSphereComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	UDecalComponent* GroundDecalComponent;
 
 	void TowerBeginAttack(AActor* Actor, bool bIsAttackTarget);
 	void TowerStopAttack(AActor* Actor);
+
+	void WhileSameTeamHeroInRangeTakeDamage(AActor* DamageSourceActor, float DamageValue);
+
+	void UpdateTowerAttackTargetOnEnemyDeath(AActor* DeadActor);
+
+	void SelectAttackTarget();
+	
+	UFUNCTION()
+	void ActorEnterTowerAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void ActorExitTowerAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY()
+	TArray<AActor*> SameTeamHeroInRange; // 范围内的同队伍英雄角色
+
+	UPROPERTY()
+	TArray<AActor*> EnemyTeamMinionsInRange; // 范围内的敌对队伍小兵角色
+
+	UPROPERTY()
+	TArray<AActor*> EnemyTeamHeroesInRange; // 范围内的敌对队伍英雄角色
+
+	UPROPERTY()
+	AActor* CurrentTargetActor;
 
 };
