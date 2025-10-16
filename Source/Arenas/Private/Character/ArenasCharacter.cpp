@@ -388,6 +388,7 @@ void AArenasCharacter::DeathMontageFinished()
 	{
 		// 死亡动画播放完毕后添加布娃娃物理效果
 		SetRagdollPhysics(true);
+		OnFinishDeathAnimation();
 	}
 	
 }
@@ -417,6 +418,10 @@ void AArenasCharacter::PlayDeathAnimation()
 		GetWorld()->GetTimerManager().ClearTimer(DeathMontageTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(DeathMontageTimerHandle, this, &AArenasCharacter::DeathMontageFinished, MontageDuration + DeathMontageFinishTimeOffset, false);
 	}
+}
+
+void AArenasCharacter::OnFinishDeathAnimation()
+{
 }
 
 void AArenasCharacter::OnDeath()

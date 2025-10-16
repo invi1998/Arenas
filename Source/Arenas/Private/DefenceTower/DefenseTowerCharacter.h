@@ -31,6 +31,9 @@ public:
 private:
 	virtual void OnRep_TeamID() override;
 
+	virtual void OnFinishDeathAnimation();
+	virtual void OnDeath();
+
 	// 根据队伍ID设置塔的材质颜色
 	void PickSkinBasedOnTeamID();
 

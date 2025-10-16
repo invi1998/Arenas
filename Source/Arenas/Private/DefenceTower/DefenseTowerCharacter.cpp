@@ -42,6 +42,8 @@ void ADefenseTowerCharacter::PossessedBy(AController* NewController)
 			
 		}
 	}
+
+	
 }
 
 void ADefenseTowerCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
@@ -83,6 +85,44 @@ void ADefenseTowerCharacter::BeginPlay()
 void ADefenseTowerCharacter::OnRep_TeamID()
 {
 	PickSkinBasedOnTeamID();
+}
+
+void ADefenseTowerCharacter::OnFinishDeathAnimation()
+{
+	Destroy();
+}
+
+void ADefenseTowerCharacter::OnDeath()
+{
+	// 防御塔消亡
+	for (AActor* EnemyHero : EnemyTeamHeroesInRange)
+	{
+		TowerStopAttack(EnemyHero);
+		if (UArenasAbilitySystemComponent* HeroASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(EnemyHero))
+		{
+			HeroASC->OnActorDeath.RemoveAll(this);
+		}
+	}
+	EnemyTeamHeroesInRange.Empty();
+
+	for (AActor* EnemyMinion : EnemyTeamMinionsInRange)
+	{
+		// 清空绑定
+		if (UArenasAbilitySystemComponent* MinionASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(EnemyMinion))
+		{
+			MinionASC->OnActorDeath.RemoveAll(this);
+		}
+	}
+	EnemyTeamMinionsInRange.Empty();
+	
+	for (AActor* SameTeamHero : SameTeamHeroInRange)
+	{
+		// 清空绑定
+		if (UArenasAbilitySystemComponent* HeroASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(SameTeamHero))
+		{
+			HeroASC->OnAnyDamageTaken.RemoveAll(this);
+		}
+	}
 }
 
 void ADefenseTowerCharacter::PickSkinBasedOnTeamID()

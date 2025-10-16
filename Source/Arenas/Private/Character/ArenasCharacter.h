@@ -152,6 +152,7 @@ private:
 
 	void PlayDeathAnimation();
 
+	virtual void OnFinishDeathAnimation();
 	virtual void OnDeath();
 	virtual void OnRespawn();
 
