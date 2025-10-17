@@ -16,7 +16,7 @@ class ARENAS_API AArenasTowerAIController : public AAIController
 
 public:
 	// Sets default values for this actor's properties
-	AArenasTowerAIController();
+	AArenasTowerAIController(const FObjectInitializer& ObjectInitializer);
 
 	virtual void OnPossess(APawn* InPawn) override;
 

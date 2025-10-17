@@ -8,8 +8,10 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Engine.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-AArenasTowerAIController::AArenasTowerAIController()
+AArenasTowerAIController::AArenasTowerAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
 }
 

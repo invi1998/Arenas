@@ -10,12 +10,14 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/ArenasCharacter.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
-
-// Sets default values
-AArenasAIController::AArenasAIController()
+// 该Super构造函数中的SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent")是用于设置默认的寻路组件
+// 因为默认的寻路组件是PathFollowingComponent，而我们需要的是CrowdFollowingComponent，所以需要在构造函数中设置默认的寻路组件
+AArenasAIController::AArenasAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
@@ -101,6 +103,41 @@ void AArenasAIController::BeginPlay()
 	Super::BeginPlay();
 
 	RunBehaviorTree(BehaviorTree); // 运行行为树
+
+	if (UCrowdFollowingComponent* CrowdFollowingComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+	{
+		// 是否启用人群避让
+		CrowdFollowingComp->SetCrowdSimulationState(bEnableCrowdAvoidance ? ECrowdSimulationState::Enabled : ECrowdSimulationState::ObstacleOnly);
+
+		// 设置人群避让质量
+		switch (DetourCrowdAvoidanceQuality)
+		{
+		case 1:
+			CrowdFollowingComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low);
+			break;
+		case 2:
+			CrowdFollowingComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Medium);
+			break;
+		case 3:
+			CrowdFollowingComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Good);
+			break;
+		case 4:
+			CrowdFollowingComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
+			break;
+		default: break;
+		}
+
+		// 设置避让组：1表示我们当前的AI应该对其他AI（EnemyAI，因为我们此前设置的团队ID 1 就是我们的EnemyTeam)进行避让
+		// CrowdFollowingComp->SetAvoidanceGroup(1);				// 设置避让组
+		// CrowdFollowingComp->SetGroupsToAvoid(1);		// 设置需要避让的组
+
+		// 设置人群避让半径
+		CrowdFollowingComp->SetCrowdCollisionQueryRange(CollisionQueryRange);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AArenasAIController::BeginPlay: CrowdFollowingComponent is null!"));
+	}
 }
 
 void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
