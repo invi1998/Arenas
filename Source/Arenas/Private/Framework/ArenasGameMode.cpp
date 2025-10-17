@@ -22,6 +22,16 @@ APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole,
 	return NewPlayerController;
 }
 
+void AArenasGameMode::RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack)
+{
+	BarracksMap.Add(InTeamID, InBarrack);
+}
+
+AMinionBarrack* AArenasGameMode::GetBarrackByTeamID(const FGenericTeamId& InTeamID) const
+{
+	return BarracksMap.Contains(InTeamID) ? BarracksMap[InTeamID] : nullptr;
+}
+
 FGenericTeamId AArenasGameMode::GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const
 {
 	static int PlayerCount = 0;

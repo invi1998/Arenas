@@ -9,6 +9,8 @@
 
 // 兵营
 
+class AStormCore;
+class ADefenseTowerCharacter;
 class AMinionCharacter;
 
 UCLASS()
@@ -19,6 +21,10 @@ class ARENAS_API AMinionBarrack : public AActor
 public:
 	// Sets default values for this actor's properties
 	AMinionBarrack();
+
+	AActor* GetCurrentMinionGoal() const;
+
+	AMinionBarrack* GetEnemyBarrack() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +39,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	FGenericTeamId BarrackTeamID;
 
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	FGenericTeamId EnemyBarrackTeamID;
+
 	// 预生成的兵营小兵池
 	UPROPERTY()
 	TArray<AMinionCharacter*> SpawnedMinionPool;
@@ -42,9 +51,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TArray<APlayerStart *> MinionSpawnPoints;
-
-	UPROPERTY(EditAnywhere, Category = "Spawn")
-	AActor* MinionGoal; // 小兵的目标点
 
 	int32 NextSpawnSpotIndex = -1;
 
@@ -74,5 +80,33 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	float SpawnMinionInterval = 1.f; // 小兵组内生成间隔，单位秒
+
+	// 防御塔相关
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	TSubclassOf<ADefenseTowerCharacter> DefenseTowerClass;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	TArray<APlayerStart *> TowerSpawnPoints;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	TSubclassOf<AStormCore> StormCoreClass;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	APlayerStart* BaseCoreSpawnPoint;	// 防御塔核心的生成点
+
+	UPROPERTY()
+	TArray<ADefenseTowerCharacter *> SpawnedTowers;
+
+	UPROPERTY()
+	AStormCore* SpawnedStormCore;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	AActor* DefaultFaceGoalActor; // 默认面向的目标
+
+	void OnDefenseTowerDeath(AActor* TowerActor);
+	void SpawnDefenseTowers();
+
+	AActor* GetCurrentCanBeAttackGoalActor() const;
 	
 };

@@ -3,8 +3,14 @@
 
 #include "MinionBarrack.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "Character/Minion/MinionCharacter.h"
+#include "DefenceTower/DefenseTowerCharacter.h"
+#include "DefenceTower/StormCore.h"
+#include "Framework/ArenasGameMode.h"
 #include "GameFramework/PlayerStart.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -14,6 +20,108 @@ AMinionBarrack::AMinionBarrack()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+AActor* AMinionBarrack::GetCurrentMinionGoal() const
+{
+	if (AMinionBarrack* EnemyBarrack = GetEnemyBarrack())
+	{
+		return EnemyBarrack->GetCurrentCanBeAttackGoalActor();
+	}
+	return nullptr;
+}
+
+AMinionBarrack* AMinionBarrack::GetEnemyBarrack() const
+{
+	// 获取场景内敌方兵营对象
+	if (!HasAuthority()) return nullptr;
+
+	// 从GameMode中获取
+	if (AArenasGameMode* ArenasGameMode = Cast<AArenasGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+	{
+		if (AMinionBarrack* EnemyBarrack = ArenasGameMode->GetBarrackByTeamID(EnemyBarrackTeamID))
+		{
+			return EnemyBarrack;
+		}
+		
+	}
+	return nullptr;
+}
+
+void AMinionBarrack::OnDefenseTowerDeath(AActor* TowerActor)
+{
+	if (HasAuthority())
+	{
+		if (ADefenseTowerCharacter* TowerCharacter = Cast<ADefenseTowerCharacter>(TowerActor))
+		{
+			if (UArenasAbilitySystemComponent* TowerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(TowerCharacter))
+			{
+				TowerASC->OnActorDeath.RemoveAll(this); // 取消监听防御塔的死亡事件
+			}
+			
+			if (SpawnedTowers.Contains(TowerCharacter))
+			{
+				SpawnedTowers.Remove(TowerCharacter);
+
+				// 防御塔死亡后，修改敌方小兵的默认目标，这样就不会有小兵一直攻击死去的防御塔或者跳过一塔攻击二塔或者水晶
+				if (AMinionBarrack* EnemyBarrack = GetEnemyBarrack())
+				{
+					AActor* NewGoalActor = GetCurrentCanBeAttackGoalActor();
+					for (AMinionCharacter* Minion : EnemyBarrack->SpawnedMinionPool)
+					{
+						Minion->SetGoal(NewGoalActor);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AMinionBarrack::SpawnDefenseTowers()
+{
+	if (HasAuthority())
+	{
+		FTransform SpawnPointTransform = GetActorTransform();
+		// 生成防御塔核心
+		if (StormCoreClass && BaseCoreSpawnPoint)
+		{
+			SpawnPointTransform = BaseCoreSpawnPoint->GetActorTransform();
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			if (AStormCore* Core = GetWorld()->SpawnActor<AStormCore>(StormCoreClass, SpawnPointTransform, SpawnParameters))
+			{
+				Core->SetGenericTeamId(BarrackTeamID);
+				Core->FinishSpawning(SpawnPointTransform);
+				SpawnedStormCore = Core;
+			}
+		}
+		
+		for (const APlayerStart* SpawnPoint : TowerSpawnPoints)
+		{
+			SpawnPointTransform = SpawnPoint->GetActorTransform();
+			// 在每个生成点生成一个防御塔
+			if (DefenseTowerClass)
+			{
+				FActorSpawnParameters SpawnParameters;
+				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+				if (ADefenseTowerCharacter* Tower = GetWorld()->SpawnActor<ADefenseTowerCharacter>(DefenseTowerClass, SpawnPointTransform, SpawnParameters))
+				{
+					Tower->SetGenericTeamId(BarrackTeamID);
+					Tower->FinishSpawning(SpawnPointTransform);
+					Tower->SetDefenseTowerFaceGoal(DefaultFaceGoalActor);
+					SpawnedTowers.Add(Tower);
+
+					// 监听防御塔的死亡事件
+					if (UArenasAbilitySystemComponent* TowerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(Tower))
+					{
+						TowerASC->OnActorDeath.AddUObject(this, &AMinionBarrack::OnDefenseTowerDeath);
+					}
+					
+				}
+			}
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AMinionBarrack::BeginPlay()
 {
@@ -21,6 +129,8 @@ void AMinionBarrack::BeginPlay()
 
 	if (HasAuthority())
 	{
+		SpawnDefenseTowers();	// 生成防御塔
+		
 		GetWorldTimerManager().SetTimer(
 			SpawnGroupMinionTimerHandle,
 			this,
@@ -28,8 +138,12 @@ void AMinionBarrack::BeginPlay()
 			SpawnGroupInterval,
 			true,
 			SpawnFirstGroupDelay); // 10秒后开始生成第一波小兵
+
+		if (AArenasGameMode* ArenasGameMode = Cast<AArenasGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+		{
+			ArenasGameMode->RegisterMinionBarrack(BarrackTeamID, this);
+		}
 	}
-	
 	
 }
 
@@ -125,7 +239,7 @@ void AMinionBarrack::SpawnMinionsToPool()
 	{
 		NewMinion->SetGenericTeamId(BarrackTeamID);
 		NewMinion->FinishSpawning(SpawnPointTransform);
-		NewMinion->SetGoal(MinionGoal);
+		NewMinion->SetGoal(GetCurrentMinionGoal());
 		SpawnedMinionPool.Add(NewMinion);
 	}
 }
@@ -140,5 +254,15 @@ AMinionCharacter* AMinionBarrack::GetNextAvailableMinionFromPool() const
 		}
 	}
 	return nullptr;
+}
+
+AActor* AMinionBarrack::GetCurrentCanBeAttackGoalActor() const
+{
+	// 返回当前可以作为防御塔攻击目标的Actor
+	if (SpawnedTowers.Num() > 0)
+	{
+		return SpawnedTowers[0];
+	}
+	return SpawnedStormCore;
 }
 

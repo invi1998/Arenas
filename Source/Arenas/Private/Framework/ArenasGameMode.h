@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "ArenasGameMode.generated.h"
 
+class AMinionBarrack;
 /**
  * 
  */
@@ -19,6 +20,9 @@ public:
 	// 该函数会在玩家生成的时候被调用，无论是本地客户端还是通过网络远程客户端连接生成
 	virtual APlayerController* SpawnPlayerController(ENetRole InRemoteRole, const FString& Options) override;
 
+	void RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack);
+	AMinionBarrack* GetBarrackByTeamID(const FGenericTeamId& InTeamID) const;
+
 private:
 	FGenericTeamId GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const;
 
@@ -26,5 +30,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 	TMap<FGenericTeamId, FName> TeamStartingSpotTagsMap; // 队伍起始点标签映射表，Key为队伍ID，Value为起始点标签
+
+	UPROPERTY()
+	TMap<FGenericTeamId, AMinionBarrack*> BarracksMap;
 	
 };
