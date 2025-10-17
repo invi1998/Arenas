@@ -20,7 +20,11 @@ AStormCore::AStormCore()
 void AStormCore::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	CoreAIController = Cast<AArenasTowerAIController>(NewController);
+	if (HasAuthority())
+	{
+		CoreAIController = Cast<AArenasTowerAIController>(NewController);
+	}
+	
 }
 
 void AStormCore::SetGenericTeamId(const FGenericTeamId& InTeamID)
