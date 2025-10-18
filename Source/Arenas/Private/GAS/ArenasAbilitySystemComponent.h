@@ -31,6 +31,16 @@ public:
 	void InitializeBaseAttributes();
 	void ServerSideInit();
 	void ApplyFullStateEffect();
+	
+	bool IsHeroCharacter() const;
+	bool IsMinionCharacter() const;
+
+	void AddKillsMatchStatNumber(float InNum);
+	void AddDeathMatchStatNumber(float InNum);
+	void AddDamageMatchStatNumber(float InDamage);
+	void AddAssistsMatchStatNumber(float InNum);
+	void AddGoldEarnedMatchStatNumber(float InNum);
+	void AddKillMinionMatchStatNumber(float InNum);
 
 	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
 
@@ -53,6 +63,7 @@ private:
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
 	void HandleManaChanged(const FOnAttributeChangeData& Data);
 	void HandleExperienceChanged(const FOnAttributeChangeData& Data);
+	void HandleGoldChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 
 	UPROPERTY(EditDefaultsOnly, Category = "PA_Generics")
 	UPA_AbilitySystemGenerics* AbilitySystemGenerics;		// 赋予初始属性和效果
@@ -64,5 +75,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilitys")
 	TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Match Stat")
+	float AssistTimeThreshold = 30.f; // 助攻时间阈值，单位秒，在这个时间内对敌人造成伤害的角色会被计为助攻
+
+	// TMap， Key为伤害来源Actor, Value为受到伤害的时间戳，用来统计助攻
+	UPROPERTY()
+	TMap<TWeakObjectPtr<AActor>, float> RecentDamageSourcesMap;
 	
 };

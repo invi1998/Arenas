@@ -4,6 +4,7 @@
 #include "GAS/ExecCalc/MMC_BaseAttackDamage.h"
 
 #include "ArenasGameplayTags.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 
 UMMC_BaseAttackDamage::UMMC_BaseAttackDamage()
 {
@@ -60,6 +61,15 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 	
 	// 计算最终伤害值，考虑护甲的减伤效果
 	float FinalDamage = AttackDamage * (100.f / (100.f + Armor));
+
+	// 统计英雄角色的伤害
+	if (UArenasAbilitySystemComponent* ArenasASC = Cast<UArenasAbilitySystemComponent>(Spec.GetContext().GetInstigatorAbilitySystemComponent()))
+	{
+		if (ArenasASC->IsHeroCharacter())
+		{
+			ArenasASC->AddDamageMatchStatNumber(FinalDamage);
+		}
+	}
 
 	return -FinalDamage;
 }

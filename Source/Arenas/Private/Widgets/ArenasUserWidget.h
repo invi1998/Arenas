@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UMatchStatWidget;
 class UInventoryWidget;
 class UShopWidget;
 class UHeroUserWidget;
@@ -63,6 +64,9 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	UInventoryWidget* InventoryWidget;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UMatchStatWidget* MatchStatWidget;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
 	void SetOwningPawnInputEnabled(bool bEnabled);

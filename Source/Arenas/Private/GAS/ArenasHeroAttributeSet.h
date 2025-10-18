@@ -95,6 +95,32 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_HeroType)
 	FGameplayAttributeData HeroType;
 	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, HeroType);
+
+	// 比赛统计数据
+	UPROPERTY(ReplicatedUsing = OnRep_Kills)
+	FGameplayAttributeData Kills;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Kills);
+
+	UPROPERTY(ReplicatedUsing = OnRep_Deaths)
+	FGameplayAttributeData Deaths;
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Deaths);
+
+	UPROPERTY(ReplicatedUsing = OnRep_Assists)
+	FGameplayAttributeData Assists;		// 助攻数
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, Assists);
+
+	UPROPERTY(ReplicatedUsing = OnRep_GoldEarned)
+	FGameplayAttributeData GoldEarned;		// 获得的总金币
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, GoldEarned);
+
+	UPROPERTY(ReplicatedUsing = OnRep_DamageDealt)
+	FGameplayAttributeData DamageDealt;		// 造成的总伤害
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, DamageDealt);
+
+	UPROPERTY(ReplicatedUsing = OnRep_KillMinions)
+	FGameplayAttributeData KillMinions;		// 击杀小兵数
+	ATTRIBUTE_ACCESSORS(UArenasHeroAttributeSet, KillMinions);
+	
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -148,6 +174,24 @@ public:
 
 	UFUNCTION()
 	void OnRep_HeroType(const FGameplayAttributeData& OldValue);
-	
+
+	UFUNCTION()
+	void OnRep_Kills(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Deaths(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Assists(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_GoldEarned(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_DamageDealt(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_KillMinions(const FGameplayAttributeData& OldValue);
+
 	
 };

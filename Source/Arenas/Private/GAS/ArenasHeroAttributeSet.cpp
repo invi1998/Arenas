@@ -29,7 +29,13 @@ void UArenasHeroAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, StrengthGrowthRate, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, IntelligenceGrowthRate, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, AgilityGrowthRate, COND_None, REPNOTIFY_OnChanged);
-	
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Kills, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Deaths, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, Assists, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, GoldEarned, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, DamageDealt, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasHeroAttributeSet, KillMinions, COND_None, REPNOTIFY_Always);
 }
 
 void UArenasHeroAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldValue)
@@ -116,3 +122,35 @@ void UArenasHeroAttributeSet::OnRep_HeroType(const FGameplayAttributeData& OldVa
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, HeroType, OldValue);
 }
+
+void UArenasHeroAttributeSet::OnRep_Kills(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, Kills, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_Deaths(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, Deaths, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_Assists(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, Assists, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_GoldEarned(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, GoldEarned, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_DamageDealt(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, DamageDealt, OldValue);
+}
+
+void UArenasHeroAttributeSet::OnRep_KillMinions(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasHeroAttributeSet, KillMinions, OldValue);
+}
+
+

@@ -40,7 +40,7 @@ private:
 	UPROPERTY(meta=(BindWidgetOptional))
 	UImage* Icon;
 
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta=(BindWidget), VisibleAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess="true"))
 	UTextBlock* AttributeText;
 
 	UPROPERTY(meta=(BindWidgetOptional))

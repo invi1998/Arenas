@@ -10,7 +10,6 @@
 #include "ArenasHeroAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "PA_AbilitySystemGenerics.h"
-#include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "player/ArenasPlayerCharacter.h"
 
 UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
@@ -18,6 +17,7 @@ UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetHealthAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleHealthChanged);
 	GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetManaAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleManaChanged);
 	GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleExperienceChanged);
+	GetGameplayAttributeValueChangeDelegate(UArenasHeroAttributeSet::GetGoldAttribute()).AddUObject(this, &UArenasAbilitySystemComponent::HandleGoldChanged);
 	
 	GenericConfirmInputID = static_cast<int32>(EArenasAbilityInputID::Confirm);	// 确认输入ID
 	GenericCancelInputID = static_cast<int32>(EArenasAbilityInputID::Cancel);	// 取消输入ID
@@ -86,6 +86,82 @@ void UArenasAbilitySystemComponent::ServerSideInit()
 void UArenasAbilitySystemComponent::ApplyFullStateEffect()
 {
 	AuthApplyGameplayEffectToSelf(AbilitySystemGenerics->GetFullStateEffectClass());
+}
+
+bool UArenasAbilitySystemComponent::IsHeroCharacter() const
+{
+	return HasMatchingGameplayTag(ArenasGameplayTags::RoleType_Hero);
+}
+
+bool UArenasAbilitySystemComponent::IsMinionCharacter() const
+{
+	return HasMatchingGameplayTag(ArenasGameplayTags::RoleType_Minion);
+}
+
+void UArenasAbilitySystemComponent::AddKillsMatchStatNumber(float InNum)
+{
+	float CurrentKills = 0;
+	bool bFound = false;
+	CurrentKills = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetKillsAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetKillsAttribute(), CurrentKills + InNum);
+	}
+}
+
+void UArenasAbilitySystemComponent::AddDeathMatchStatNumber(float InNum)
+{
+	float CurrentDeaths = 0;
+	bool bFound = false;
+	CurrentDeaths = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetDeathsAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetDeathsAttribute(), CurrentDeaths + InNum);
+	}
+}
+
+void UArenasAbilitySystemComponent::AddDamageMatchStatNumber(float InDamage)
+{
+	float CurrentDamage = 0;
+	bool bFound = false;
+	CurrentDamage = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetDamageDealtAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetDamageDealtAttribute(), CurrentDamage + InDamage);
+	}
+}
+
+void UArenasAbilitySystemComponent::AddAssistsMatchStatNumber(float InNum)
+{
+	float CurrentAssists = 0;
+	bool bFound = false;
+	CurrentAssists = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetAssistsAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetAssistsAttribute(), CurrentAssists + InNum);
+	}
+}
+
+void UArenasAbilitySystemComponent::AddGoldEarnedMatchStatNumber(float InNum)
+{
+	float CurrentGoldEarned = 0;
+	bool bFound = false;
+	CurrentGoldEarned = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetGoldEarnedAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetGoldEarnedAttribute(), CurrentGoldEarned + InNum);
+	}
+}
+
+void UArenasAbilitySystemComponent::AddKillMinionMatchStatNumber(float InNum)
+{
+	float CurrentKillMinions = 0;
+	bool bFound = false;
+	CurrentKillMinions = GetGameplayAttributeValue(UArenasHeroAttributeSet::GetKillMinionsAttribute(), bFound);
+	if (bFound)
+	{
+		SetNumericAttributeBase(UArenasHeroAttributeSet::GetKillMinionsAttribute(), CurrentKillMinions + InNum);
+	}
 }
 
 void UArenasAbilitySystemComponent::AddGameplayTagToActorIfNotHas(FGameplayTag InTag)
@@ -225,6 +301,11 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 			AActor* DamageSource = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
 			float DamageAmount = Data.OldValue - Data.NewValue;
 			OnAnyDamageTaken.Broadcast(DamageSource, DamageAmount);
+			// 记录最近的伤害来源及时间（只统计来自英雄角色的伤害）
+			if (DamageSource && DamageSource != GetOwner() && DamageSource->IsA<AArenasPlayerCharacter>())
+			{
+				RecentDamageSourcesMap.Add(DamageSource, GetWorld()->GetTimeSeconds());
+			}
 		}
 	}
 	
@@ -238,6 +319,11 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 			AuthApplyGameplayEffectToSelf(AbilitySystemGenerics->GetDeathEffectClass());
 		}
 
+		if (IsHeroCharacter())
+		{
+			AddDeathMatchStatNumber(1.f);		// 统计死亡数
+		}
+
 		/*
 		 * 下面的代码逻辑已经被放到 ArenasAttributeSet::PostGameplayEffectExecute 中处理了(这里我两个地方都保留）
 		 * 因为我们从接收伤害到血量变更之间是通过DamageToken这个中间量来设置的，所以此处监听血量变化并不会附带Data.GEModData信息，因为我们是在属性集里直接SetHealth来修改的血量
@@ -248,6 +334,54 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 			FGameplayEventData DeathEventData;
 			DeathEventData.ContextHandle = Data.GEModData->EffectSpec.GetContext();	// 传递效果上下文，以便获取击杀者等信息
 
+			// 统计数据
+			AActor* KillerActor = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
+			if (AArenasPlayerCharacter* KillerCharacter = Cast<AArenasPlayerCharacter>(KillerActor))
+			{
+				if (UArenasAbilitySystemComponent* KillerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(KillerCharacter))
+				{
+					// 如果当前角色是英雄角色，就统计击杀数，如果是小兵，就统计补兵数
+					if (IsHeroCharacter())
+					{
+						KillerASC->AddKillsMatchStatNumber(1.f);
+					}
+					else if (IsMinionCharacter())
+					{
+						KillerASC->AddKillMinionMatchStatNumber(1.f);
+					}
+					
+				}
+			}
+
+			// 统计最近伤害来源
+			for (auto It = RecentDamageSourcesMap.CreateIterator(); It; ++It)
+			{
+				if (AActor* DamageSource = It.Key().Get())
+				{
+					float DamageTime = It.Value();
+					// 如果伤害来源记录时间超过一定时间（例如10秒），则移除该记录
+					if (GetWorld()->GetTimeSeconds() - DamageTime > AssistTimeThreshold)
+					{
+						continue;
+					}
+
+					// 如果伤害来源不是击杀者本身，则统计助攻
+					if (DamageSource != KillerActor)
+					{
+						if (AArenasPlayerCharacter* AssistCharacter = Cast<AArenasPlayerCharacter>(DamageSource))	
+						{
+							if (UArenasAbilitySystemComponent* AssistASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(AssistCharacter))
+							{
+								AssistASC->AddAssistsMatchStatNumber(1.f);
+							}
+						}
+					}
+				}
+			}
+
+			// 清空最近伤害来源记录
+			RecentDamageSourcesMap.Empty();
+			
 			// 触发死亡事件
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), ArenasGameplayTags::Status_Dead, DeathEventData);
 			
@@ -339,5 +473,18 @@ void UArenasAbilitySystemComponent::HandleExperienceChanged(const FOnAttributeCh
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), PrevLevelExp);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), NextLevelExp);
 	
+}
+
+void UArenasAbilitySystemComponent::HandleGoldChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	if (IsHeroCharacter())
+	{
+		// 只统计增加的金币，不统计减少的金币
+		if (OnAttributeChangeData.NewValue > OnAttributeChangeData.OldValue)
+		{
+			AddGoldEarnedMatchStatNumber(OnAttributeChangeData.NewValue - OnAttributeChangeData.OldValue);
+		}
+	}
 }
 
