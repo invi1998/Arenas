@@ -292,6 +292,11 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 
+	if (HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead))
+	{
+		return;	// 已经死亡的角色不处理血量变化
+	}
+
 	// 是否是受到伤害
 	if (Data.NewValue < Data.OldValue)
 	{
