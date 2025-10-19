@@ -78,6 +78,12 @@ void AArenasPlayerController::ClearDefenseTowerRangeDecal(const FName& DefenseTo
 	Client_HideTowerAttackRangeDecal(DefenseTowerName);
 }
 
+void AArenasPlayerController::ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation)
+{
+	if (!HasAuthority()) return;
+	Client_ShowCombatText(ValueNumber, TextType, HitLocation);
+}
+
 void AArenasPlayerController::SpawnPlayerUIWidget()
 {
 	if (!IsLocalPlayerController()) return;
@@ -146,4 +152,10 @@ void AArenasPlayerController::Client_HideTowerAttackRangeDecal_Implementation(co
 		DefenseTowerDecal->Destroy();
 		ActiveDefenseTowerAttackRangeDecals.Remove(DefenseTowerName);
 	}
+}
+
+void AArenasPlayerController::Client_ShowCombatText_Implementation(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation)
+{
+	if (!IsLocalPlayerController()) return;
+	BP_ShowCombatText(ValueNumber, TextType, HitLocation);
 }

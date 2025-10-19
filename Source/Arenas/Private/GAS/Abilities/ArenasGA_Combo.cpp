@@ -152,6 +152,8 @@ void UArenasGA_Combo::DoDamage(FGameplayEventData Payload)
 		
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
 
+		// 设置发起者（Instigator）为当前Ability的拥有者
+
 		// 添加SetByCaller参数
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, BaseDamage);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, CurrentComboIndex);

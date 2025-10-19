@@ -60,6 +60,11 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 		// 对于奖励发放，此处我们通过GE来实现，而非直接修改角色属性集，因为在某些情况下，当我们尝试奖励击杀者时，击杀者可能已经死亡
 		// 这种情况下，我们不应该发送任何奖励，GE可以很容易的阻止这种情况的发生
+
+		// 金币奖励需要将死亡角色的位置传入上下文，因为显示金币掉落数字需要在角色死亡处显示
+		const FVector DeathLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+		FHitResult DeadHit;
+		DeadHit.Location = DeathLocation;
 		
 		if (Killer)
 		{
@@ -69,7 +74,9 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(RewardEffectClass, 1.f);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Exp, KillerExpReward);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Gold, KillerGoldReward);
-
+			EffectSpecHandle.Data->GetContext().AddHitResult(DeadHit, true);
+			
+			
 			ApplyGameplayEffectSpecToTarget(
 				GetCurrentAbilitySpecHandle(),
 				GetCurrentActorInfo(),
@@ -105,6 +112,8 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(RewardEffectClass, 1.f);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Exp, TargetExpReward);
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Gold, TargetGoldReward);
+		
+		EffectSpecHandle.Data->GetContext().AddHitResult(DeadHit, true);
 
 		K2_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(RewardTargets, true));
 

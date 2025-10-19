@@ -51,7 +51,7 @@ public:
 	virtual UPawnUIComponent* GetPawnUIComponent() const override;
 	FGenericTeamId GetOwningGenericTeamId() const;
 	// Interface IPawnUIInterface End
-
+	
 	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
 
 protected:

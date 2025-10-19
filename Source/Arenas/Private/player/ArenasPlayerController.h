@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/PlayerController.h"
+#include "Interface/CombatTextInterface.h"
 #include "ArenasPlayerController.generated.h"
 
 class AAttackRangeDecal;
@@ -17,7 +18,7 @@ class UMaterialInterface;
  * 
  */
 UCLASS()
-class ARENAS_API AArenasPlayerController : public APlayerController, public IGenericTeamAgentInterface
+class ARENAS_API AArenasPlayerController : public APlayerController, public IGenericTeamAgentInterface, public ICombatTextInterface
 {
 	GENERATED_BODY()
 
@@ -35,6 +36,11 @@ public:
 
 	void DrawDefenseTowerRangeDecal(const FName& DefenseTowerName, const FVector& Location, float Range, bool bUnderAttack);
 	void ClearDefenseTowerRangeDecal(const FName& DefenseTowerName);
+
+	virtual void ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation) override;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation);
 
 private:
 	UPROPERTY()
@@ -81,6 +87,9 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void Client_HideTowerAttackRangeDecal(const FName& DefenseTowerName);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation);
 
 	
 };

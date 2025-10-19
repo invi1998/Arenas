@@ -11,6 +11,7 @@
 #include "GameplayEffectExtension.h"
 #include "PA_AbilitySystemGenerics.h"
 #include "player/ArenasPlayerCharacter.h"
+#include "player/ArenasPlayerController.h"
 
 UArenasAbilitySystemComponent::UArenasAbilitySystemComponent()
 {
@@ -231,6 +232,21 @@ void UArenasAbilitySystemComponent::Client_AbilityUpgradeSuccess_Implementation(
 		AbilitySpec->Level = NewAbilityLevel;
 		AbilitySpecDirtiedCallbacks.Broadcast(*AbilitySpec);
 	}
+}
+
+void UArenasAbilitySystemComponent::ShowComboText(float FinalDamage, EArenasComboTextType TextType, const FVector& HitLocation)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	// 获取当前Owner的控制器，如果该控制器实现了ICombatTextInterface接口，则调用其显示伤害数字的方法
+	if (AArenasPlayerCharacter* PlayerCharacter = Cast<AArenasPlayerCharacter>(GetOwner()))
+	{
+		if (AArenasPlayerController* PlayerController = Cast<AArenasPlayerController>(PlayerCharacter->GetController()))
+		{
+			PlayerController->ShowCombatText(FinalDamage, TextType, HitLocation);
+		}
+	}
+	
 }
 
 void UArenasAbilitySystemComponent::ApplyInitialEffects()
@@ -477,18 +493,34 @@ void UArenasAbilitySystemComponent::HandleExperienceChanged(const FOnAttributeCh
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetLevelAttribute(), NewLevel);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetPrevLevelExperienceAttribute(), PrevLevelExp);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetNextLevelExperienceAttribute(), NextLevelExp);
+
+	// 显示经验获取数字
+	ShowComboText(Data.NewValue - Data.OldValue, EArenasComboTextType::Experience, GetOwner()->GetActorLocation());
 	
 }
 
 void UArenasAbilitySystemComponent::HandleGoldChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	
 	if (IsHeroCharacter())
 	{
 		// 只统计增加的金币，不统计减少的金币
 		if (OnAttributeChangeData.NewValue > OnAttributeChangeData.OldValue)
 		{
 			AddGoldEarnedMatchStatNumber(OnAttributeChangeData.NewValue - OnAttributeChangeData.OldValue);
+
+			// 显示金币获取数字
+			if (OnAttributeChangeData.GEModData)
+			{
+				FVector HitLocation = GetOwner()->GetActorLocation();
+				if (OnAttributeChangeData.GEModData->EffectSpec.GetContext().GetHitResult())
+				{
+					HitLocation = OnAttributeChangeData.GEModData->EffectSpec.GetContext().GetHitResult()->Location;
+				}
+					
+				ShowComboText(OnAttributeChangeData.NewValue - OnAttributeChangeData.OldValue, EArenasComboTextType::Gold, HitLocation);
+			}
 		}
 	}
 }

@@ -54,6 +54,8 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void Client_AbilityUpgradeSuccess(FGameplayAbilitySpecHandle AbilitySpecHandle, int32 NewAbilityLevel);
+	
+	void ShowComboText(float FinalDamage, EArenasComboTextType TextType, const FVector& HitLocation);
 
 private:
 	void ApplyInitialEffects();

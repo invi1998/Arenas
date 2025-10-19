@@ -13,6 +13,18 @@ class UGameplayEffect;
 class UArenasGameplayAbility;
 
 UENUM(BlueprintType)
+enum class EArenasComboTextType : uint8
+{
+	Normal				UMETA(DisplayName = "Normal"),
+	Critical			UMETA(DisplayName = "Critical"),
+	Miss				UMETA(DisplayName = "Miss"),
+	Gold				UMETA(DisplayName = "Gold"),
+	Heal				UMETA(DisplayName = "Heal"),
+	Experience			UMETA(DisplayName = "Experience"),
+	Damaged				UMETA(DisplayName = "Damaged"),		// 受到伤害
+};
+
+UENUM(BlueprintType)
 enum class EArenasAbilityInputID : uint8
 {
 	None				UMETA(DisplayName = "None"),
