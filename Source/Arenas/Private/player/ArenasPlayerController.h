@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Interface/CombatTextInterface.h"
 #include "ArenasPlayerController.generated.h"
@@ -45,6 +46,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation);
 
+	void MatchFinished(AActor* ViewTarget, FGenericTeamId LooseTeamID);
+
 	UPROPERTY(BlueprintAssignable, Category="Team")
 	FOnTeamPlayerKillChangedSignature OnTeamOnePlayerKillChanged;
 
@@ -55,6 +58,12 @@ public:
 	void UpdateTeamTwoPlayerKillCount(int32 NewKillCount);
 	
 private:
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float FinishedMatchViewBlendTimeDuration = 3.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float FinishedViewBlendTimeDuration = 3.5f;
+	
 	UPROPERTY()
 	AArenasPlayerCharacter* ArenasPlayerCharacter;
 
@@ -109,5 +118,10 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation);
 
+	UFUNCTION(Client, Reliable)
+	void Client_MatchFinished(AActor* ViewTarget, FGenericTeamId LooseTeamID);
+
+	bool bIsWin;
+	void ShowMatchFinishedState();
 	
 };

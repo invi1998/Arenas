@@ -4,6 +4,7 @@
 #include "MinionBarrack.h"
 
 #include "ArenasBlueprintFunctionLibrary.h"
+#include "ArenasGameplayTags.h"
 #include "Character/Minion/MinionCharacter.h"
 #include "DefenceTower/DefenseTowerCharacter.h"
 #include "DefenceTower/StormCore.h"
@@ -75,6 +76,14 @@ void AMinionBarrack::OnDefenseTowerDeath(AActor* TowerActor)
 	}
 }
 
+void AMinionBarrack::OnStormCoreDestroyedInGame(AActor* Actor)
+{
+	if (AMinionBarrack* Barrack = Cast<AMinionBarrack>(Actor->GetOwner()))
+	{
+		OnStormCoreDestroyed.Broadcast(Barrack);
+	}
+}
+
 void AMinionBarrack::SpawnDefenseTowers()
 {
 	if (HasAuthority())
@@ -90,7 +99,14 @@ void AMinionBarrack::SpawnDefenseTowers()
 			{
 				Core->SetGenericTeamId(BarrackTeamID);
 				Core->FinishSpawning(SpawnPointTransform);
+				Core->SetOwner(this);
 				SpawnedStormCore = Core;
+
+				if (UArenasAbilitySystemComponent* CoreASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(Core))
+				{
+					CoreASC->OnActorDeath.AddUObject(this, &AMinionBarrack::OnStormCoreDestroyedInGame);
+				}
+				
 			}
 		}
 		

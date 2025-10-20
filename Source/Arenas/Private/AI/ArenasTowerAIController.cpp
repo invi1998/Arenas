@@ -90,10 +90,18 @@ void AArenasTowerAIController::OnOwnerDeadTagChanged(FGameplayTag GameplayTag, i
 	if (Count != 0)
 	{
 		// 禁用行为树
-		GetBrainComponent()->StopLogic(TEXT("Owner Dead"));
+		if (GetBrainComponent())
+		{
+			GetBrainComponent()->StopLogic(TEXT("Owner Dead"));
+		}
+		
 	}
 	else
 	{
-		GetBrainComponent()->StartLogic();
+		if (GetBrainComponent())
+		{
+			GetBrainComponent()->StartLogic();
+		}
+		
 	}
 }

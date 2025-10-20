@@ -85,6 +85,18 @@ void AArenasPlayerController::ShowCombatText(float ValueNumber, EArenasComboText
 	Client_ShowCombatText(ValueNumber, TextType, HitLocation);
 }
 
+void AArenasPlayerController::MatchFinished(AActor* ViewTarget, FGenericTeamId LooseTeamID)
+{
+	if (!HasAuthority()) return;
+
+	SetViewTargetWithBlend(ViewTarget, FinishedMatchViewBlendTimeDuration);
+
+	ArenasPlayerCharacter->DisableInput(this);
+
+	Client_MatchFinished(ViewTarget, LooseTeamID);
+	
+}
+
 void AArenasPlayerController::UpdateTeamOnePlayerKillCount(int32 NewKillCount)
 {
 	if (IsLocalPlayerController())
@@ -184,3 +196,22 @@ void AArenasPlayerController::Client_ShowCombatText_Implementation(float ValueNu
 	if (!IsLocalPlayerController()) return;
 	BP_ShowCombatText(ValueNumber, TextType, HitLocation);
 }
+
+void AArenasPlayerController::Client_MatchFinished_Implementation(AActor* ViewTarget, FGenericTeamId LooseTeamID)
+{
+	if (!IsLocalPlayerController()) return;
+	bIsWin = (TeamID != LooseTeamID);
+
+	// PlayerUIWidget->ShowMatchResult(MatchResultText);
+	FTimerHandle ShowMatchResultTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(ShowMatchResultTimerHandle, this, &AArenasPlayerController::ShowMatchFinishedState, FinishedViewBlendTimeDuration, false);
+	
+}
+
+
+void AArenasPlayerController::ShowMatchFinishedState()
+{
+	PlayerUIWidget->ShowMatchResult(bIsWin);
+}
+
+

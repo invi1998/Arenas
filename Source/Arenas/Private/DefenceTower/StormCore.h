@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AI/MinionBarrack.h"
 #include "Character/ArenasCharacter.h"
 #include "StormCore.generated.h"
 
@@ -22,6 +23,8 @@ public:
 
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 
+	UCameraComponent* GetStormCoreViewCam() const { return ViewCam; }
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

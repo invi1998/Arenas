@@ -24,10 +24,12 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
 	virtual void BeginPlay() override;
+
+	virtual void StartPlay() override;
 	
 	// 该函数会在玩家生成的时候被调用，无论是本地客户端还是通过网络远程客户端连接生成
 	virtual APlayerController* SpawnPlayerController(ENetRole InRemoteRole, const FString& Options) override;
-
+	
 	void RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack);
 	AMinionBarrack* GetBarrackByTeamID(const FGenericTeamId& InTeamID) const;
 
@@ -46,5 +48,7 @@ private:
 
 	UPROPERTY()
 	AArenasGameState* ArenasGameState;
+	
+	void MatchFinished(AMinionBarrack* DestroyMinionBarrack);
 	
 };

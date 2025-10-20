@@ -13,6 +13,10 @@ class AStormCore;
 class ADefenseTowerCharacter;
 class AMinionCharacter;
 
+class AMinionBarrack;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStormCoreDestroyedSignature, AMinionBarrack* /*Barrack*/);
+
 UCLASS()
 class ARENAS_API AMinionBarrack : public AActor
 {
@@ -25,6 +29,12 @@ public:
 	AActor* GetCurrentMinionGoal() const;
 
 	AMinionBarrack* GetEnemyBarrack() const;
+
+	FOnStormCoreDestroyedSignature OnStormCoreDestroyed;
+
+	AStormCore* GetStormCore() const { return SpawnedStormCore; }
+
+	FGenericTeamId GetBarrackTeamID() const { return BarrackTeamID; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -105,6 +115,7 @@ private:
 	AActor* DefaultFaceGoalActor; // 默认面向的目标
 
 	void OnDefenseTowerDeath(AActor* TowerActor);
+	void OnStormCoreDestroyedInGame(AActor* Actor);
 	void SpawnDefenseTowers();
 
 	AActor* GetCurrentCanBeAttackGoalActor() const;

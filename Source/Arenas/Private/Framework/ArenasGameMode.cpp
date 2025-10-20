@@ -5,8 +5,11 @@
 
 #include "ArenasGameState.h"
 #include "EngineUtils.h"
+#include "AI/MinionBarrack.h"
+#include "DefenceTower/StormCore.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "player/ArenasPlayerController.h"
 
 AArenasGameMode::AArenasGameMode()
 {
@@ -23,6 +26,13 @@ void AArenasGameMode::PostLogin(APlayerController* NewPlayer)
 void AArenasGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AArenasGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	
 }
 
 APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole, const FString& Options)
@@ -44,6 +54,9 @@ APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole,
 void AArenasGameMode::RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack)
 {
 	BarracksMap.Add(InTeamID, InBarrack);
+
+	InBarrack->OnStormCoreDestroyed.AddUObject(this, &AArenasGameMode::MatchFinished);
+	
 }
 
 AMinionBarrack* AArenasGameMode::GetBarrackByTeamID(const FGenericTeamId& InTeamID) const
@@ -92,4 +105,19 @@ AActor* AArenasGameMode::FindNextStartingSpotForTeam(const FGenericTeamId& InTea
 	}
 
 	return nullptr;
+}
+
+void AArenasGameMode::MatchFinished(AMinionBarrack* DestroyMinionBarrack)
+{
+	if (!DestroyMinionBarrack) return;
+	// UCameraComponent* StormCoreView = DestroyMinionBarrack->GetStormCore()->GetStormCoreViewCam();
+	AActor* ViewTarget = DestroyMinionBarrack->GetStormCore();
+	FGenericTeamId LooseTeamID = DestroyMinionBarrack->GetBarrackTeamID();
+	if (UWorld* World = GetWorld())
+	{
+		for (TActorIterator<AArenasPlayerController> It(World); It; ++It)
+		{
+			It->MatchFinished(ViewTarget, LooseTeamID);
+		}
+	}
 }

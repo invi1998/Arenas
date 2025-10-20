@@ -40,6 +40,7 @@ public:
 	
 	void ShowGameplayMenu();
 	void SetGameplayMenuTitle(const FText& InTitleText);
+	void ShowMatchResult(bool bIsWin);
 
 protected:
 	// NativeOnInitialized 先执行，NativeConstruct 后执行

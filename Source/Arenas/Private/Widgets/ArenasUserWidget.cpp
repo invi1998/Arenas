@@ -110,6 +110,11 @@ void UArenasUserWidget::SetGameplayMenuTitle(const FText& InTitleText)
 	}
 }
 
+void UArenasUserWidget::ShowMatchResult(bool bIsWin)
+{
+	
+}
+
 void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
