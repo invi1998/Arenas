@@ -84,6 +84,22 @@ void AArenasPlayerController::ShowCombatText(float ValueNumber, EArenasComboText
 	Client_ShowCombatText(ValueNumber, TextType, HitLocation);
 }
 
+void AArenasPlayerController::UpdateTeamOnePlayerKillCount(int32 NewKillCount)
+{
+	if (IsLocalPlayerController())
+	{
+		OnTeamOnePlayerKillChanged.Broadcast(NewKillCount);
+	}
+}
+
+void AArenasPlayerController::UpdateTeamTwoPlayerKillCount(int32 NewKillCount)
+{
+	if (IsLocalPlayerController())
+	{
+		OnTeamTwoPlayerKillChanged.Broadcast(NewKillCount);
+	}
+}
+
 void AArenasPlayerController::SpawnPlayerUIWidget()
 {
 	if (!IsLocalPlayerController()) return;

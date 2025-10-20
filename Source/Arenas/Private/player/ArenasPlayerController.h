@@ -14,6 +14,9 @@ class UInputMappingContext;
 class UArenasUserWidget;
 class AArenasPlayerCharacter;
 class UMaterialInterface;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTeamPlayerKillChangedSignature, int32, NewKillCount);
+
 /**
  * 
  */
@@ -42,6 +45,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_ShowCombatText(float ValueNumber, EArenasComboTextType TextType, const FVector& HitLocation);
 
+	UPROPERTY(BlueprintAssignable, Category="Team")
+	FOnTeamPlayerKillChangedSignature OnTeamOnePlayerKillChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="Team")
+	FOnTeamPlayerKillChangedSignature OnTeamTwoPlayerKillChanged;
+
+	void UpdateTeamOnePlayerKillCount(int32 NewKillCount);
+	void UpdateTeamTwoPlayerKillCount(int32 NewKillCount);
+	
 private:
 	UPROPERTY()
 	AArenasPlayerCharacter* ArenasPlayerCharacter;

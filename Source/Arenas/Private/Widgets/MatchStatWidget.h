@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MatchStatWidget.generated.h"
 
+class AArenasPlayerController;
 class UHeroStatsGauge;
 /**
  * 
@@ -14,6 +15,14 @@ UCLASS()
 class ARENAS_API UMatchStatWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+
+public:
+	void SetOwningArenasPlayerController(AArenasPlayerController* InArenasPC);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnOwningArenasPlayerControllerSet(AArenasPlayerController* InArenasPC);
+
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -33,5 +42,8 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* MinionKillsGauge;
+
+	UPROPERTY()
+	AArenasPlayerController* OwningArenasPlayerController;
 	
 };

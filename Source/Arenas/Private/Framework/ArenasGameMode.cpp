@@ -3,22 +3,26 @@
 
 #include "Framework/ArenasGameMode.h"
 
+#include "ArenasGameState.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 
 AArenasGameMode::AArenasGameMode()
 {
 }
 
+void AArenasGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	ArenasGameState = ArenasGameState ? ArenasGameState : Cast<AArenasGameState>(UGameplayStatics::GetGameState(this));
+	
+}
+
 void AArenasGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TeamPlayerKillCountMap.Empty();
-	for (const FGenericTeamId& TeamId : ValidTeamIDs)
-	{
-		TeamPlayerKillCountMap.Add({TeamId, 0});
-	}
 }
 
 APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole, const FString& Options)
@@ -49,16 +53,17 @@ AMinionBarrack* AArenasGameMode::GetBarrackByTeamID(const FGenericTeamId& InTeam
 
 void AArenasGameMode::AddPlayerKillForTeam(const FGenericTeamId& InTeamID)
 {
-	if (TeamPlayerKillCountMap.Contains(InTeamID))
+	if (ArenasGameState)
 	{
-		TeamPlayerKillCountMap[InTeamID] += 1;
-		OnTeamPlayerKillChanged.Broadcast(InTeamID, TeamPlayerKillCountMap[InTeamID]);
+		if (InTeamID == FGenericTeamId(0))
+		{
+			ArenasGameState->AddTeamOnePlayerKillCount();
+		}
+		else if (InTeamID == FGenericTeamId(1))
+		{
+			ArenasGameState->AddTeamTwoPlayerKillCount();
+		}
 	}
-}
-
-int32 AArenasGameMode::GetPlayerKillCountForTeam(const FGenericTeamId& InTeamID) const
-{
-	return TeamPlayerKillCountMap.Contains(InTeamID) ? TeamPlayerKillCountMap[InTeamID] : 0;
 }
 
 FGenericTeamId AArenasGameMode::GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const

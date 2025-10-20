@@ -6,8 +6,10 @@
 #include "Interface/PawnUIInterface.h"
 #include "Component/UI/PlayerUIComponent.h"
 #include "ArenasBlueprintFunctionLibrary.h"
+#include "MatchStatWidget.h"
 #include "Component/AbilityListView.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+#include "player/ArenasPlayerController.h"
 #include "Shop/ShopWidget.h"
 
 void UArenasUserWidget::InitOverheadWidget(AActor* InActor)
@@ -77,6 +79,17 @@ void UArenasUserWidget::NativeOnInitialized()
 		if (UPlayerUIComponent* PlayerUIComponent = PawnUIInterface->GetPlayerUIComponent())
 		{
 			BP_OnOwningPlayerUIComponentInitialized(PlayerUIComponent);
+		}
+	}
+
+	if (MatchStatWidget)
+	{
+		if (APawn* OwningPawn = GetOwningPlayerPawn())
+		{
+			if (AArenasPlayerController* ArenasPC = Cast<AArenasPlayerController>(OwningPawn->GetController()))
+			{
+				MatchStatWidget->SetOwningArenasPlayerController(ArenasPC);
+			}
 		}
 	}
 }
