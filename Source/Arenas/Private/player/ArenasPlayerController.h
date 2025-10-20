@@ -75,8 +75,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ShopToggleInputAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ToggleGameplayMenuInputAction;
+
 	UFUNCTION()
 	void OnShopToggleActionTriggered();
+
+	UFUNCTION()
+	void OnToggleGameplayMenuActionTriggered();
 
 	// Decal 
 	UPROPERTY(EditDefaultsOnly, Category = "Decal")

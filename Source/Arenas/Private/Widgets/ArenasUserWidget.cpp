@@ -8,7 +8,10 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "MatchStatWidget.h"
 #include "Component/AbilityListView.h"
+#include "Components/CanvasPanel.h"
+#include "Components/WidgetSwitcher.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+#include "Menu/GameplayMenu.h"
 #include "player/ArenasPlayerController.h"
 #include "Shop/ShopWidget.h"
 
@@ -68,6 +71,45 @@ void UArenasUserWidget::ToggleShopPopup()
 	}
 }
 
+void UArenasUserWidget::ToggleGameplayMenu()
+{
+	if (GameplayMenuWidget && MainSwitcher && GameplayWidgetsRootPanel && GameplayMenuRootPanel)
+	{
+		if (MainSwitcher->GetActiveWidget() == GameplayMenuRootPanel)
+		{
+			MainSwitcher->SetActiveWidget(GameplayWidgetsRootPanel);
+			SetOwningPawnInputEnabled(true);
+			SetShowMouseCursor(false);
+			SetFocusToGameOnly();
+		}
+		else
+		{
+			ShowGameplayMenu();
+		}
+	}
+}
+
+void UArenasUserWidget::ShowGameplayMenu()
+{
+	if (GameplayMenuWidget && MainSwitcher && GameplayWidgetsRootPanel)
+	{
+		MainSwitcher->SetActiveWidget(GameplayMenuRootPanel);
+		SetOwningPawnInputEnabled(false);
+		SetShowMouseCursor(true);
+		SetFocusToGameAndUI();
+		// GameplayMenuWidget->SetFocus();
+	}
+	
+}
+
+void UArenasUserWidget::SetGameplayMenuTitle(const FText& InTitleText)
+{
+	if (GameplayMenuWidget)
+	{
+		GameplayMenuWidget->SetMenuTitleText(InTitleText);
+	}
+}
+
 void UArenasUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -111,6 +153,14 @@ void UArenasUserWidget::NativeConstruct()
 			}
 		}
 	}
+
+	SetShowMouseCursor(false);
+	SetFocusToGameOnly();
+	if (GameplayMenuWidget)
+	{
+		GameplayMenuWidget->GetResumeButtonClickedEventDelegate().AddDynamic(this, &UArenasUserWidget::ToggleGameplayMenu);
+	}
+	
 }
 
 void UArenasUserWidget::PlayShopPopupAnim(bool bPlayForward)

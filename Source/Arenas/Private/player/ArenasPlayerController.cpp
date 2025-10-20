@@ -65,6 +65,7 @@ void AArenasPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(ShopToggleInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerController::OnShopToggleActionTriggered);
+		EnhancedInputComponent->BindAction(ToggleGameplayMenuInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerController::OnToggleGameplayMenuActionTriggered);
 	}
 }
 
@@ -118,6 +119,14 @@ void AArenasPlayerController::OnShopToggleActionTriggered()
 	if (PlayerUIWidget)
 	{
 		PlayerUIWidget->ToggleShopPopup();
+	}
+}
+
+void AArenasPlayerController::OnToggleGameplayMenuActionTriggered()
+{
+	if (PlayerUIWidget)
+	{
+		PlayerUIWidget->ToggleGameplayMenu();
 	}
 }
 

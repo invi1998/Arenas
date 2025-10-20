@@ -23,6 +23,8 @@ public:
 
 	FOnButtonClickedEvent& GetResumeButtonClickedEventDelegate() const;
 
+	void SetMenuTitleText(const FText& NewTitleText);
+
 private:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* MenuTitle;

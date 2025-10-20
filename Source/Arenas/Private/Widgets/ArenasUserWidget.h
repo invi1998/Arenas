@@ -8,6 +8,9 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UCanvasPanel;
+class UWidgetSwitcher;
+class UGameplayMenu;
 class UMatchStatWidget;
 class UInventoryWidget;
 class UShopWidget;
@@ -31,6 +34,12 @@ public:
 	void ConfigureAbilities(const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& InAbilities);
 
 	void ToggleShopPopup();
+
+	UFUNCTION()
+	void ToggleGameplayMenu();
+	
+	void ShowGameplayMenu();
+	void SetGameplayMenuTitle(const FText& InTitleText);
 
 protected:
 	// NativeOnInitialized 先执行，NativeConstruct 后执行
@@ -67,6 +76,18 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	UMatchStatWidget* MatchStatWidget;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UGameplayMenu* GameplayMenuWidget;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UWidgetSwitcher* MainSwitcher;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UCanvasPanel* GameplayWidgetsRootPanel;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UCanvasPanel* GameplayMenuRootPanel;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
 	void SetOwningPawnInputEnabled(bool bEnabled);
