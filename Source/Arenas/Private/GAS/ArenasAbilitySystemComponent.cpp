@@ -10,6 +10,7 @@
 #include "ArenasHeroAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "PA_AbilitySystemGenerics.h"
+#include "Framework/ArenasGameMode.h"
 #include "player/ArenasPlayerCharacter.h"
 #include "player/ArenasPlayerController.h"
 
@@ -345,6 +346,8 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 			AddDeathMatchStatNumber(1.f);		// 统计死亡数
 		}
 
+		bool bRecordTeamKillStats = false;
+
 		/*
 		 * 下面的代码逻辑已经被放到 ArenasAttributeSet::PostGameplayEffectExecute 中处理了(这里我两个地方都保留）
 		 * 因为我们从接收伤害到血量变更之间是通过DamageToken这个中间量来设置的，所以此处监听血量变化并不会附带Data.GEModData信息，因为我们是在属性集里直接SetHealth来修改的血量
@@ -365,6 +368,11 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 					if (IsHeroCharacter())
 					{
 						KillerASC->AddKillsMatchStatNumber(1.f);
+						if (AArenasGameMode* GameMode = GetWorld()->GetAuthGameMode<AArenasGameMode>())
+						{
+							bRecordTeamKillStats = true;
+							GameMode->AddPlayerKillForTeam(KillerCharacter->GetGenericTeamId());
+						}
 					}
 					else if (IsMinionCharacter())
 					{
@@ -394,6 +402,15 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 							if (UArenasAbilitySystemComponent* AssistASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(AssistCharacter))
 							{
 								AssistASC->AddAssistsMatchStatNumber(1.f);
+
+								if (!bRecordTeamKillStats)
+								{
+									if (AArenasGameMode* GameMode = GetWorld()->GetAuthGameMode<AArenasGameMode>())
+									{
+										bRecordTeamKillStats = true;
+										GameMode->AddPlayerKillForTeam(AssistCharacter->GetGenericTeamId());
+									}
+								}
 							}
 						}
 					}

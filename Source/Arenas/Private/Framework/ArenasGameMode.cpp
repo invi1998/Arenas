@@ -6,6 +6,21 @@
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
 
+AArenasGameMode::AArenasGameMode()
+{
+}
+
+void AArenasGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TeamPlayerKillCountMap.Empty();
+	for (const FGenericTeamId& TeamId : ValidTeamIDs)
+	{
+		TeamPlayerKillCountMap.Add({TeamId, 0});
+	}
+}
+
 APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole, const FString& Options)
 {
 	APlayerController* NewPlayerController = Super::SpawnPlayerController(InRemoteRole, Options);
@@ -30,6 +45,20 @@ void AArenasGameMode::RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMin
 AMinionBarrack* AArenasGameMode::GetBarrackByTeamID(const FGenericTeamId& InTeamID) const
 {
 	return BarracksMap.Contains(InTeamID) ? BarracksMap[InTeamID] : nullptr;
+}
+
+void AArenasGameMode::AddPlayerKillForTeam(const FGenericTeamId& InTeamID)
+{
+	if (TeamPlayerKillCountMap.Contains(InTeamID))
+	{
+		TeamPlayerKillCountMap[InTeamID] += 1;
+		OnTeamPlayerKillChanged.Broadcast(InTeamID, TeamPlayerKillCountMap[InTeamID]);
+	}
+}
+
+int32 AArenasGameMode::GetPlayerKillCountForTeam(const FGenericTeamId& InTeamID) const
+{
+	return TeamPlayerKillCountMap.Contains(InTeamID) ? TeamPlayerKillCountMap[InTeamID] : 0;
 }
 
 FGenericTeamId AArenasGameMode::GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const

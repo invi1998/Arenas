@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.generated.h"
 
+class AArenasGameMode;
 class UInputAction;
 struct FGameplayTag;
 class UArenasAbilitySystemComponent;
@@ -19,6 +20,11 @@ class ARENAS_API UArenasBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 
 public:
+	static AArenasGameMode* NativeGetArenasGameMode(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "Arenas | FunctionLibrary", meta=(WorldContext="WorldContextObject", DisplayName="Get Arenas Game Mode"))
+	static AArenasGameMode* BP_GetArenasGameMode(const UObject* WorldContextObject);
+	
 	static UArenasAbilitySystemComponent* NativeGetArenasASCFromActor(AActor* Actor);
 
 	UFUNCTION(BlueprintPure, Category = "Arenas | FunctionLibrary", meta=(DisplayName="Get Arenas ASC From Actor"))

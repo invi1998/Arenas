@@ -8,7 +8,18 @@
 #include "ArenasGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayTagsManager.h"
+#include "Framework/ArenasGameMode.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
+
+AArenasGameMode* UArenasBlueprintFunctionLibrary::NativeGetArenasGameMode(const UObject* WorldContextObject)
+{
+	return WorldContextObject ? Cast<AArenasGameMode>(WorldContextObject->GetWorld()->GetAuthGameMode()) : nullptr;
+}
+
+AArenasGameMode* UArenasBlueprintFunctionLibrary::BP_GetArenasGameMode(const UObject* WorldContextObject)
+{
+	return NativeGetArenasGameMode(WorldContextObject);
+}
 
 UArenasAbilitySystemComponent* UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(AActor* InActor)
 {
