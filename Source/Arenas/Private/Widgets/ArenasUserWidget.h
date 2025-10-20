@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UMatchFinished;
 class UCanvasPanel;
 class UWidgetSwitcher;
 class UGameplayMenu;
@@ -89,6 +90,12 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	UCanvasPanel* GameplayMenuRootPanel;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UCanvasPanel* MatchResultRootPanel;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UMatchFinished* MatchFinishedWidget;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
 	void SetOwningPawnInputEnabled(bool bEnabled);

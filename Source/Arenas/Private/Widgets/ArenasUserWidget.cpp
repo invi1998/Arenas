@@ -12,6 +12,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "Menu/GameplayMenu.h"
+#include "Menu/MatchFinished.h"
 #include "player/ArenasPlayerController.h"
 #include "Shop/ShopWidget.h"
 
@@ -112,7 +113,16 @@ void UArenasUserWidget::SetGameplayMenuTitle(const FText& InTitleText)
 
 void UArenasUserWidget::ShowMatchResult(bool bIsWin)
 {
-	
+	if (MatchFinishedWidget && MainSwitcher && MatchResultRootPanel)
+	{
+		MatchFinishedWidget->BP_OnMatchFinishedDisplayed(bIsWin);
+		MainSwitcher->SetActiveWidget(MatchResultRootPanel);
+		// FText ResultText = bIsWin ? FText::FromString("胜利") : FText::FromString("失败");
+		// MatchFinishedWidget->SetMenuTitleText(ResultText);
+		SetOwningPawnInputEnabled(false);
+		SetShowMouseCursor(true);
+		SetFocusToGameAndUI();
+	}
 }
 
 void UArenasUserWidget::NativeOnInitialized()
