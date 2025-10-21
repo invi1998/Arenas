@@ -13,8 +13,8 @@ AProjectileActor::AProjectileActor()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	USceneComponent* RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	SetRootComponent(RootComponent);
+	USceneComponent* RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("Root Comp"));
+	SetRootComponent(RootComp);
 }
 
 // Called every frame

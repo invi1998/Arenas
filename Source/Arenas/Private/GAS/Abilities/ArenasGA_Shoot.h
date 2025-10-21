@@ -6,6 +6,7 @@
 #include "ArenasGameplayAbility.h"
 #include "ArenasGA_Shoot.generated.h"
 
+class AProjectileActor;
 /**
  * 
  */
@@ -38,6 +39,20 @@ private:
 	void ShootProjectile(FGameplayEventData Payload);
 
 	FGameplayTag GetShootEventTag() const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	TSubclassOf<AProjectileActor> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	float ProjectileSpeed = 2000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	float ShootProjectileRange = 5000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	TSubclassOf<UGameplayEffect> ProjectileHitEffect;
+
+	FGenericTeamId GetOwnerTeamId() const;
 	
 	
 };

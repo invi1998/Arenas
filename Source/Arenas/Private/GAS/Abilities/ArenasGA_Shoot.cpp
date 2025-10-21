@@ -6,6 +6,7 @@
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "GAS/Actor/ProjectileActor.h"
 // #include "Abilities/Tasks/AbilityTask_NetworkSyncPoint.h"
 
 UArenasGA_Shoot::UArenasGA_Shoot()
@@ -82,9 +83,47 @@ void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::ShootProjectile called"));
+	if (K2_HasAuthority())
+	{
+		AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = OwnerAvatarActor;
+		SpawnParameters.Instigator = Cast<APawn>(OwnerAvatarActor);
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		FVector SocketLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+		if (USkeletalMeshComponent* MeshComp = GetOwningComponentFromActorInfo())
+		{
+			TArray<FName> OutNames;
+			UGameplayTagsManager::Get().SplitGameplayTagFName(Payload.EventTag, OutNames);
+			if (OutNames.Num() > 0)
+			{
+				FName SocketName = OutNames.Last();
+				SocketLocation = MeshComp->GetSocketLocation(SocketName);
+			}
+		}
+		AProjectileActor* SpawnedProjectile = GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParameters);
+		if (SpawnedProjectile)
+		{
+			FGameplayEffectSpecHandle HitEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+			
+			SpawnedProjectile->ShootProjectile(ProjectileSpeed, ShootProjectileRange, nullptr, GetOwnerTeamId(), HitEffectSpecHandle);
+		}
+		
+	}
 }
 
 FGameplayTag UArenasGA_Shoot::GetShootEventTag() const
 {
 	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Shoot"));
+}
+
+FGenericTeamId UArenasGA_Shoot::GetOwnerTeamId() const
+{
+	if (IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(GetOwningActorFromActorInfo()))
+	{
+		return TeamAgent->GetGenericTeamId();
+	}
+
+	return FGenericTeamId::NoTeam;
 }
