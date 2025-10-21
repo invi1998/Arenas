@@ -25,6 +25,9 @@ public:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	UAnimMontage* ShootMontage;
+	
 	UFUNCTION()
 	void OnStartShoot(FGameplayEventData Payload);
 
@@ -33,5 +36,9 @@ private:
 
 	UFUNCTION()
 	void ShootProjectile(FGameplayEventData Payload);
+
+	FGameplayTag GetShootEventTag() const;
+	
 	
 };
+

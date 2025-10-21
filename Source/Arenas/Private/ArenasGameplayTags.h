@@ -39,6 +39,9 @@ namespace ArenasGameplayTags
 	// Event-Uppercut
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Uppercut_Launch);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Uppercut_FinalBlow);
+	// Event-Shoot
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Shoot_HandLeft);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Shoot_HandRight);
 	
 
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Damage);

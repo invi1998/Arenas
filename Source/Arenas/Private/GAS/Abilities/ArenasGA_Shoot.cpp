@@ -4,7 +4,9 @@
 #include "ArenasGA_Shoot.h"
 
 #include "ArenasGameplayTags.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+// #include "Abilities/Tasks/AbilityTask_NetworkSyncPoint.h"
 
 UArenasGA_Shoot::UArenasGA_Shoot()
 {
@@ -34,7 +36,7 @@ void UArenasGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		WaitStopShootEventTask->EventReceived.AddDynamic(this, &UArenasGA_Shoot::OnStopShoot);
 		WaitStopShootEventTask->ReadyForActivation();
 
-		UAbilityTask_WaitGameplayEvent* WaitShootProjectileEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Ability_Shoot, nullptr, false, false);
+		UAbilityTask_WaitGameplayEvent* WaitShootProjectileEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, GetShootEventTag(), nullptr, false, false);
 		WaitShootProjectileEventTask->EventReceived.AddDynamic(this, &UArenasGA_Shoot::ShootProjectile);
 		WaitShootProjectileEventTask->ReadyForActivation();
 		
@@ -51,15 +53,38 @@ void UArenasGA_Shoot::InputReleased(const FGameplayAbilitySpecHandle Handle, con
 
 void UArenasGA_Shoot::OnStartShoot(FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::OnStartShoot called"));
+	// 此处射击动画我们不在客户端做预测，只在服务器端做蒙太奇事件，然后客户端只用于单纯的动画播放
+	if (HasAuthority(&CurrentActivationInfo))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayShootMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ShootMontage);
+		PlayShootMontageTask->ReadyForActivation();
+	}
+	else
+	{
+		// 客户端逻辑，可以播放射击动画
+		PlayMontageLocally(ShootMontage);
+	}
+
+	// 当然，如果要是非要做客户端预测，可以通过AbilityTask_NetworkSyncPoint来做（添加同步）
+	// UAbilityTask_NetworkSyncPoint* NetworkSyncPointTask = UAbilityTask_NetworkSyncPoint::WaitNetSync(this, EAbilityTaskNetSyncType::OnlyServerWait);
+	// NetworkSyncPointTask->ReadyForActivation();
 }
 
 void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::OnStopShoot called"));
+	if (ShootMontage)
+	{
+		StopMontageAffterCurrentSection(ShootMontage);
+	}
 }
 
 void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::ShootProjectile called"));
+}
+
+FGameplayTag UArenasGA_Shoot::GetShootEventTag() const
+{
+	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Shoot"));
 }

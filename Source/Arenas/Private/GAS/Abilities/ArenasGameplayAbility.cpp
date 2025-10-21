@@ -80,6 +80,26 @@ void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle&
 	PushTargets(TargetActors, PushVelocity);
 }
 
+void UArenasGameplayAbility::PlayMontageLocally(UAnimMontage* MontageToPlay)
+{
+	UAnimInstance* OwningAnimInstance = GetOwnerAnimInstance();
+	if (OwningAnimInstance && MontageToPlay && !OwningAnimInstance->Montage_IsPlaying(MontageToPlay))
+	{
+		OwningAnimInstance->Montage_Play(MontageToPlay);
+	}
+}
+
+void UArenasGameplayAbility::StopMontageAffterCurrentSection(UAnimMontage* MontageToStop)
+{
+	UAnimInstance* OwningAnimInstance = GetOwnerAnimInstance();
+	if (OwningAnimInstance && MontageToStop)
+	{
+		FName CurrentSectionName = OwningAnimInstance->Montage_GetCurrentSection(MontageToStop);
+		// 设置下一段为无效段，动画将在当前段播放完后停止
+		OwningAnimInstance->Montage_SetNextSection(CurrentSectionName, NAME_None, MontageToStop);
+	}
+}
+
 AArenasCharacter* UArenasGameplayAbility::GetOwningArenasCharacter()
 {
 	if (!OwningArenasCharacter)

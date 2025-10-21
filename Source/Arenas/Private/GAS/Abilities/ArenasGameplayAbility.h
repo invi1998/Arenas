@@ -39,6 +39,9 @@ protected:
 	void PushTargets(const TArray<AActor*>& TargetActors, const FVector& PushVelocity);
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& PushVelocity);
 
+	void PlayMontageLocally(UAnimMontage* MontageToPlay);
+	void StopMontageAffterCurrentSection(UAnimMontage* MontageToStop);
+
 	AArenasCharacter* GetOwningArenasCharacter();
 
 private:
