@@ -135,7 +135,7 @@ void AArenasCharacter::BeginPlay()
 	// 注册视觉感知，建议在BeginPlay中注册，如果在构造函数中注册那么可能会因为组件还未初始化而失败
 	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
 
-	OnAnimInstanceReady.Broadcast();
+	// OnAnimInstanceReady.Broadcast();
 	
 }
 

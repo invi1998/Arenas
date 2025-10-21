@@ -22,6 +22,7 @@ void USkeletalMeshRenderActorWidget::SetMeshAnimInstance()
 	AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>();
 	if (ArenasCharacter && SkeletalMeshRenderActor)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SetMeshAnimInstance called in SkeletalMeshRenderActorWidget"));
 		SkeletalMeshRenderActor->ConfigureSkeletalMeshComponent(ArenasCharacter->GetMesh()->GetSkeletalMeshAsset(), ArenasCharacter->GetMesh()->GetAnimClass());
 	}
 }

@@ -38,6 +38,7 @@ void AArenasPlayerController::AcknowledgePossession(class APawn* P)
 	{
 		ArenasPlayerCharacter->ClientSideInit();
 		SpawnPlayerUIWidget();
+		ArenasPlayerCharacter->OnAnimInstanceReady.Broadcast();
 	}
 	
 }
