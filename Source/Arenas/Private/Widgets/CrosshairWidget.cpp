@@ -40,6 +40,7 @@ void UCrosshairWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	if (CrosshairImage->GetVisibility() == ESlateVisibility::Visible)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, TEXT("Updating Crosshair Position"));
 		UpdateCrosshairPosition();	
 	}
 	
@@ -68,5 +69,7 @@ void UCrosshairWidget::UpdateCrosshairPosition()
 
 	FVector2D ViewPortSize = FVector2D(static_cast<float>(ViewportX), static_cast<float>(ViewportY));
 	CrosshairImageSlot->SetPosition(ViewPortSize * 0.5f / ViewScale);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Crosshair Position: %s"), *CrosshairImageSlot->GetPosition().ToString()));
 	
 }

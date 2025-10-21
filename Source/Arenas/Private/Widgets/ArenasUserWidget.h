@@ -8,6 +8,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "ArenasUserWidget.generated.h"
 
+class UCrosshairWidget;
 class UMatchFinished;
 class UCanvasPanel;
 class UWidgetSwitcher;
@@ -96,6 +97,9 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	UMatchFinished* MatchFinishedWidget;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	UCrosshairWidget* CrosshairWidget;
 	
 	void PlayShopPopupAnim(bool bPlayForward);
 	void SetOwningPawnInputEnabled(bool bEnabled);
