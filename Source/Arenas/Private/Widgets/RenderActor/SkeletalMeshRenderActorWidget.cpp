@@ -10,9 +10,7 @@ void USkeletalMeshRenderActorWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>();
-	
-	if (ArenasCharacter)
+	if (AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>())
 	{
 		ArenasCharacter->OnAnimInstanceReady.AddUObject(this, &USkeletalMeshRenderActorWidget::SetMeshAnimInstance);
 	}
