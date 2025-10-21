@@ -144,10 +144,12 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 
 	if (AbilityID == EArenasAbilityInputID::BasicAttack)
 	{
+		FGameplayTag BasicAttackTag = bPressed ? ArenasGameplayTags::Ability_BasicAttack_Pressed : ArenasGameplayTags::Ability_BasicAttack_Released;
+		
 		// 确认技能释放
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, ArenasGameplayTags::Ability_BasicAttack_Pressed, FGameplayEventData());
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, BasicAttackTag, FGameplayEventData());
 		// 服务器端确认技能释放
-		Server_SendGameplayEventToSelf(ArenasGameplayTags::Ability_BasicAttack_Pressed, FGameplayEventData());
+		Server_SendGameplayEventToSelf(BasicAttackTag, FGameplayEventData());
 	}
 	
 }

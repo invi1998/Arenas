@@ -34,7 +34,7 @@ void UArenasGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		WaitStopShootEventTask->EventReceived.AddDynamic(this, &UArenasGA_Shoot::OnStopShoot);
 		WaitStopShootEventTask->ReadyForActivation();
 
-		UAbilityTask_WaitGameplayEvent* WaitShootProjectileEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Ability_BasicAttack);
+		UAbilityTask_WaitGameplayEvent* WaitShootProjectileEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Ability_Shoot, nullptr, false, false);
 		WaitShootProjectileEventTask->EventReceived.AddDynamic(this, &UArenasGA_Shoot::ShootProjectile);
 		WaitShootProjectileEventTask->ReadyForActivation();
 		

@@ -29,6 +29,7 @@ enum class EArenasAbilityInputID : uint8
 {
 	None				UMETA(DisplayName = "None"),
 	BasicAttack			UMETA(DisplayName = "基础攻击"),
+	Aim					UMETA(DisplayName = "瞄准"),
 	Ability1			UMETA(DisplayName = "技能1"),
 	Ability2			UMETA(DisplayName = "技能2"),
 	Ability3			UMETA(DisplayName = "技能3"),
