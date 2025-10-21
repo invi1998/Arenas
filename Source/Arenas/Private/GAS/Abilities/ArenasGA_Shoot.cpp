@@ -73,7 +73,6 @@ void UArenasGA_Shoot::OnStartShoot(FGameplayEventData Payload)
 
 void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::OnStopShoot called"));
 	if (ShootMontage)
 	{
 		StopMontageAffterCurrentSection(ShootMontage);

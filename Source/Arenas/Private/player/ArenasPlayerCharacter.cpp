@@ -124,7 +124,7 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 {
 	// 因为技能输入可能是按下就触发，也可能是按下后松开触发，所以这里通过检查bPressed来区别这两种情况
 	bool bPressed = Value.Get<bool>();
-	if (bPressed && bIsLearnAbilityLeaderDown && AbilityID != EArenasAbilityInputID::BasicAttack && AbilityID != EArenasAbilityInputID::Confirm && AbilityID != EArenasAbilityInputID::Cancel)
+	if (bPressed && bIsLearnAbilityLeaderDown)
 	{
 		// 如果当前正在按住升级技能栏键，并且触发的技能不是普攻，则尝试升级该技能
 		UpgradeAbilityWithInputID(AbilityID);
@@ -145,7 +145,7 @@ void AArenasPlayerCharacter::HandleAbilityInput(const FInputActionValue& Value, 
 	if (AbilityID == EArenasAbilityInputID::BasicAttack)
 	{
 		FGameplayTag BasicAttackTag = bPressed ? ArenasGameplayTags::Ability_BasicAttack_Pressed : ArenasGameplayTags::Ability_BasicAttack_Released;
-		
+
 		// 确认技能释放
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, BasicAttackTag, FGameplayEventData());
 		// 服务器端确认技能释放
