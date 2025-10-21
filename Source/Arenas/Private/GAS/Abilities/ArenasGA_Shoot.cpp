@@ -12,6 +12,7 @@
 UArenasGA_Shoot::UArenasGA_Shoot()
 {
 	ActivationOwnedTags.AddTag(ArenasGameplayTags::Status_Aiming);
+	ActivationOwnedTags.AddTag(ArenasGameplayTags::Status_Crosshair);
 }
 
 void UArenasGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
