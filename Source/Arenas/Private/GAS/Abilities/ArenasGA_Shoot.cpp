@@ -82,7 +82,6 @@ void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 
 void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UArenasGA_Shoot::ShootProjectile called"));
 	if (K2_HasAuthority())
 	{
 		AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
@@ -102,8 +101,7 @@ void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 				SocketLocation = MeshComp->GetSocketLocation(SocketName);
 			}
 		}
-		AProjectileActor* SpawnedProjectile = GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParameters);
-		if (SpawnedProjectile)
+		if (AProjectileActor* SpawnedProjectile = GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParameters))
 		{
 			FGameplayEffectSpecHandle HitEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			

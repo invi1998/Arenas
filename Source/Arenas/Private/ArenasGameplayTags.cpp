@@ -37,8 +37,8 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Uppercut_FinalBlow, "Event.Ability.Uppercut.FinalBlow", "上勾拳技能终结一击" );
 
 	// Event-Shoot
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_HandLeft, "Event.Ability.Shoot.HandLeft", "射击技能左手发射" );
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_HandRight, "Event.Ability.Shoot.HandRight", "射击技能右手发射" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_hand_L, "Event.Ability.Shoot.hand_L", "射击技能左手发射" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_hand_R, "Event.Ability.Shoot.hand_R", "射击技能右手发射" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	
