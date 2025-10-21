@@ -23,9 +23,11 @@ namespace ArenasGameplayTags
 	// Gameplay Ability Tags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack_Pressed);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack_Released);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Uppercut);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Passive_Launch_Activated);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_GroundBlast);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Shoot);
 
 	/***** Event Tags *****/
 	// Event-Combo
