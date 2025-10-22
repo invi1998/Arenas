@@ -89,7 +89,7 @@ void UArenasGameplayAbility::PlayMontageLocally(UAnimMontage* MontageToPlay)
 	}
 }
 
-void UArenasGameplayAbility::StopMontageAffterCurrentSection(UAnimMontage* MontageToStop)
+void UArenasGameplayAbility::StopMontageAfterCurrentSection(UAnimMontage* MontageToStop)
 {
 	UAnimInstance* OwningAnimInstance = GetOwnerAnimInstance();
 	if (OwningAnimInstance && MontageToStop)
@@ -108,5 +108,57 @@ AArenasCharacter* UArenasGameplayAbility::GetOwningArenasCharacter()
 	}
 
 	return OwningArenasCharacter;
+}
+
+AActor* UArenasGameplayAbility::GetAimActorTarget(float AimDistance, ETeamAttitude::Type AimTeamAttitude) const
+{
+	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())
+	{
+		FVector Loc;
+		FRotator Rot;
+		OwnerAvatarActor->GetActorEyesViewPoint(Loc, Rot);
+
+		FVector AimEnd = Loc + Rot.Vector() * AimDistance;
+		// TArray<AActor*> Targets;
+		TArray<FHitResult> HitResults;
+
+		if (bShowDebugLine)
+		{
+			DrawDebugLine(GetWorld(), Loc, AimEnd, FColor::Green, false, 2.f, 0, 2.f);
+		}
+		
+		if (GetWorld()->LineTraceMultiByObjectType(
+			HitResults,
+			Loc,
+			AimEnd,
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_Pawn),
+			FCollisionQueryParams(NAME_None, false, OwnerAvatarActor)
+		))
+		{
+			for (const FHitResult& Hit : HitResults)
+			{
+				AActor* HitActor = Hit.GetActor();
+				if (HitActor && IsActorTeamAttitude(HitActor, AimTeamAttitude))
+				{
+					return HitActor;
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+bool UArenasGameplayAbility::IsActorTeamAttitude(AActor* OtherActor, ETeamAttitude::Type DesiredAttitude) const
+{
+	if (!OtherActor) return false;
+	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())
+	{
+		if (IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(OwnerAvatarActor))
+		{
+			return OwnerTeamAgent->GetTeamAttitudeTowards(*OtherActor) == DesiredAttitude;
+		}
+	}
+	return false;
 }
 

@@ -31,7 +31,7 @@ protected:
 	UAnimInstance* GetOwnerAnimInstance() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Hit Sweep")
-	bool bShowSweepDebug = false;
+	bool bShowDebugLine = false;
 	
 	// 推开角色
 	void PushSelf(const FVector& PushVelocity);
@@ -40,9 +40,13 @@ protected:
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& PushVelocity);
 
 	void PlayMontageLocally(UAnimMontage* MontageToPlay);
-	void StopMontageAffterCurrentSection(UAnimMontage* MontageToStop);
+	void StopMontageAfterCurrentSection(UAnimMontage* MontageToStop);
 
 	AArenasCharacter* GetOwningArenasCharacter();
+
+	AActor* GetAimActorTarget(float AimDistance, ETeamAttitude::Type AimTeamAttitude) const;
+
+	bool IsActorTeamAttitude(AActor* OtherActor, ETeamAttitude::Type DesiredAttitude) const;
 
 private:
 	UPROPERTY()

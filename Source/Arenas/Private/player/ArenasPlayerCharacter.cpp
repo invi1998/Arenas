@@ -88,6 +88,13 @@ UPlayerUIComponent* AArenasPlayerCharacter::GetPlayerUIComponent() const
 	return PlayerUIComponent;
 }
 
+void AArenasPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = FollowCamera->GetComponentLocation();
+	OutRotation = FollowCamera->GetComponentRotation();
+	
+}
+
 FVector AArenasPlayerCharacter::GetLookForwardDir() const
 {
 	return FollowCamera->GetForwardVector();
@@ -207,12 +214,8 @@ void AArenasPlayerCharacter::OnUnStun()
 
 void AArenasPlayerCharacter::OnAimStateChanged(bool bNewAiming)
 {
-	if (IsLocallyControlledByPlayer())
-	{
-		FVector Goal = bNewAiming ? CameraAimLocationOffset : FVector::ZeroVector;
-		LerpCameraToLocalOffsetLocation(Goal);
-	}
-	
+	FVector Goal = bNewAiming ? CameraAimLocationOffset : FVector::ZeroVector;
+	LerpCameraToLocalOffsetLocation(Goal);
 }
 
 void AArenasPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)

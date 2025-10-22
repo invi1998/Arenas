@@ -35,6 +35,10 @@ public:
 	// Interface IPawnUIInterface Begin
 	virtual UPlayerUIComponent* GetPlayerUIComponent() const override;
 	// Interface IPawnUIInterface End
+
+	// 因为默认情况下，GetActorEyesViewPoint获取的是角色视线处的结果，但是玩家角色的视线位置并不在摄像机位置
+	// 所以需要重写该函数以返回摄像机位置和朝向
+	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 	
 private:
 	UPROPERTY()

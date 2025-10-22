@@ -61,12 +61,15 @@ void UCrosshairWidget::UpdateCrosshairPosition()
 {
 	if (!CachedPlayerController || !CrosshairImageSlot) return;
 
+	/*
+
 	float ViewScale = UWidgetLayoutLibrary::GetViewportScale(this);
 
 	int32 ViewportX, ViewportY;
 	CachedPlayerController->GetViewportSize(ViewportX, ViewportY);
 
 	FVector2D ViewPortSize = FVector2D(static_cast<float>(ViewportX), static_cast<float>(ViewportY));
-	CrosshairImageSlot->SetPosition(ViewPortSize * 0.5f / ViewScale);
+	CrosshairImageSlot->SetPosition(ViewPortSize / 2.f / ViewScale);
+	*/
 	
 }

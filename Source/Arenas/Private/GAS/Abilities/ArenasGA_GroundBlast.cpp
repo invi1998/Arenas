@@ -44,7 +44,7 @@ void UArenasGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	if (ATargetActor_GroundPick* GroundPickTargetActor = Cast<ATargetActor_GroundPick>(TargetActor))
 	{
-		GroundPickTargetActor->SetShouldDrawDebugSphere(bShowSweepDebug);
+		GroundPickTargetActor->SetShouldDrawDebugSphere(bShowDebugLine);
 		GroundPickTargetActor->SetTargetAreaRadius(TargetAreaRadius);
 		GroundPickTargetActor->SetTargetTraceDistance(TargetTraceDistance);
 		GroundPickTargetActor->SetTargetOptions(bShouldTargetEnemies, bShouldTargetAllies);

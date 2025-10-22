@@ -76,7 +76,7 @@ void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 {
 	if (ShootMontage)
 	{
-		StopMontageAffterCurrentSection(ShootMontage);
+		StopMontageAfterCurrentSection(ShootMontage);
 	}
 }
 
@@ -105,7 +105,7 @@ void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 		{
 			FGameplayEffectSpecHandle HitEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			
-			SpawnedProjectile->ShootProjectile(ProjectileSpeed, ShootProjectileRange, nullptr, GetOwnerTeamId(), HitEffectSpecHandle);
+			SpawnedProjectile->ShootProjectile(ProjectileSpeed, ShootProjectileRange, GetAimTargetIfValid(), GetOwnerTeamId(), HitEffectSpecHandle);
 		}
 		
 	}
@@ -124,4 +124,10 @@ FGenericTeamId UArenasGA_Shoot::GetOwnerTeamId() const
 	}
 
 	return FGenericTeamId::NoTeam;
+}
+
+AActor* UArenasGA_Shoot::GetAimTargetIfValid() const
+{
+	AActor* AimTarget = GetAimActorTarget(ShootProjectileRange, ETeamAttitude::Hostile);
+	return AimTarget;
 }

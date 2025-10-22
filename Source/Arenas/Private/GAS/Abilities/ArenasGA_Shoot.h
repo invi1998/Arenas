@@ -53,6 +53,8 @@ private:
 	TSubclassOf<UGameplayEffect> ProjectileHitEffect;
 
 	FGenericTeamId GetOwnerTeamId() const;
+
+	AActor* GetAimTargetIfValid() const;
 	
 	
 };
