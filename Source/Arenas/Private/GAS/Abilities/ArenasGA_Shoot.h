@@ -56,6 +56,5 @@ private:
 
 	AActor* GetAimTargetIfValid() const;
 	
-	
 };
 

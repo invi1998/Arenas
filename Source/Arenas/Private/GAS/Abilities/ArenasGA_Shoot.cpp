@@ -3,7 +3,9 @@
 
 #include "ArenasGA_Shoot.h"
 
+#include "AbilitySystemGlobals.h"
 #include "ArenasGameplayTags.h"
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GAS/Actor/ProjectileActor.h"
@@ -138,3 +140,4 @@ AActor* UArenasGA_Shoot::GetAimTargetIfValid() const
 	AActor* AimTarget = GetAimActorTarget(ShootProjectileRange, ETeamAttitude::Hostile);
 	return AimTarget;
 }
+

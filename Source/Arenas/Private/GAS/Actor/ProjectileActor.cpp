@@ -4,6 +4,8 @@
 #include "ProjectileActor.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayCueManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -76,6 +78,11 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 					GetWorldTimerManager().ClearTimer(ProjectileTravelTimerHandle); // 清除最大飞行距离计时器
 				}
 			}
+			// 发送本地游戏提示
+			FHitResult HitResult;
+			HitResult.ImpactNormal = GetActorForwardVector();
+			HitResult.ImpactPoint = GetActorLocation();
+			SendLocalGameplayCue(OtherActor, HitResult);
 
 			// 销毁投射物
 			Destroy();
@@ -124,6 +131,16 @@ void AProjectileActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AProjectileActor::SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult)
+{
+	FGameplayCueParameters CueParameters;
+	CueParameters.Location = HitResult.ImpactPoint;
+	CueParameters.Normal = HitResult.ImpactNormal;
+
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
+
 }
 
 

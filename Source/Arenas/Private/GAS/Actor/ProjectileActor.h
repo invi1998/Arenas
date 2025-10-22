@@ -54,5 +54,10 @@ protected:
 	
 	ETeamAttitude::Type ProjectileTeamAttitudeType;		// 投射物的阵营态度
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Cue")
+	FGameplayTag HitGameplayCueTag;
+	
+	void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult);
+
 
 };
