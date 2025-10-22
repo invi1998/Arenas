@@ -5,6 +5,7 @@
 
 #include "SkeletalMeshRenderActor.h"
 #include "Character/ArenasCharacter.h"
+#include "Components/SceneCaptureComponent2D.h"
 
 void USkeletalMeshRenderActorWidget::NativeConstruct()
 {
@@ -20,9 +21,19 @@ void USkeletalMeshRenderActorWidget::NativeConstruct()
 void USkeletalMeshRenderActorWidget::SetMeshAnimInstance()
 {
 	AArenasCharacter* ArenasCharacter = GetOwningPlayerPawn<AArenasCharacter>();
+	
 	if (ArenasCharacter && SkeletalMeshRenderActor)
 	{
 		SkeletalMeshRenderActor->ConfigureSkeletalMeshComponent(ArenasCharacter->GetMesh()->GetSkeletalMeshAsset(), ArenasCharacter->GetMesh()->GetAnimClass());
+
+		if (IRenderActorTargetInterface* TargetInterface = Cast<IRenderActorTargetInterface>(ArenasCharacter))
+		{
+			if (USceneCaptureComponent2D* SceneCaptureComp = SkeletalMeshRenderActor->GetSceneCaptureComponent())
+			{
+				SceneCaptureComp->SetRelativeLocation(TargetInterface->GetCaptureTargetLocalPosition());
+				SceneCaptureComp->SetRelativeRotation(TargetInterface->GetCaptureTargetLocalRotation());
+			}
+		}
 	}
 }
 

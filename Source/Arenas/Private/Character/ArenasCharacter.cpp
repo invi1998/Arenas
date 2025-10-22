@@ -120,6 +120,16 @@ FGenericTeamId AArenasCharacter::GetOwningGenericTeamId() const
 	return TeamID;
 }
 
+FVector AArenasCharacter::GetCaptureTargetLocalPosition() const
+{
+	return HeadshotCaptureTargetLocalPosition;
+}
+
+FRotator AArenasCharacter::GetCaptureTargetLocalRotation() const
+{
+	return HeadshotCaptureTargetLocalRotation;
+}
+
 const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& AArenasCharacter::GetAbilities() const
 {
 	return ArenasAbilitySystemComponent->GetAbilities();

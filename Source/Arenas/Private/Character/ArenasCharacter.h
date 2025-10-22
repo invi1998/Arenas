@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "GAS/Abilities/ArenasGameplayAbility.h"
 #include "Interface/PawnUIInterface.h"
+#include "Interface/RenderActorTargetInterface.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Types/ArenaStructTypes.h"
 #include "ArenasCharacter.generated.h"
@@ -23,7 +24,7 @@ class UArenasAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE(FOnAnimInstanceReady);
 
 UCLASS()
-class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface, public IGenericTeamAgentInterface
+class ARENAS_API AArenasCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnUIInterface, public IGenericTeamAgentInterface, public IRenderActorTargetInterface
 {
 	GENERATED_BODY()
 
@@ -51,12 +52,22 @@ public:
 	virtual UPawnUIComponent* GetPawnUIComponent() const override;
 	FGenericTeamId GetOwningGenericTeamId() const;
 	// Interface IPawnUIInterface End
+
+	virtual FVector GetCaptureTargetLocalPosition() const override;
+	virtual FRotator GetCaptureTargetLocalRotation() const override;
 	
 	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Capture")
+	FVector HeadshotCaptureTargetLocalPosition;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Capture")
+	FRotator HeadshotCaptureTargetLocalRotation;
 
 public:
 	// Called every frame
