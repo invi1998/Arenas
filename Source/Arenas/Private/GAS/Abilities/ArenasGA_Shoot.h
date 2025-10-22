@@ -6,6 +6,7 @@
 #include "ArenasGameplayAbility.h"
 #include "ArenasGA_Shoot.generated.h"
 
+class UArenasAbilitySystemComponent;
 class AProjectileActor;
 /**
  * 
@@ -24,7 +25,12 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+	                         const FGameplayAbilityActorInfo* ActorInfo,
+	                         const FGameplayAbilityActivationInfo ActivationInfo,
+	                         bool bReplicateEndAbility,
+	                         bool bWasCancelled) override;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
 	UAnimMontage* ShootMontage;
@@ -54,7 +60,26 @@ private:
 
 	FGenericTeamId GetOwnerTeamId() const;
 
-	AActor* GetAimTargetIfValid() const;
-	
+	AActor* GetAimTargetIfValid();
+
+	UPROPERTY()
+	AActor* AimTarget;
+
+	UPROPERTY()
+	UArenasAbilitySystemComponent* AimTargetASC;
+
+	FTimerHandle AimTargetCheckTimerHandle;
+
+	void TargetActorDead(FGameplayTag GameplayTag, int32 Count);
+	void FindAimTarget();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target")
+	float AimTargetCheckInterval = 0.1f;
+
+	void StartAimTargetCheck();
+	void StopAimTargetCheck();
+
+	bool HasValidTarget() const;
+	bool IsTargetInRange() const;		
 };
 

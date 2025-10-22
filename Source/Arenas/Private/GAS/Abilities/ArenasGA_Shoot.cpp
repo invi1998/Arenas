@@ -3,11 +3,13 @@
 
 #include "ArenasGA_Shoot.h"
 
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
-#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 #include "GAS/Actor/ProjectileActor.h"
 // #include "Abilities/Tasks/AbilityTask_NetworkSyncPoint.h"
 
@@ -55,6 +57,20 @@ void UArenasGA_Shoot::InputReleased(const FGameplayAbilitySpecHandle Handle, con
 	K2_EndAbility();
 }
 
+void UArenasGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (AimTargetASC)
+	{
+		AimTargetASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead).RemoveAll(this);
+		AimTargetASC = nullptr;
+	}
+
+	OnStopShoot(FGameplayEventData());
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
 void UArenasGA_Shoot::OnStartShoot(FGameplayEventData Payload)
 {
 	// 此处射击动画我们不在客户端做预测，只在服务器端做蒙太奇事件，然后客户端只用于单纯的动画播放
@@ -72,6 +88,9 @@ void UArenasGA_Shoot::OnStartShoot(FGameplayEventData Payload)
 	// 当然，如果要是非要做客户端预测，可以通过AbilityTask_NetworkSyncPoint来做（添加同步）
 	// UAbilityTask_NetworkSyncPoint* NetworkSyncPointTask = UAbilityTask_NetworkSyncPoint::WaitNetSync(this, EAbilityTaskNetSyncType::OnlyServerWait);
 	// NetworkSyncPointTask->ReadyForActivation();
+
+	FindAimTarget();
+	StartAimTargetCheck();
 }
 
 void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
@@ -80,6 +99,8 @@ void UArenasGA_Shoot::OnStopShoot(FGameplayEventData Payload)
 	{
 		StopMontageAfterCurrentSection(ShootMontage);
 	}
+
+	StopAimTargetCheck();
 }
 
 void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
@@ -135,9 +156,77 @@ FGenericTeamId UArenasGA_Shoot::GetOwnerTeamId() const
 	return FGenericTeamId::NoTeam;
 }
 
-AActor* UArenasGA_Shoot::GetAimTargetIfValid() const
+AActor* UArenasGA_Shoot::GetAimTargetIfValid()
 {
-	AActor* AimTarget = GetAimActorTarget(ShootProjectileRange, ETeamAttitude::Hostile);
-	return AimTarget;
+	if (HasValidTarget()) return AimTarget;
+	
+	return nullptr;
+}
+
+void UArenasGA_Shoot::TargetActorDead(FGameplayTag GameplayTag, int32 Count)
+{
+	if (Count > 0)
+	{
+		FindAimTarget();
+	}
+}
+
+void UArenasGA_Shoot::FindAimTarget()
+{
+	if (HasValidTarget()) return;
+
+	if (AimTargetASC)
+	{
+		AimTargetASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead).RemoveAll(this);
+		AimTargetASC = nullptr;
+	}
+
+	AimTarget = GetAimActorTarget(ShootProjectileRange, ETeamAttitude::Hostile);
+	if (AimTarget)
+	{
+		AimTargetASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(AimTarget);
+		if (AimTargetASC)
+		{
+			AimTargetASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead).AddUObject(this, &UArenasGA_Shoot::TargetActorDead);
+		}
+	}
+	
+}
+
+void UArenasGA_Shoot::StartAimTargetCheck()
+{
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(
+			AimTargetCheckTimerHandle,
+			this,
+			&UArenasGA_Shoot::FindAimTarget,
+			AimTargetCheckInterval,
+			true);
+	}
+}
+
+void UArenasGA_Shoot::StopAimTargetCheck()
+{
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(AimTargetCheckTimerHandle);
+	}
+}
+
+bool UArenasGA_Shoot::HasValidTarget() const
+{
+	if (!AimTarget) return false;
+
+	if (!UArenasBlueprintFunctionLibrary::IsAlive(AimTarget)) return false;
+	if (!IsTargetInRange()) return false;
+	return true;
+}
+
+bool UArenasGA_Shoot::IsTargetInRange() const
+{
+	if (!AimTarget) return false;
+	float DistanceSquared = FVector::DistSquared(GetAvatarActorFromActorInfo()->GetActorLocation(), AimTarget->GetActorLocation());
+	return DistanceSquared <= FMath::Square(ShootProjectileRange);
 }
 
