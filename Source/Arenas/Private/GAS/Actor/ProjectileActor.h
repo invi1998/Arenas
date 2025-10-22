@@ -25,7 +25,9 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
-	void ShootProjectile(float InSpeed, float InMaxDistance, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle);
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	void ShootProjectile(float InSpeed, float InMaxDistance, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle, ETeamAttitude::Type InTeamAttitudeType = ETeamAttitude::Hostile);
 
 	void TravelMaxDistanceReached();
 	
@@ -49,6 +51,8 @@ protected:
 	const AActor* TargetActor;
 
 	FTimerHandle ProjectileTravelTimerHandle;
+	
+	ETeamAttitude::Type ProjectileTeamAttitudeType;		// 投射物的阵营态度
 
 
 };

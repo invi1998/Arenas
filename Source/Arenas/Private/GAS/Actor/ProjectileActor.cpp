@@ -3,6 +3,8 @@
 
 #include "ProjectileActor.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -55,11 +57,37 @@ FGenericTeamId AProjectileActor::GetGenericTeamId() const
 	return IGenericTeamAgentInterface::GetGenericTeamId();
 }
 
-void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, const AActor* InTargetActor,
-                                       FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle)
+void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if (OtherActor && OtherActor != GetOwner())
+	{
+		// 仅在服务端处理碰撞逻辑
+		// 检查阵营态度
+		if (GetTeamAttitudeTowards(*OtherActor) == ProjectileTeamAttitudeType)
+		{
+			// 应用效果
+			UAbilitySystemComponent* OtherASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
+			if (IsValid(OtherASC))
+			{
+				if (HasAuthority() && HitEffectSpecHandle.IsValid())
+				{
+					OtherASC->ApplyGameplayEffectSpecToSelf(*HitEffectSpecHandle.Data.Get());
+					GetWorldTimerManager().ClearTimer(ProjectileTravelTimerHandle); // 清除最大飞行距离计时器
+				}
+			}
+
+			// 销毁投射物
+			Destroy();
+		}
+	}
+}
+
+void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle, ETeamAttitude::Type InTeamAttitudeType)
 {
 	TargetActor = InTargetActor;
 	ProjectileSpeed = InSpeed;
+	ProjectileTeamAttitudeType = InTeamAttitudeType;
 
 	FRotator OwnerRotator = GetActorRotation();
 	SetGenericTeamId(InInstigatorTeamID);
