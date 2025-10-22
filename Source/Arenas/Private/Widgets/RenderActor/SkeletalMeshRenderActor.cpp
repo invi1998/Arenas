@@ -13,7 +13,7 @@ ASkeletalMeshRenderActor::ASkeletalMeshRenderActor()
 	
 }
 
-void ASkeletalMeshRenderActor::ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimationAsset> AnimBlueprintClass)
+void ASkeletalMeshRenderActor::ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimInstance> AnimBlueprintClass)
 {
 	MeshComp->SetSkeletalMeshAsset(InSkeletalMesh);
 	MeshComp->SetAnimInstanceClass(AnimBlueprintClass);

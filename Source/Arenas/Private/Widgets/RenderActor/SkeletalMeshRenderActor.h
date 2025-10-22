@@ -15,7 +15,7 @@ class ARENAS_API ASkeletalMeshRenderActor : public ARenderActor
 
 public:
 	ASkeletalMeshRenderActor();
-	void ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimationAsset> AnimBlueprintClass);
+	void ConfigureSkeletalMeshComponent(USkeletalMesh* InSkeletalMesh, TSubclassOf<UAnimInstance> AnimBlueprintClass);
 
 private:
 	virtual void BeginPlay() override;
