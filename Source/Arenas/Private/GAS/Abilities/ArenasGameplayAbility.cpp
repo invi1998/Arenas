@@ -162,3 +162,11 @@ bool UArenasGameplayAbility::IsActorTeamAttitude(AActor* OtherActor, ETeamAttitu
 	return false;
 }
 
+void UArenasGameplayAbility::SendLocalGameplayEvent(const FGameplayTag EventTag, const FGameplayEventData& Payload)
+{
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+	{
+		ASC->HandleGameplayEvent(EventTag, &Payload);
+	}
+}
+

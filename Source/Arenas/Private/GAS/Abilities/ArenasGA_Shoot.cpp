@@ -67,6 +67,8 @@ void UArenasGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 	}
 
 	OnStopShoot(FGameplayEventData());
+
+	SendLocalGameplayEvent(ArenasGameplayTags::Target_Updated, FGameplayEventData());
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -190,6 +192,10 @@ void UArenasGA_Shoot::FindAimTarget()
 			AimTargetASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead).AddUObject(this, &UArenasGA_Shoot::TargetActorDead);
 		}
 	}
+
+	FGameplayEventData EventData;
+	EventData.Target = AimTarget;
+	SendLocalGameplayEvent(ArenasGameplayTags::Target_Updated, EventData);
 	
 }
 

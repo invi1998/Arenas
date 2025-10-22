@@ -48,6 +48,8 @@ protected:
 
 	bool IsActorTeamAttitude(AActor* OtherActor, ETeamAttitude::Type DesiredAttitude) const;
 
+	void SendLocalGameplayEvent(const FGameplayTag EventTag, const FGameplayEventData& Payload);
+
 private:
 	UPROPERTY()
 	AArenasCharacter* OwningArenasCharacter;
