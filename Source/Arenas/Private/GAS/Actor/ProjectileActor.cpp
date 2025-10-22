@@ -83,11 +83,12 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle, ETeamAttitude::Type InTeamAttitudeType)
+void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, FVector InitialMoveDir, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle, ETeamAttitude::Type InTeamAttitudeType)
 {
 	TargetActor = InTargetActor;
 	ProjectileSpeed = InSpeed;
 	ProjectileTeamAttitudeType = InTeamAttitudeType;
+	MoveDirection = InitialMoveDir.GetSafeNormal();
 
 	FRotator OwnerRotator = GetActorRotation();
 	SetGenericTeamId(InInstigatorTeamID);
@@ -98,7 +99,7 @@ void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, const
 		GetOwner()->GetActorEyesViewPoint(OwnerViewLocation, OwnerRotator);	// 获取拥有者的视点位置
 	}
 
-	MoveDirection = OwnerRotator.Vector();
+	// MoveDirection = OwnerRotator.Vector();
 	HitEffectSpecHandle = InHitEffectSpecHandle;
 
 	float TravelMaxTime = InMaxDistance / ProjectileSpeed;

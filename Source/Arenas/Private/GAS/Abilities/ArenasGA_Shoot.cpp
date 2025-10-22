@@ -101,11 +101,18 @@ void UArenasGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 				SocketLocation = MeshComp->GetSocketLocation(SocketName);
 			}
 		}
+		
 		if (AProjectileActor* SpawnedProjectile = GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParameters))
 		{
 			FGameplayEffectSpecHandle HitEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+
+			FVector Loc;
+			FRotator Rot;
+			OwnerAvatarActor->GetActorEyesViewPoint(Loc, Rot);
+			FVector ShootTargetEndLoc = Loc + Rot.Vector() * ShootProjectileRange;
+			FVector InitialProjectileDirection = (ShootTargetEndLoc - SocketLocation).GetSafeNormal();
 			
-			SpawnedProjectile->ShootProjectile(ProjectileSpeed, ShootProjectileRange, GetAimTargetIfValid(), GetOwnerTeamId(), HitEffectSpecHandle);
+			SpawnedProjectile->ShootProjectile(ProjectileSpeed, ShootProjectileRange, InitialProjectileDirection, GetAimTargetIfValid(), GetOwnerTeamId(), HitEffectSpecHandle);
 		}
 		
 	}
