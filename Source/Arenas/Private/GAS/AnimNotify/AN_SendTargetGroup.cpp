@@ -30,6 +30,7 @@ void UAN_SendTargetGroup::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	{
 		IgnoredActors.Add(OwnerActor);
 	}
+	
 	for (int32 i = 1; i < TargetSocketNames.Num(); ++i)
 	{
 		FVector StartLocation = MeshComp->GetSocketLocation(TargetSocketNames[i-1]);

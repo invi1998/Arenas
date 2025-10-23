@@ -25,7 +25,7 @@ AProjectileActor::AProjectileActor()
 void AProjectileActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (HasAuthority())
 	{
 		if (TargetActor)
@@ -34,9 +34,11 @@ void AProjectileActor::Tick(float DeltaTime)
 			MoveDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 		}
 	}
+		
 	SetActorLocation(GetActorLocation() + MoveDirection * ProjectileSpeed * DeltaTime);
 	// 如果只设置弹体位置，会出现子弹移动很死板的问题，所以同时还需要修正弹体的朝向
 	SetActorRotation(MoveDirection.Rotation());
+	
 	
 }
 
@@ -48,6 +50,12 @@ void AProjectileActor::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	DOREPLIFETIME(AProjectileActor, ProjectileSpeed);
 	DOREPLIFETIME(AProjectileActor, MoveDirection);
 	
+}
+
+void AProjectileActor::Destroyed()
+{
+	
+	Super::Destroyed();
 }
 
 void AProjectileActor::SetGenericTeamId(const FGenericTeamId& InTeamID)
@@ -71,9 +79,10 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 	}
 	
-	Super::NotifyActorBeginOverlap(OtherActor);
+	// Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor && OtherActor != GetOwner())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ProjectileActor overlapped with %s, Is Server = %s"), *OtherActor->GetName(), HasAuthority() ? TEXT("True") : TEXT("False"));
 		// 仅在服务端处理碰撞逻辑
 		// 检查阵营态度
 		if (GetTeamAttitudeTowards(*OtherActor) == ProjectileTeamAttitudeType)
@@ -88,14 +97,15 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 					GetWorldTimerManager().ClearTimer(ProjectileTravelTimerHandle); // 清除最大飞行距离计时器
 				}
 			}
+
 			// 发送本地游戏提示
 			FHitResult HitResult;
 			HitResult.ImpactNormal = GetActorForwardVector();
 			HitResult.ImpactPoint = GetActorLocation();
 			SendLocalGameplayCue(OtherActor, HitResult);
-
-			// 销毁投射物
-			Destroy();
+			
+			Destroyed();
+			
 		}
 	}
 }
@@ -148,10 +158,11 @@ void AProjectileActor::SendLocalGameplayCue(AActor* CueTargetActor, const FHitRe
 	FGameplayCueParameters CueParameters;
 	CueParameters.Location = HitResult.ImpactPoint;
 	CueParameters.Normal = HitResult.ImpactNormal;
-
+	
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
-
+	
 }
+
 
 
 

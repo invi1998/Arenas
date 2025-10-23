@@ -22,6 +22,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Destroyed() override;
+
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
@@ -56,10 +58,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Cue")
 	FGameplayTag HitGameplayCueTag;
-	
-	void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile" )
 	bool bOnlyOverlapTargetActor = false;	// 是否只与目标Actor发生碰撞
+
+	void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult);
 
 };

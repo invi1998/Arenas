@@ -59,5 +59,8 @@ public:
 
 	static bool CheckAbilityCanCost(const FGameplayAbilitySpec& InAbilitySpec, const UArenasAbilitySystemComponent* InAbilitySystemComponent);
 	static bool CheckAbilityCanCost_Static(const UGameplayAbility* InAbilityCDO, const UArenasAbilitySystemComponent* InAbilitySystemComponent);
+
+	// 执行本地GameplayCue
+	static void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult, FGameplayTag HitGameplayCueTag);
 	
 };

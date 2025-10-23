@@ -5,8 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "ArenasGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameplayCueManager.h"
 #include "GameplayTagsManager.h"
 #include "Framework/ArenasGameMode.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
@@ -221,4 +223,14 @@ bool UArenasBlueprintFunctionLibrary::CheckAbilityCanCost_Static(const UGameplay
 	// 这种方式虽然不够严谨（因为AbilitySpec可能包含一些额外的信息，比如技能等级等），但对于大多数简单的装备物品技能消耗检查来说是足够的
 	// 而且这样可以避免不必要的网络开销和延迟
 	return InAbilityCDO->CheckCost(FGameplayAbilitySpecHandle(), InAbilitySystemComponent->AbilityActorInfo.Get());
+}
+
+void UArenasBlueprintFunctionLibrary::SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult, FGameplayTag HitGameplayCueTag)
+{
+	FGameplayCueParameters CueParameters;
+	CueParameters.Location = HitResult.ImpactPoint;
+	CueParameters.Normal = HitResult.ImpactNormal;
+	
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
+
 }
