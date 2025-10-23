@@ -59,5 +59,7 @@ protected:
 	
 	void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile" )
+	bool bOnlyOverlapTargetActor = false;	// 是否只与目标Actor发生碰撞
 
 };

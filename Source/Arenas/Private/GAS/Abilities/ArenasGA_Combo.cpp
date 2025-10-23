@@ -10,7 +10,6 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
-#include "ProfilingDebugging/CookStats.h"
 
 UArenasGA_Combo::UArenasGA_Combo() : ComboMontage(nullptr)
 {
@@ -72,7 +71,7 @@ void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		UAbilityTask_WaitGameplayEvent* WaitComboDamageEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 			this,
-			ArenasGameplayTags::Event_Ability_Combo_Damage,
+			GetDamageEventTag(),
 			nullptr,
 			false,
 			true);
@@ -83,6 +82,11 @@ void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 
 	SetupWaitComboInputPressTask();
+}
+
+FGameplayTag UArenasGA_Combo::GetDamageEventTag() const
+{
+	return ArenasGameplayTags::Event_Ability_Combo_Damage;
 }
 
 void UArenasGA_Combo::SetupWaitComboInputPressTask()

@@ -53,7 +53,6 @@ void UArenasGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UArenasGA_Shoot::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Shoot Ability Input Released"));
 	K2_EndAbility();
 }
 

@@ -82,6 +82,11 @@ void ADefenseTowerCharacter::BeginPlay()
 	GroundDecalComponent->SetVisibility(false);
 }
 
+AActor* ADefenseTowerCharacter::GetCurrentTargetActor() const
+{
+	return CurrentTargetActor;
+}
+
 void ADefenseTowerCharacter::OnRep_TeamID()
 {
 	PickSkinBasedOnTeamID();

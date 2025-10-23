@@ -34,8 +34,9 @@ void AProjectileActor::Tick(float DeltaTime)
 			MoveDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 		}
 	}
-
 	SetActorLocation(GetActorLocation() + MoveDirection * ProjectileSpeed * DeltaTime);
+	// 如果只设置弹体位置，会出现子弹移动很死板的问题，所以同时还需要修正弹体的朝向
+	SetActorRotation(MoveDirection.Rotation());
 	
 }
 
@@ -61,6 +62,15 @@ FGenericTeamId AProjectileActor::GetGenericTeamId() const
 
 void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	if (bOnlyOverlapTargetActor)
+	{
+		// 仅与目标Actor发生碰撞
+		if (OtherActor != TargetActor)
+		{
+			return;
+		}
+	}
+	
 	Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor && OtherActor != GetOwner())
 	{

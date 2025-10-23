@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/ArenasCharacter.h"
+#include "Interface/ArenasCombatInterface.h"
 #include "DefenseTowerCharacter.generated.h"
 
 class AArenasTowerAIController;
@@ -11,7 +12,7 @@ class UCameraComponent;
 class USphereComponent;
 
 UCLASS()
-class ARENAS_API ADefenseTowerCharacter : public AArenasCharacter
+class ARENAS_API ADefenseTowerCharacter : public AArenasCharacter, public IArenasCombatInterface
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,8 @@ public:
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	virtual void BeginPlay() override;
+
+	virtual AActor* GetCurrentTargetActor() const override;
 
 private:
 	virtual void OnRep_TeamID() override;

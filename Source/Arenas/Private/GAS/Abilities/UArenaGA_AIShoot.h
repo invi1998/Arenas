@@ -1,29 +1,47 @@
-﻿// Ace of Arenas. (invi1998 All Rights Reserved)
+﻿// Ace of Arenas. (invi_1998 All Rights Reserved)
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "ArenasGameplayAbility.h"
-#include "ArenasGA_Combo.generated.h"
+#include "UArenaGA_AIShoot.generated.h"
 
+class AProjectileActor;
 /**
  * 
  */
 UCLASS()
-class ARENAS_API UArenasGA_Combo : public UArenasGameplayAbility
+class ARENAS_API UUArenaGA_AIShoot : public UArenasGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UArenasGA_Combo();
-
+	UUArenaGA_AIShoot();
 	static FGameplayTag GetComboChangeEventTag();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+
 private:
-	FGameplayTag GetDamageEventTag() const;
-	
+	virtual FGameplayTag GetDamageEventTag() const;
+
+	UFUNCTION()
+	void ShootProjectile(FGameplayEventData Payload);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	TSubclassOf<AProjectileActor> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	float ProjectileSpeed = 2000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	float ShootProjectileRange = 5000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting")
+	TSubclassOf<UGameplayEffect> ProjectileHitEffect;
+
+	FGenericTeamId GetOwnerTeamId() const;
+
 	void SetupWaitComboInputPressTask();
 	void TryCommitCombo();
 
@@ -39,7 +57,5 @@ private:
 	void OnComboInputPressed(float TimeWaited);
 
 	FName NextComboName;
-
-	UFUNCTION()
-	void DoDamage(FGameplayEventData Payload);
+	
 };
