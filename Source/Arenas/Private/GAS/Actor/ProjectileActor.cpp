@@ -4,7 +4,7 @@
 #include "ProjectileActor.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "AbilitySystemGlobals.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "GameplayCueManager.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -49,13 +49,8 @@ void AProjectileActor::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	DOREPLIFETIME(AProjectileActor, TeamId);
 	DOREPLIFETIME(AProjectileActor, ProjectileSpeed);
 	DOREPLIFETIME(AProjectileActor, MoveDirection);
+	DOREPLIFETIME(AProjectileActor, TeamAttitudeByte);
 	
-}
-
-void AProjectileActor::Destroyed()
-{
-	
-	Super::Destroyed();
 }
 
 void AProjectileActor::SetGenericTeamId(const FGenericTeamId& InTeamID)
@@ -65,7 +60,24 @@ void AProjectileActor::SetGenericTeamId(const FGenericTeamId& InTeamID)
 
 FGenericTeamId AProjectileActor::GetGenericTeamId() const
 {
-	return IGenericTeamAgentInterface::GetGenericTeamId();
+	return TeamId;
+}
+
+ETeamAttitude::Type AProjectileActor::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	if (const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(&Other))
+	{
+		FGenericTeamId OtherTeamID = OtherTeamAgent->GetGenericTeamId();
+		FGenericTeamId MyTeamID = GetGenericTeamId();
+		
+		if (MyTeamID == OtherTeamID) 
+			return ETeamAttitude::Friendly;
+		else if (MyTeamID == FGenericTeamId::NoTeam || OtherTeamID == FGenericTeamId::NoTeam)
+			return ETeamAttitude::Neutral;
+		else
+			return ETeamAttitude::Hostile;
+	}
+	return ETeamAttitude::Neutral;
 }
 
 void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -82,9 +94,9 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	// Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor && OtherActor != GetOwner())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ProjectileActor overlapped with %s, Is Server = %s"), *OtherActor->GetName(), HasAuthority() ? TEXT("True") : TEXT("False"));
 		// 仅在服务端处理碰撞逻辑
 		// 检查阵营态度
+		
 		if (GetTeamAttitudeTowards(*OtherActor) == ProjectileTeamAttitudeType)
 		{
 			// 应用效果
@@ -98,24 +110,46 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 				}
 			}
 
-			// 发送本地游戏提示
+			// 发送游戏提示
 			FHitResult HitResult;
 			HitResult.ImpactNormal = GetActorForwardVector();
 			HitResult.ImpactPoint = GetActorLocation();
-			SendLocalGameplayCue(OtherActor, HitResult);
+
+			// 判断当前弹丸所属的Actor是否是AI角色
+			if (AActor* OwnerActor = GetOwner())
+			{
+				if (UArenasBlueprintFunctionLibrary::IsAIActor(OwnerActor))
+				{
+					// 如果是AI角色发射的弹丸，则使用GAS的方式触发游戏提示
+					TriggerGameplayCue_GAS(OtherActor, HitResult);
+				}
+				else
+				{
+					// 否则使用本地方式触发游戏提示
+					SendLocalGameplayCue(OtherActor, HitResult);
+				}
+			}
+			else
+			{
+				// 如果没有拥有者，则使用本地方式触发游戏提示
+				SendLocalGameplayCue(OtherActor, HitResult);
+			}
 			
-			Destroyed();
+			Destroy();
 			
 		}
+		
 	}
 }
 
 void AProjectileActor::ShootProjectile(float InSpeed, float InMaxDistance, FVector InitialMoveDir, const AActor* InTargetActor, FGenericTeamId InInstigatorTeamID, FGameplayEffectSpecHandle InHitEffectSpecHandle, ETeamAttitude::Type InTeamAttitudeType)
 {
+
 	TargetActor = InTargetActor;
 	ProjectileSpeed = InSpeed;
 	ProjectileTeamAttitudeType = InTeamAttitudeType;
 	MoveDirection = InitialMoveDir.GetSafeNormal();
+	TeamAttitudeByte = static_cast<uint8>(InTeamAttitudeType);
 
 	FRotator OwnerRotator = GetActorRotation();
 	SetGenericTeamId(InInstigatorTeamID);
@@ -153,14 +187,38 @@ void AProjectileActor::BeginPlay()
 	
 }
 
+void AProjectileActor::OnRep_TeamAttitude()
+{
+	if (!HasAuthority())
+	{
+		// 因为ProjectileTeamAttitudeType这个属性变量只存在服务端，所以这里需要将字节值转换回枚举类型
+		ProjectileTeamAttitudeType = static_cast<ETeamAttitude::Type>(TeamAttitudeByte);
+	}
+	
+}
+
 void AProjectileActor::SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult)
 {
+	
 	FGameplayCueParameters CueParameters;
 	CueParameters.Location = HitResult.ImpactPoint;
 	CueParameters.Normal = HitResult.ImpactNormal;
 	
-	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
-	
+	// UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
+	UGameplayCueManager::ExecuteGameplayCue_NonReplicated(CueTargetActor, HitGameplayCueTag, CueParameters);
+}
+
+void AProjectileActor::TriggerGameplayCue_GAS(AActor* HitActor, const FHitResult& HitResult)
+{
+	if (!HitActor) return;
+	if (UArenasAbilitySystemComponent* ArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(HitActor))
+	{
+		FGameplayCueParameters CueParameters;
+		CueParameters.Location = HitResult.ImpactPoint;
+		CueParameters.Normal = HitResult.ImpactNormal;
+
+		ArenasASC->ExecuteGameplayCue(HitGameplayCueTag, CueParameters);
+	}
 }
 
 

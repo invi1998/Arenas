@@ -62,5 +62,5 @@ public:
 
 	// 执行本地GameplayCue
 	static void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult, FGameplayTag HitGameplayCueTag);
-	
+	static bool IsAIActor(AActor* Actor);
 };

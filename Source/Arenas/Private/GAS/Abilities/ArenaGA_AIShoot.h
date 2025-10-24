@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "ArenasGameplayAbility.h"
-#include "UArenaGA_AIShoot.generated.h"
+#include "ArenaGA_AIShoot.generated.h"
 
 class AProjectileActor;
 /**
  * 
  */
 UCLASS()
-class ARENAS_API UUArenaGA_AIShoot : public UArenasGameplayAbility
+class ARENAS_API UArenaGA_AIShoot : public UArenasGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UUArenaGA_AIShoot();
+	UArenaGA_AIShoot();
 	static FGameplayTag GetComboChangeEventTag();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

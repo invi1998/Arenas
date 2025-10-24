@@ -1,7 +1,7 @@
 ﻿// Ace of Arenas. (invi_1998 All Rights Reserved)
 
 
-#include "UArenaGA_AIShoot.h"
+#include "ArenaGA_AIShoot.h"
 
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "ArenasGameplayTags.h"
@@ -12,7 +12,7 @@
 #include "GAS/Actor/ProjectileActor.h"
 #include "Interface/ArenasCombatInterface.h"
 
-UUArenaGA_AIShoot::UUArenaGA_AIShoot()
+UArenaGA_AIShoot::UArenaGA_AIShoot()
 {
 	FGameplayTagContainer TempAbilityTags;
 	TempAbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
@@ -20,12 +20,12 @@ UUArenaGA_AIShoot::UUArenaGA_AIShoot()
 	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
 }
 
-FGameplayTag UUArenaGA_AIShoot::GetComboChangeEventTag()
+FGameplayTag UArenaGA_AIShoot::GetComboChangeEventTag()
 {
 	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Combo.Change"));
 }
 
-void UUArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -45,13 +45,13 @@ void UUArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		UAbilityTask_PlayMontageAndWait* PlayComboMontageAndWaitTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ComboMontage, 1.f, NAME_None, false);
 		// 订阅蒙太奇淡出混合事件
-		PlayComboMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UUArenaGA_AIShoot::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnBlendOut.AddDynamic(this, &UArenaGA_AIShoot::K2_EndAbility);
 		// 订阅蒙太奇完成事件
-		PlayComboMontageAndWaitTask->OnCompleted.AddDynamic(this, &UUArenaGA_AIShoot::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnCompleted.AddDynamic(this, &UArenaGA_AIShoot::K2_EndAbility);
 		// 订阅蒙太奇中断事件
-		PlayComboMontageAndWaitTask->OnInterrupted.AddDynamic(this, &UUArenaGA_AIShoot::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnInterrupted.AddDynamic(this, &UArenaGA_AIShoot::K2_EndAbility);
 		// 订阅蒙太奇取消事件
-		PlayComboMontageAndWaitTask->OnCancelled.AddDynamic(this, &UUArenaGA_AIShoot::K2_EndAbility);
+		PlayComboMontageAndWaitTask->OnCancelled.AddDynamic(this, &UArenaGA_AIShoot::K2_EndAbility);
 		
 		PlayComboMontageAndWaitTask->ReadyForActivation();	// 准备好被激活（实际并未被激活）
 
@@ -63,7 +63,7 @@ void UUArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			false,	// 因为连招会被多次触发，所以这里不需要只触发一次
 			false);	// 同时，我们这里监听的是Combo.Change，它下面有多个具体的连招段Tag，所以这里不需要只匹配精确标签
 
-		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UUArenaGA_AIShoot::OnComboChangeEventReceived);
+		WaitComboChangeEventTask->EventReceived.AddDynamic(this, &UArenaGA_AIShoot::OnComboChangeEventReceived);
 		WaitComboChangeEventTask->ReadyForActivation();
 	}
 
@@ -77,7 +77,7 @@ void UUArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			false,
 			false);
 
-		WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UUArenaGA_AIShoot::ShootProjectile);
+		WaitComboDamageEventTask->EventReceived.AddDynamic(this, &UArenaGA_AIShoot::ShootProjectile);
 		WaitComboDamageEventTask->ReadyForActivation();
 	}
 	
@@ -85,14 +85,14 @@ void UUArenaGA_AIShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	SetupWaitComboInputPressTask();
 }
 
-void UUArenaGA_AIShoot::SetupWaitComboInputPressTask()
+void UArenaGA_AIShoot::SetupWaitComboInputPressTask()
 {
 	UAbilityTask_WaitInputPress* WaitComboInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
-	WaitComboInputPressTask->OnPress.AddDynamic(this, &UUArenaGA_AIShoot::OnComboInputPressed);
+	WaitComboInputPressTask->OnPress.AddDynamic(this, &UArenaGA_AIShoot::OnComboInputPressed);
 	WaitComboInputPressTask->ReadyForActivation();
 }
 
-void UUArenaGA_AIShoot::TryCommitCombo()
+void UArenaGA_AIShoot::TryCommitCombo()
 {
 	if (NextComboName == NAME_None)
 	{
@@ -106,7 +106,7 @@ void UUArenaGA_AIShoot::TryCommitCombo()
 	}
 }
 
-int32 UUArenaGA_AIShoot::GetCurrentComboIndex() const
+int32 UArenaGA_AIShoot::GetCurrentComboIndex() const
 {
 	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
 	{
@@ -116,7 +116,7 @@ int32 UUArenaGA_AIShoot::GetCurrentComboIndex() const
 	return 0; // 默认返回0，表示无效索引
 }
 
-void UUArenaGA_AIShoot::OnComboChangeEventReceived(FGameplayEventData PayloadData)
+void UArenaGA_AIShoot::OnComboChangeEventReceived(FGameplayEventData PayloadData)
 {
 	FGameplayTag EventTag = PayloadData.EventTag;
 
@@ -129,18 +129,18 @@ void UUArenaGA_AIShoot::OnComboChangeEventReceived(FGameplayEventData PayloadDat
 	NextComboName = UArenasBlueprintFunctionLibrary::NativeGetGameplayTagLastName(EventTag);
 }
 
-void UUArenaGA_AIShoot::OnComboInputPressed(float TimeWaited)
+void UArenaGA_AIShoot::OnComboInputPressed(float TimeWaited)
 {
 	SetupWaitComboInputPressTask();
 	TryCommitCombo();
 }
 
-FGameplayTag UUArenaGA_AIShoot::GetDamageEventTag() const
+FGameplayTag UArenaGA_AIShoot::GetDamageEventTag() const
 {
 	return FGameplayTag::RequestGameplayTag(FName("Event.Ability.Shoot"));
 }
 
-void UUArenaGA_AIShoot::ShootProjectile(FGameplayEventData Payload)
+void UArenaGA_AIShoot::ShootProjectile(FGameplayEventData Payload)
 {
 	if (K2_HasAuthority())
 	{
@@ -184,7 +184,7 @@ void UUArenaGA_AIShoot::ShootProjectile(FGameplayEventData Payload)
 	}
 }
 
-FGenericTeamId UUArenaGA_AIShoot::GetOwnerTeamId() const
+FGenericTeamId UArenaGA_AIShoot::GetOwnerTeamId() const
 {
 	if (IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(GetOwningActorFromActorInfo()))
 	{

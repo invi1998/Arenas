@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "AIController.h"
 #include "ArenasGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayCueManager.h"
@@ -233,4 +234,14 @@ void UArenasBlueprintFunctionLibrary::SendLocalGameplayCue(AActor* CueTargetActo
 	
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(CueTargetActor, HitGameplayCueTag, EGameplayCueEvent::Executed, CueParameters);
 
+}
+
+bool UArenasBlueprintFunctionLibrary::IsAIActor(AActor* Actor)
+{
+	// 检查Actor的控制器是否是AAIController
+	if (APawn* Pawn = Cast<APawn>(Actor))
+	{
+		return Pawn->GetController() && Pawn->GetController()->IsA<AAIController>();
+	}
+	return false;
 }
