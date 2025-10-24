@@ -97,7 +97,7 @@ void AMinionBarrack::SpawnDefenseTowers()
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			if (AStormCore* Core = GetWorld()->SpawnActor<AStormCore>(StormCoreClass, SpawnPointTransform, SpawnParameters))
 			{
-				Core->SetOwner(this);
+				// Core->SetOwner(this);
 				Core->SetGenericTeamId(BarrackTeamID);
 				Core->FinishSpawning(SpawnPointTransform);
 				
