@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "Arenas/Arenas.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -41,6 +42,39 @@ ATargetActor_Beam::ATargetActor_Beam()
 	
 	AvatarActor = nullptr;
 }
+
+void ATargetActor_Beam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATargetActor_Beam, TargetRange);
+	DOREPLIFETIME(ATargetActor_Beam, DetectionCylinderRadius);
+	DOREPLIFETIME(ATargetActor_Beam, TeamId);
+	DOREPLIFETIME(ATargetActor_Beam, AvatarActor);
+	
+}
+
+void ATargetActor_Beam::ConfigureTargetSetting(float InTargetRange, float InDetectionCylinderRadius, float InTargetingInterval, FGenericTeamId OwningTeamId, bool bShouldDrawDebug)
+{
+	TargetRange = InTargetRange;
+	DetectionCylinderRadius = InDetectionCylinderRadius;
+	TargetingInterval = InTargetingInterval;
+	TeamId = OwningTeamId;
+	bDrawDebug = bShouldDrawDebug;
+	
+}
+
+void ATargetActor_Beam::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	TeamId = TeamID;
+}
+
+FGenericTeamId ATargetActor_Beam::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+
 
 
 

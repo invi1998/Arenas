@@ -170,3 +170,12 @@ void UArenasGameplayAbility::SendLocalGameplayEvent(const FGameplayTag EventTag,
 	}
 }
 
+FGenericTeamId UArenasGameplayAbility::GetOwningTeamId() const
+{
+	if (OwningArenasCharacter)
+	{
+		return OwningArenasCharacter->GetGenericTeamId();
+	}
+	return FGenericTeamId::NoTeam;
+}
+

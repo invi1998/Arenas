@@ -50,6 +50,8 @@ protected:
 
 	void SendLocalGameplayEvent(const FGameplayTag EventTag, const FGameplayEventData& Payload);
 
+	FGenericTeamId GetOwningTeamId() const;
+
 private:
 	UPROPERTY()
 	AArenasCharacter* OwningArenasCharacter;

@@ -107,6 +107,8 @@ void UArenasGA_Lazer::OnLazerFireEventReceived(FGameplayEventData Payload)
 
 	if (ATargetActor_Beam* TargetActor_Beam = Cast<ATargetActor_Beam>(TargetActor))
 	{
+		TargetActor_Beam->ConfigureTargetSetting(TargetRange, DetectionCylinderRadius, TargetingInterval, GetOwningTeamId(), bShowDebugLine);
+		
 		// 将TargetActor附加到技能拥有者的指定Socket上，以确保其位置和旋转与角色同步，SnapToTargetNotIncludingScale用于确保位置和旋转对齐但不影响缩放
 		TargetActor_Beam->AttachToComponent(GetOwningComponentFromActorInfo(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LazerTargetActorAttachSocketName);
 	}

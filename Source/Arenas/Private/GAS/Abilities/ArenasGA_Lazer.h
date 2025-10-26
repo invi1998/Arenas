@@ -28,11 +28,20 @@ private:
 
 	FActiveGameplayEffectHandle ActiveOngoingConsumeEffectHandle;	// 持续消耗效果句柄
 
-	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
 	TSubclassOf<ATargetActor_Beam> LazerTargetActorClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
 	FName LazerTargetActorAttachSocketName = TEXT("Lazer");
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float TargetRange = 4000.f;		// 激光束目标范围
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float DetectionCylinderRadius = 30.f;	// 检测圆柱体半径
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float TargetingInterval = 0.3f;		// 目标选择间隔时间
 
 	void ManaUpdate(const FOnAttributeChangeData& OnAttributeChangeData);
 
