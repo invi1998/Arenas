@@ -40,6 +40,9 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_hand_L, "Event.Ability.Shoot.hand_L", "射击技能左手发射" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Shoot_hand_R, "Event.Ability.Shoot.hand_R", "射击技能右手发射" );
 	
+	// Event-Lazer
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Lazer_Fire, "Event.Ability.Lazer.Fire", "激光技能发射" );
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_BaseDamage, "SetByCaller.BaseDamage", "基础伤害" );

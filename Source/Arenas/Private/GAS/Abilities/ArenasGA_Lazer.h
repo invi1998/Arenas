@@ -1,0 +1,35 @@
+﻿// Ace of Arenas. (invi_1998 All Rights Reserved)
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "ArenasGameplayAbility.h"
+#include "ArenasGA_Lazer.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class ARENAS_API UArenasGA_Lazer : public UArenasGameplayAbility
+{
+	GENERATED_BODY()
+	
+public:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Anim")
+	UAnimMontage* LazerMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> OnGoingConsumeEffect;	// 持续消耗效果
+
+	FActiveGameplayEffectHandle ActiveOngoingConsumeEffectHandle;	// 持续消耗效果句柄
+
+	void ManaUpdate(const FOnAttributeChangeData& OnAttributeChangeData);
+
+	UFUNCTION()
+	void OnLazerFireEventReceived(FGameplayEventData Payload);
+	
+};
