@@ -23,7 +23,21 @@ ATargetActor_Beam::ATargetActor_Beam()
 	BeamVFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BeamVFXComp"));
 	BeamVFXComp->SetupAttachment(GetRootComponent());
 	bReplicates = true;
+	
 	ShouldProduceTargetDataOnServer = true;		// 服务器端生成目标数据，而客户端只是进行模拟和显示
+
+	// 设置了只在服务端生成后，测试发现，在多人模式下，施法者客户端没有生成目标Actor，只有服务端和其他客户端生成了该Actor
+	// 这是因为在父类的IsNetRelevantFor函数里，有一段逻辑是这样的：
+	// bool AGameplayAbilityTargetActor::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+	// The player who created the ability doesn't need to be updated about it - there should be local prediction in place.
+	// if (RealViewer == PrimaryPC)
+	// {
+	// 	return false;
+	// }
+	// 创建该能力的玩家不需要获得更新信息——应该有本地预测机制。
+	// 因此，施法者客户端不会接收到该Actor的更新信息，自然也就不会生成该Actor了。
+	// 这样做的好处是减少了网络流量，因为施法者客户端不需要知道该Actor的存在，只需要在本地进行预测和显示即可。
+	// 其他客户端和服务端则需要知道该Actor的存在，以便进行正确的游戏逻辑处理。
 	
 	AvatarActor = nullptr;
 }

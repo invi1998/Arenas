@@ -6,6 +6,7 @@
 #include "ArenasGameplayAbility.h"
 #include "ArenasGA_Lazer.generated.h"
 
+class ATargetActor_Beam;
 /**
  * 
  */
@@ -27,8 +28,17 @@ private:
 
 	FActiveGameplayEffectHandle ActiveOngoingConsumeEffectHandle;	// 持续消耗效果句柄
 
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	TSubclassOf<ATargetActor_Beam> LazerTargetActorClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	FName LazerTargetActorAttachSocketName = TEXT("Lazer");
+
 	void ManaUpdate(const FOnAttributeChangeData& OnAttributeChangeData);
 
+	UFUNCTION()
+	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& Data);
+	
 	UFUNCTION()
 	void OnLazerFireEventReceived(FGameplayEventData Payload);
 	
