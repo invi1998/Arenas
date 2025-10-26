@@ -93,11 +93,9 @@ void AMinionBarrack::SpawnDefenseTowers()
 		if (StormCoreClass && BaseCoreSpawnPoint)
 		{
 			SpawnPointTransform = BaseCoreSpawnPoint->GetActorTransform();
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			if (AStormCore* Core = GetWorld()->SpawnActor<AStormCore>(StormCoreClass, SpawnPointTransform, SpawnParameters))
+			
+			if (AStormCore* Core = GetWorld()->SpawnActorDeferred<AStormCore>(StormCoreClass, SpawnPointTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				// Core->SetOwner(this);
 				Core->SetGenericTeamId(BarrackTeamID);
 				Core->FinishSpawning(SpawnPointTransform);
 				
@@ -117,10 +115,7 @@ void AMinionBarrack::SpawnDefenseTowers()
 			// 在每个生成点生成一个防御塔
 			if (DefenseTowerClass)
 			{
-				FActorSpawnParameters SpawnParameters;
-				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-				if (ADefenseTowerCharacter* Tower = GetWorld()->SpawnActor<ADefenseTowerCharacter>(DefenseTowerClass, SpawnPointTransform, SpawnParameters))
+				if (ADefenseTowerCharacter* Tower = GetWorld()->SpawnActorDeferred<ADefenseTowerCharacter>(DefenseTowerClass, SpawnPointTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 				{
 					Tower->SetGenericTeamId(BarrackTeamID);
 					Tower->FinishSpawning(SpawnPointTransform);

@@ -37,22 +37,4 @@ void AStormCore::SetGenericTeamId(const FGenericTeamId& InTeamID)
 	}
 }
 
-// Called when the game starts or when spawned
-void AStormCore::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AStormCore::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AStormCore::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
 
