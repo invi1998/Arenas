@@ -26,6 +26,7 @@ public class Arenas : ModuleRules
 			"Slate",
 			"SlateCore",
 			"AIModule",
+			"Niagara",
 		});
 
 		// Uncomment if you are using Slate UI
