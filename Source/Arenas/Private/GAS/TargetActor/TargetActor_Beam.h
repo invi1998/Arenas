@@ -18,6 +18,8 @@ class ARENAS_API ATargetActor_Beam : public AGameplayAbilityTargetActor, public 
 public:
 	// Sets default values for this actor's properties
 	ATargetActor_Beam();
+	virtual void Tick(float DeltaSeconds) override;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void ConfigureTargetSetting(float InTargetRange, float InDetectionCylinderRadius, float InTargetingInterval, FGenericTeamId OwningTeamId, bool bShouldDrawDebug = false);
@@ -25,6 +27,7 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
+	virtual void StartTargeting(UGameplayAbility* Ability) override;
 
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
@@ -35,6 +38,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USphereComponent* TargetEndDetectionSphere;		// 目标终点检测球体
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "VFX")
+	FName BeamFXLengthParamName = TEXT("Length");		// 激光束特效长度参数名称
 
 	UPROPERTY(Replicated)
 	float TargetRange;		// 激光束目标范围
@@ -53,5 +59,9 @@ private:
 
 	UPROPERTY(Replicated)
 	const AActor* AvatarActor;		// 持有该TargetActor的角色
-	
+
+	FTimerHandle PeriodicalTargetingTimerHandle;		// 定时目标选择定时器
+
+	void DoTargetCheckAndReport();
+	void UpdateTargetTrace();
 };

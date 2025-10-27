@@ -91,8 +91,8 @@ UPlayerUIComponent* AArenasPlayerCharacter::GetPlayerUIComponent() const
 void AArenasPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	OutLocation = FollowCamera->GetComponentLocation();
-	OutRotation = FollowCamera->GetComponentRotation();
-	
+	// OutRotation = FollowCamera->GetComponentRotation();
+	OutRotation = GetBaseAimRotation();		// 使用基础瞄准旋转，以确保视角方向与控制器方向一致
 }
 
 FVector AArenasPlayerCharacter::GetLookForwardDir() const
