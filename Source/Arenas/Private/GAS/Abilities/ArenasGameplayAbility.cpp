@@ -172,9 +172,9 @@ void UArenasGameplayAbility::SendLocalGameplayEvent(const FGameplayTag EventTag,
 
 FGenericTeamId UArenasGameplayAbility::GetOwningTeamId() const
 {
-	if (OwningArenasCharacter)
+	if (IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo()))
 	{
-		return OwningArenasCharacter->GetGenericTeamId();
+		return OwnerTeamAgent->GetGenericTeamId();
 	}
 	return FGenericTeamId::NoTeam;
 }

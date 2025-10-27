@@ -99,7 +99,7 @@ ETeamAttitude::Type ATargetActor_Beam::GetTeamAttitudeTowards(const AActor& Othe
 	{
 		FGenericTeamId OtherTeamID = OtherTeamAgent->GetGenericTeamId();
 		FGenericTeamId MyTeamID = GetGenericTeamId();
-		
+
 		if (MyTeamID == OtherTeamID) 
 			return ETeamAttitude::Friendly;
 		else if (MyTeamID == FGenericTeamId::NoTeam || OtherTeamID == FGenericTeamId::NoTeam)
@@ -139,7 +139,7 @@ void ATargetActor_Beam::DoTargetCheckAndReport()
 	TArray<TWeakObjectPtr<AActor>> OverlappingActorsWeakPtrArray;
 	for (AActor* OverlappingActor : OverlappingActorSet)
 	{
-		if (ShouldReprotActorAsTarget(OverlappingActor))
+		if (ShouldReportActorAsTarget(OverlappingActor))
 		{
 			OverlappingActorsWeakPtrArray.Add(OverlappingActor);
 		}
@@ -198,7 +198,7 @@ void ATargetActor_Beam::UpdateTargetTrace()
 
 	FVector BeamEndLocation = SweepEndLocation;
 	float BeamLength = TargetRange;
-
+	
 	for (FHitResult HitResult : SweepHitResults)
 	{
 		if (HitResult.GetActor())
@@ -223,7 +223,7 @@ void ATargetActor_Beam::UpdateTargetTrace()
 	
 }
 
-bool ATargetActor_Beam::ShouldReprotActorAsTarget(const AActor* CheckedActor) const
+bool ATargetActor_Beam::ShouldReportActorAsTarget(const AActor* CheckedActor) const
 {
 	if (!CheckedActor) return false;
 	if (AvatarActor && AvatarActor == CheckedActor) return false;
