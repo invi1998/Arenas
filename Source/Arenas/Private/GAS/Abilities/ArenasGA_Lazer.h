@@ -26,6 +26,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> OnGoingConsumeEffect;	// 持续消耗效果
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	float HitPushSpeed = 3000.f;		// 命中推开速度
+
 	FActiveGameplayEffectHandle ActiveOngoingConsumeEffectHandle;	// 持续消耗效果句柄
 
 	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")

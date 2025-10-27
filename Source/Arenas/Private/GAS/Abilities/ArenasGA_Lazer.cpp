@@ -73,6 +73,13 @@ void UArenasGA_Lazer::ManaUpdate(const FOnAttributeChangeData& OnAttributeChange
 
 void UArenasGA_Lazer::TargetDataReceived(const FGameplayAbilityTargetDataHandle& Data)
 {
+	if (K2_HasAuthority())
+	{
+		BP_ApplyGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		// 推开命中的目标
+		const FVector PushDirection = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+		PushTargets(Data, PushDirection * HitPushSpeed);
+	}
 }
 
 void UArenasGA_Lazer::OnLazerFireEventReceived(FGameplayEventData Payload)
@@ -103,13 +110,17 @@ void UArenasGA_Lazer::OnLazerFireEventReceived(FGameplayEventData Payload)
 
 	AGameplayAbilityTargetActor* TargetActor;
 	WaitDamageTargetDataTask->BeginSpawningActor(this, LazerTargetActorClass, TargetActor);
-	WaitDamageTargetDataTask->FinishSpawningActor(this, TargetActor);
-
+	
 	if (ATargetActor_Beam* TargetActor_Beam = Cast<ATargetActor_Beam>(TargetActor))
 	{
 		TargetActor_Beam->ConfigureTargetSetting(TargetRange, DetectionCylinderRadius, TargetingInterval, GetOwningTeamId(), bShowDebugLine);
-		
+		WaitDamageTargetDataTask->FinishSpawningActor(this, TargetActor);
 		// 将TargetActor附加到技能拥有者的指定Socket上，以确保其位置和旋转与角色同步，SnapToTargetNotIncludingScale用于确保位置和旋转对齐但不影响缩放
 		TargetActor_Beam->AttachToComponent(GetOwningComponentFromActorInfo(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LazerTargetActorAttachSocketName);
 	}
+	else
+	{
+		WaitDamageTargetDataTask->FinishSpawningActor(this, TargetActor);
+	}
+	
 }

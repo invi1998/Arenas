@@ -52,6 +52,16 @@ void ATargetActor_Beam::Tick(float DeltaSeconds)
 	UpdateTargetTrace();
 }
 
+void ATargetActor_Beam::BeginDestroy()
+{
+	if (GetWorld() && PeriodicalTargetingTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(PeriodicalTargetingTimerHandle);
+	}
+	
+	Super::BeginDestroy();
+}
+
 void ATargetActor_Beam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -103,6 +113,28 @@ void ATargetActor_Beam::StartTargeting(UGameplayAbility* Ability)
 
 void ATargetActor_Beam::DoTargetCheckAndReport()
 {
+	if (!OwningAbility) return;
+	if (!HasAuthority()) return;
+
+	TSet<AActor*> OverlappingActorSet;
+	TargetEndDetectionSphere->GetOverlappingActors(OverlappingActorSet);
+
+	TArray<TWeakObjectPtr<AActor>> OverlappingActorsWeakPtrArray;
+	for (AActor* OverlappingActor : OverlappingActorSet)
+	{
+		if (ShouldReprotActorAsTarget(OverlappingActor))
+		{
+			OverlappingActorsWeakPtrArray.Add(OverlappingActor);
+		}
+	}
+	// 生成目标数据句柄
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	FGameplayAbilityTargetData_ActorArray* ActorArrayData = new FGameplayAbilityTargetData_ActorArray();
+	ActorArrayData->SetActors(OverlappingActorsWeakPtrArray);
+	TargetDataHandle.Add(ActorArrayData);
+
+	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
+	
 }
 
 void ATargetActor_Beam::UpdateTargetTrace()
@@ -172,6 +204,20 @@ void ATargetActor_Beam::UpdateTargetTrace()
 		BeamVFXComp->SetFloatParameter(BeamFXLengthParamName, BeamLength * 0.01f);
 	}
 	
+}
+
+bool ATargetActor_Beam::ShouldReprotActorAsTarget(const AActor* CheckedActor) const
+{
+	if (!CheckedActor) return false;
+	if (AvatarActor && AvatarActor == CheckedActor) return false;
+	if (CheckedActor == this) return false;
+
+	if (GetTeamAttitudeTowards(*CheckedActor) == ETeamAttitude::Hostile)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 

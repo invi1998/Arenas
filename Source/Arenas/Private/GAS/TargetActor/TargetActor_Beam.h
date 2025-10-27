@@ -19,6 +19,7 @@ public:
 	// Sets default values for this actor's properties
 	ATargetActor_Beam();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginDestroy() override;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -64,4 +65,6 @@ private:
 
 	void DoTargetCheckAndReport();
 	void UpdateTargetTrace();
+
+	bool ShouldReprotActorAsTarget(const AActor* CheckedActor) const;
 };
