@@ -93,6 +93,23 @@ FGenericTeamId ATargetActor_Beam::GetGenericTeamId() const
 	return TeamId;
 }
 
+ETeamAttitude::Type ATargetActor_Beam::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	if (const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(&Other))
+	{
+		FGenericTeamId OtherTeamID = OtherTeamAgent->GetGenericTeamId();
+		FGenericTeamId MyTeamID = GetGenericTeamId();
+		
+		if (MyTeamID == OtherTeamID) 
+			return ETeamAttitude::Friendly;
+		else if (MyTeamID == FGenericTeamId::NoTeam || OtherTeamID == FGenericTeamId::NoTeam)
+			return ETeamAttitude::Neutral;
+		else
+			return ETeamAttitude::Hostile;
+	}
+	return ETeamAttitude::Neutral;
+}
+
 void ATargetActor_Beam::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
