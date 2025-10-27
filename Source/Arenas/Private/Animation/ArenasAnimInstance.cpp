@@ -47,11 +47,17 @@ void UArenasAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		YawSpeed = BodyRotDelta.Yaw / DeltaSeconds;	// 计算身体旋转的角速度
 
+		float YawLerpSpeed = YawSpeedSmoothLerpSpeed;
+		if (YawSpeed == 0.f)
+		{
+			YawLerpSpeed = YawSpeedLerpToZeroSpeed * 2.f;	// 当角速度为0时，加快插值速度
+		}
+
 		// 因为我们使用鼠标控制旋转移动的时候，会导致身体旋转角速度的变化非常大，使用这种方法会有些不稳定
 		// 我们会看到身体动作变得很急促，所以我们需要平滑处理身体旋转角速度
 		// 这里我们使用插值来平滑处理身体旋转角速度
 		// 这里的插值速度可以根据需要进行调整，默认值为1
-		SmoothedYawSpeed = UKismetMathLibrary::FInterpTo(SmoothedYawSpeed, YawSpeed, DeltaSeconds, YawSpeedSmoothLerpSpeed);
+		SmoothedYawSpeed = UKismetMathLibrary::FInterpTo(SmoothedYawSpeed, YawSpeed, DeltaSeconds, YawLerpSpeed);
 
 		// GetBaseAimRotation 若存在控制器，默认情况下会瞄准玩家的视线方向（即摄像机朝向）
 		FRotator ControlRot = OwnerPlayerCharacter->GetBaseAimRotation();

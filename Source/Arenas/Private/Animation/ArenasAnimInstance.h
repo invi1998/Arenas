@@ -89,6 +89,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	float YawSpeedSmoothLerpSpeed = 1.f;	// 平滑的身体旋转角速度的插值速度
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	float YawSpeedLerpToZeroSpeed = 30.f;	// 当角色停止移动时，身体旋转角速度插值到0的速度
 	
 	FRotator BodyPrevRot;	// 角色身体的上一个旋转角度
 	FRotator LookRotOffset;	// 角色头部的旋转偏移
