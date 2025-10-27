@@ -137,15 +137,17 @@ void UAbilityGaugeWidget::UpdateCooldown()
 
 const FGameplayAbilitySpec* UAbilityGaugeWidget::GetAbilitySpec()
 {
-	if (!CachedAbilitySpec)
+	if (!OwnerAbilitySystemComponent) return nullptr;
+	if (!AbilityCDO) return nullptr;
+	if (!CachedAbilitySpecHandle.IsValid())
 	{
-		if (AbilityCDO && OwnerAbilitySystemComponent)
+		if (FGameplayAbilitySpec* FoundAbilitySpec = OwnerAbilitySystemComponent->FindAbilitySpecFromClass(AbilityCDO->GetClass()))
 		{
-			CachedAbilitySpec = OwnerAbilitySystemComponent->FindAbilitySpecFromClass(AbilityCDO->GetClass());
+			CachedAbilitySpecHandle = FoundAbilitySpec->Handle;
 		}
 	}
 
-	return CachedAbilitySpec;
+	return OwnerAbilitySystemComponent->FindAbilitySpecFromHandle(CachedAbilitySpecHandle);
 }
 
 void UAbilityGaugeWidget::OnAbilitySpecDirtied(const FGameplayAbilitySpec& GameplayAbilitySpec)

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "GameplayEffectTypes.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
@@ -92,7 +93,8 @@ private:
 
 	UPROPERTY()
 	const UArenasAbilitySystemComponent* OwnerAbilitySystemComponent;
-	const FGameplayAbilitySpec* CachedAbilitySpec;
+
+	FGameplayAbilitySpecHandle CachedAbilitySpecHandle;
 
 	const FGameplayAbilitySpec* GetAbilitySpec();
 
