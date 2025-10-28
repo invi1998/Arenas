@@ -3,6 +3,7 @@
 
 #include "TargetActor_BlackHole.h"
 
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -131,12 +132,16 @@ void ATargetActor_BlackHole::OnRep_BlackHoleRadius()
 void ATargetActor_BlackHole::ActorInBlackHoleArea(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (UArenasBlueprintFunctionLibrary::IsTowerActor(OtherActor)) return;
+	
 	TryAddTarget(OtherActor);
 }
 
 void ATargetActor_BlackHole::ActorOutBlackHoleArea(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (UArenasBlueprintFunctionLibrary::IsTowerActor(OtherActor)) return;
+	
 	TryRemoveTarget(OtherActor);
 }
 
