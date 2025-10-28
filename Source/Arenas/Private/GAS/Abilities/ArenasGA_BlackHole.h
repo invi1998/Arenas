@@ -52,10 +52,18 @@ private:
 	UAnimMontage* FinalBlowMontage;		// 终结一击动画
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
-	TSubclassOf<UGameplayEffect> AimEffectClass;		// 瞄准特效GameplayEffect类
+	TSubclassOf<UGameplayEffect> AimEffectClass;		// 瞄准状态GameplayEffect类
 
 	FActiveGameplayEffectHandle ActiveAimGameplayEffectHandle;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	TSubclassOf<UGameplayEffect> FocusedEffectClass;	// 状态集中效果GameplayEffect类
+
+	FActiveGameplayEffectHandle ActiveFocusedGameplayEffectHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
+	FGameplayTag BlackHoleExplodeCueTag;			// 黑洞爆炸GameplayCue标签
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
 	TSubclassOf<ATargetActor_BlackHole> TargetActorClass;
 
@@ -79,5 +87,7 @@ private:
 
 	void AddAimEffect();
 	void RemoveAimEffect();
+	void AddFocusedEffect();
+	void RemoveFocusedEffect();
 	
 };

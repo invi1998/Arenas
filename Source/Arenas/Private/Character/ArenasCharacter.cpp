@@ -99,6 +99,11 @@ bool AArenasCharacter::IsStunning() const
 	return GetAbilitySystemComponent() && GetAbilitySystemComponent()->HasMatchingGameplayTag(ArenasGameplayTags::Status_Stun);
 }
 
+bool AArenasCharacter::IsFocusing() const
+{
+	return bIsFocusingMode;
+}
+
 void AArenasCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -216,6 +221,11 @@ void AArenasCharacter::AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount
 	SetIsAiming(NewCount != 0);
 }
 
+void AArenasCharacter::FocusTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
+{
+	bIsFocusingMode = (NewCount > 0);
+}
+
 void AArenasCharacter::SetIsAiming(bool bNewAiming)
 {
 	// 切换瞄准状态时，调整角色的旋转行为
@@ -274,6 +284,11 @@ void AArenasCharacter::BindGASChangedDelegate()
 			ArenasGameplayTags::Status_Aiming,
 			EGameplayTagEventType::NewOrRemoved)
 			.AddUObject(this, &AArenasCharacter::AimingTagUpdated);
+
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(
+			ArenasGameplayTags::Status_Focus,
+			EGameplayTagEventType::NewOrRemoved)
+			.AddUObject(this, &AArenasCharacter::FocusTagUpdated);
 
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedChanged);
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedExAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedExChanged);

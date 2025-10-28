@@ -53,6 +53,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Dead, "Status.Dead", "死亡状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Stun, "Status.Stun", "眩晕状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Aiming, "Status.Aiming", "瞄准状态" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Focus, "Status.Focus", "专注状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Health_Full, "Status.Health.Full", "生命值满状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Health_Empty, "Status.Health.Empty", "生命值空状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Mana_Full, "Status.Mana.Full", "法力值满状态" );

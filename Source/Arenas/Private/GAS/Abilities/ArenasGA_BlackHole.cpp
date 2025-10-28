@@ -4,6 +4,8 @@
 #include "ArenasGA_BlackHole.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GAS/TargetActor/TargetActor_GroundPick.h"
@@ -50,6 +52,7 @@ void UArenasGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle,
 {
 
 	RemoveAimEffect();
+	RemoveFocusedEffect();
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -77,6 +80,16 @@ void UArenasGA_BlackHole::BlackHoleTargetDataReceived(const FGameplayAbilityTarg
 	{
 		PlayMontageLocally(FinalBlowMontage);
 	}
+
+	FGameplayCueParameters CueParams;
+	CueParams.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Data, 1).ImpactPoint;
+	CueParams.RawMagnitude = TargetAreaRadius;
+	if (UAbilitySystemComponent* OwnerASC = GetAbilitySystemComponentFromActorInfo())
+	{
+		OwnerASC->ExecuteGameplayCue(BlackHoleExplodeCueTag, CueParams);
+		OwnerASC->ExecuteGameplayCue(UArenasBlueprintFunctionLibrary::GetCameraShakeGameplayCueTag(), CueParams);
+	}
+	
 }
 
 void UArenasGA_BlackHole::BlackHoleTargetDataCancelled(const FGameplayAbilityTargetDataHandle& Data)
@@ -91,6 +104,9 @@ void UArenasGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle&
 		K2_EndAbility();
 		return;
 	}
+	
+	RemoveAimEffect();
+	AddFocusedEffect();
 	
 	if (PlayCastBlackHoleMontageTask)
 	{
@@ -151,5 +167,19 @@ void UArenasGA_BlackHole::RemoveAimEffect()
 	if (ActiveAimGameplayEffectHandle.IsValid())
 	{
 		BP_RemoveGameplayEffectFromOwnerWithHandle(ActiveAimGameplayEffectHandle);	
+	}
+}
+
+void UArenasGA_BlackHole::AddFocusedEffect()
+{
+	if (!FocusedEffectClass) return;
+	ActiveFocusedGameplayEffectHandle = BP_ApplyGameplayEffectToOwner(FocusedEffectClass);
+}
+
+void UArenasGA_BlackHole::RemoveFocusedEffect()
+{
+	if (ActiveFocusedGameplayEffectHandle.IsValid())
+	{
+		BP_RemoveGameplayEffectFromOwnerWithHandle(ActiveFocusedGameplayEffectHandle);	
 	}
 }

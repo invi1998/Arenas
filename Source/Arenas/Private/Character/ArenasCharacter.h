@@ -44,6 +44,7 @@ public:
 	void RespawnImmediately();
 
 	bool IsStunning() const;
+	bool IsFocusing() const;
 
 	// 当角色被控制器控制时调用(只会在服务端被调用)
 	virtual void PossessedBy(AController* NewController) override;
@@ -95,18 +96,21 @@ private:
 	void DeathTagUpdated(FGameplayTag InGameplayTag, int32 NewCount);
 	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	void FocusTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void SetIsAiming(bool bNewAiming);
 	virtual void OnAimStateChanged(bool bNewAiming);
 	void OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMoveSpeedExChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	
 	void BindGASChangedDelegate();
 
 	void UpdateMoveSpeed();
 
 	float BaseMoveSpeed = 0;
 	float MoveSpeedEx = 0;
+	bool bIsFocusingMode = false;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;

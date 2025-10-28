@@ -120,6 +120,8 @@ void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)
 
 void AArenasPlayerCharacter::HandleMoveInput(const FInputActionValue& Value)
 {
+	if (IsFocusing()) return;
+	
 	FVector2D InputVal = Value.Get<FVector2D>();
 	InputVal.Normalize();
 
