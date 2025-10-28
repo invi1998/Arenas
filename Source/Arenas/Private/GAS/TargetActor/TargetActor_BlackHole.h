@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
+#include "NiagaraSystem.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
 #include "TargetActor_BlackHole.generated.h"
 
+class UNiagaraComponent;
 class USphereComponent;
 
 UCLASS()
@@ -27,6 +29,9 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
+
+	virtual void StartTargeting(UGameplayAbility* Ability) override;	// 开始选择目标
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
@@ -38,6 +43,14 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	UParticleSystemComponent* VFXComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	UNiagaraSystem* BlackHoleLinkVFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	FName BlackHoleVFXOriginParamName = TEXT("Origin");	// 黑洞特效中心位置参数名称
+
+	
+
 	UPROPERTY(ReplicatedUsing = OnRep_BlackHoleRadius)
 	float BlackHoleRadius;		// 黑洞半径
 
@@ -46,6 +59,8 @@ private:
 
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamId;
+	
+	FTimerHandle BlackHoleDurationTimerHandle;
 
 	UFUNCTION()
 	void OnRep_BlackHoleRadius();
@@ -56,5 +71,11 @@ private:
 	UFUNCTION()
 	void ActorOutBlackHoleArea(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	
+	void TryAddTarget(AActor* OtherTarget);
+	void TryRemoveTarget(AActor* OtherTarget);
+
+	void StopBlackHole();
+
+	UPROPERTY()
+	TMap<AActor*, UNiagaraComponent*> ActorInRangeMap;
 };

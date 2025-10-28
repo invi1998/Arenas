@@ -31,7 +31,7 @@ private:
 	float TargetTraceRange = 2000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
-	float PullSpeed = 3000.f;					// 吸引速度
+	float PullSpeed = 600.f;					// 吸引速度
 
 	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
 	float BlackHoleDuration = 6.f;			// 黑洞持续时间
