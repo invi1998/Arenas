@@ -39,7 +39,7 @@ void UArenasGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		TargetActor_GroundPick->SetTargetTraceDistance(TargetTraceRange);
 	}
 	WaitPlacementTask->FinishSpawningActor(this, TargetActor);
-	
+	AddAimEffect();
 }
 
 void UArenasGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle,
