@@ -36,6 +36,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
 	float BlackHoleDuration = 6.f;			// 黑洞持续时间
 
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float HitPushSpeed = 1000.f;				// 被黑洞吸引到中心后推开速度
+
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	TSubclassOf<ATargetActor_GroundPick> GroundPickTargetActorClass;
 
@@ -44,6 +47,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* HoldBlackHoleMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* FinalBlowMontage;		// 终结一击动画
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
 	TSubclassOf<UGameplayEffect> AimEffectClass;		// 瞄准特效GameplayEffect类

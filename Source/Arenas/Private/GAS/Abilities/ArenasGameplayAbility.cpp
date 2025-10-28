@@ -80,6 +80,18 @@ void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle&
 	PushTargets(TargetActors, PushVelocity);
 }
 
+void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& CenterPoint, float PushSpeed)
+{
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetData);
+	for (AActor* TargetActor : TargetActors)
+	{
+		FVector Direction = TargetActor->GetActorLocation() - CenterPoint;
+		Direction.Z = 0.f; // 只在水平面上推开
+		Direction.Normalize();
+		PushTarget(TargetActor, Direction * PushSpeed);
+	}
+}
+
 void UArenasGameplayAbility::PlayMontageLocally(UAnimMontage* MontageToPlay)
 {
 	UAnimInstance* OwningAnimInstance = GetOwnerAnimInstance();

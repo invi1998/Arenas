@@ -56,6 +56,27 @@ void UArenasGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UArenasGA_BlackHole::BlackHoleTargetDataReceived(const FGameplayAbilityTargetDataHandle& Data)
 {
+	// 伤害和推开效果
+	if (K2_HasAuthority())
+	{
+		BP_ApplyGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		// 推开命中的目标，以黑洞中心为基准点
+		const FVector HoleCenter = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Data, 1).ImpactPoint;
+		PushTargets(Data, HoleCenter, HitPushSpeed);
+
+		UAbilityTask_PlayMontageAndWait* PlayFinalBlowMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, FinalBlowMontage);
+		PlayFinalBlowMontageTask->OnCompleted.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayFinalBlowMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayFinalBlowMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayFinalBlowMontageTask->OnBlendOut.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayFinalBlowMontageTask->ReadyForActivation();
+		
+		
+	}
+	else
+	{
+		PlayMontageLocally(FinalBlowMontage);
+	}
 }
 
 void UArenasGA_BlackHole::BlackHoleTargetDataCancelled(const FGameplayAbilityTargetDataHandle& Data)
@@ -116,6 +137,7 @@ void UArenasGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle&
 
 void UArenasGA_BlackHole::PlacementCancelled(const FGameplayAbilityTargetDataHandle& Data)
 {
+	K2_EndAbility();
 }
 
 void UArenasGA_BlackHole::AddAimEffect()

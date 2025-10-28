@@ -29,9 +29,10 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-
-
+	
 	virtual void StartTargeting(UGameplayAbility* Ability) override;	// 开始选择目标
+	virtual void ConfirmTargetingAndContinue() override;	// 确认目标选择并继续
+	virtual void CancelTargeting() override;				// 取消目标选择
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")

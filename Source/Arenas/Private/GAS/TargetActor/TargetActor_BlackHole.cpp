@@ -124,6 +124,17 @@ void ATargetActor_BlackHole::StartTargeting(UGameplayAbility* Ability)
 	
 }
 
+void ATargetActor_BlackHole::ConfirmTargetingAndContinue()
+{
+	StopBlackHole();
+}
+
+void ATargetActor_BlackHole::CancelTargeting()
+{
+	StopBlackHole();
+	Super::CancelTargeting();
+}
+
 void ATargetActor_BlackHole::OnRep_BlackHoleRadius()
 {
 	DetectionSphereComponent->SetSphereRadius(BlackHoleRadius);
@@ -183,5 +194,33 @@ void ATargetActor_BlackHole::TryRemoveTarget(AActor* OtherTarget)
 
 void ATargetActor_BlackHole::StopBlackHole()
 {
+	TArray<TWeakObjectPtr<AActor>> FinalTargets;
+	for (TPair<AActor*, UNiagaraComponent*>& Elem : ActorInRangeMap)
+	{
+		AActor* TargetActor = Elem.Key;
+		UNiagaraComponent* TargetLinkVFXComp = Elem.Value;
+		if (TargetActor)
+		{
+			FinalTargets.Add(TargetActor);
+		}
+
+		if (IsValid(TargetLinkVFXComp))
+		{
+			TargetLinkVFXComp->DestroyComponent();
+		}
+	}
+
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	FGameplayAbilityTargetData_ActorArray* TargetData = new FGameplayAbilityTargetData_ActorArray();
+	TargetData->SetActors(FinalTargets);
+	TargetDataHandle.Add(TargetData);
+
+	FGameplayAbilityTargetData_SingleTargetHit* HitLocationData = new FGameplayAbilityTargetData_SingleTargetHit();
+	HitLocationData->HitResult.ImpactPoint = GetActorLocation();		// 将黑洞位置信息传递给GA
+	TargetDataHandle.Add(HitLocationData);
+
+	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
+
+	
 }
 

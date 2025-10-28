@@ -38,6 +38,7 @@ protected:
 	void PushTarget(AActor* TargetActor, const FVector& PushVelocity);
 	void PushTargets(const TArray<AActor*>& TargetActors, const FVector& PushVelocity);
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& PushVelocity);
+	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& CenterPoint, float PushSpeed);
 
 	void PlayMontageLocally(UAnimMontage* MontageToPlay);
 	void StopMontageAfterCurrentSection(UAnimMontage* MontageToStop);
