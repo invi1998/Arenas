@@ -6,6 +6,8 @@
 #include "ArenasGameplayAbility.h"
 #include "ArenasGA_BlackHole.generated.h"
 
+class UAbilityTask_WaitTargetData;
+class ATargetActor_BlackHole;
 class UAbilityTask_PlayMontageAndWait;
 class ATargetActor_GroundPick;
 /**
@@ -23,10 +25,16 @@ public:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
-	float TargetAreaRadius = 500.f;		// 目标区域半径
+	float TargetAreaRadius = 1000.f;		// 目标区域半径
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	float TargetTraceRange = 2000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float PullSpeed = 3000.f;					// 吸引速度
+
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	float BlackHoleDuration = 6.f;			// 黑洞持续时间
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	TSubclassOf<ATargetActor_GroundPick> GroundPickTargetActorClass;
@@ -34,14 +42,29 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* TargetingMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* HoldBlackHoleMontage;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effect")
 	TSubclassOf<UGameplayEffect> AimEffectClass;		// 瞄准特效GameplayEffect类
 
 	FActiveGameplayEffectHandle ActiveAimGameplayEffectHandle;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Target Actor")
+	TSubclassOf<ATargetActor_BlackHole> TargetActorClass;
+
 	UPROPERTY()
 	UAbilityTask_PlayMontageAndWait* PlayCastBlackHoleMontageTask;
 
+	UPROPERTY()
+	UAbilityTask_WaitTargetData* BlackHoleTargetDataTask;
+
+	UFUNCTION()
+	void BlackHoleTargetDataReceived(const FGameplayAbilityTargetDataHandle& Data);
+
+	UFUNCTION()
+	void BlackHoleTargetDataCancelled(const FGameplayAbilityTargetDataHandle& Data);
+	
 	UFUNCTION()
 	void PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Data);		// 放置黑洞
 

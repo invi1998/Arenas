@@ -3,9 +3,11 @@
 
 #include "ArenasGA_BlackHole.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GAS/TargetActor/TargetActor_GroundPick.h"
+#include "GAS/TargetActor/TargetActor_BlackHole.h"
 
 void UArenasGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -52,8 +54,64 @@ void UArenasGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UArenasGA_BlackHole::BlackHoleTargetDataReceived(const FGameplayAbilityTargetDataHandle& Data)
+{
+}
+
+void UArenasGA_BlackHole::BlackHoleTargetDataCancelled(const FGameplayAbilityTargetDataHandle& Data)
+{
+}
+
 void UArenasGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Data)
 {
+
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+	
+	if (PlayCastBlackHoleMontageTask)
+	{
+		PlayCastBlackHoleMontageTask->OnCompleted.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnInterrupted.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnCancelled.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnBlendOut.RemoveAll(this);
+	}
+
+	if (HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
+	{
+		// 由于PlaceBlackHole是由玩家输入触发，而不是GameplayEvent，所以通常来说因该会有一个PredictionKey，如果没有的话，就需要手动指定同步键
+		UAbilityTask_PlayMontageAndWait* PlayBlackHoleMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, HoldBlackHoleMontage);
+		PlayBlackHoleMontageTask->OnCompleted.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayBlackHoleMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayBlackHoleMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayBlackHoleMontageTask->OnBlendOut.AddDynamic(this, &UArenasGA_BlackHole::K2_EndAbility);
+		PlayBlackHoleMontageTask->ReadyForActivation();
+	}
+
+	BlackHoleTargetDataTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::UserConfirmed, TargetActorClass);
+	BlackHoleTargetDataTask->ValidData.AddDynamic(this, &UArenasGA_BlackHole::BlackHoleTargetDataReceived);
+	// cancel 事件通常是玩家希望提前结束TargetActor，比如提前引爆黑洞照成爆炸伤害和推开单位
+	BlackHoleTargetDataTask->Cancelled.AddDynamic(this, &UArenasGA_BlackHole::BlackHoleTargetDataCancelled);
+	BlackHoleTargetDataTask->ReadyForActivation();
+
+	AGameplayAbilityTargetActor* TargetActor;
+	BlackHoleTargetDataTask->BeginSpawningActor(this, TargetActorClass, TargetActor);
+	ATargetActor_BlackHole* TargetActor_BlackHole = Cast<ATargetActor_BlackHole>(TargetActor);
+	if (TargetActor_BlackHole)
+	{
+		TargetActor_BlackHole->ConfigureBlackHoleTargetActor(TargetAreaRadius, PullSpeed, BlackHoleDuration, GetOwningTeamId());
+	}
+	BlackHoleTargetDataTask->FinishSpawningActor(this, TargetActor);
+	if (TargetActor_BlackHole)
+	{
+		// 设置黑洞位置，黑洞位置由玩家选择的地面位置决定
+		const FVector TargetPoint = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Data, 1).ImpactPoint;
+		TargetActor_BlackHole->SetActorLocation(TargetPoint);
+	}
+	
+	
 }
 
 void UArenasGA_BlackHole::PlacementCancelled(const FGameplayAbilityTargetDataHandle& Data)
