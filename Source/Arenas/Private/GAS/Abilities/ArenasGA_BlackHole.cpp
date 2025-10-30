@@ -94,6 +94,8 @@ void UArenasGA_BlackHole::BlackHoleTargetDataReceived(const FGameplayAbilityTarg
 
 void UArenasGA_BlackHole::BlackHoleTargetDataCancelled(const FGameplayAbilityTargetDataHandle& Data)
 {
+	// 提前结束黑洞效果，引爆
+	BlackHoleTargetDataReceived(Data);
 }
 
 void UArenasGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Data)

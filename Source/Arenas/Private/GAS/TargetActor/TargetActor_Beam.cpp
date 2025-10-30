@@ -2,6 +2,8 @@
 
 
 #include "TargetActor_Beam.h"
+
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Abilities/GameplayAbility.h"
 #include "Arenas/Arenas.h"
@@ -223,11 +225,12 @@ void ATargetActor_Beam::UpdateTargetTrace()
 	
 }
 
-bool ATargetActor_Beam::ShouldReportActorAsTarget(const AActor* CheckedActor) const
+bool ATargetActor_Beam::ShouldReportActorAsTarget(AActor* CheckedActor) const
 {
 	if (!CheckedActor) return false;
 	if (AvatarActor && AvatarActor == CheckedActor) return false;
 	if (CheckedActor == this) return false;
+	if (UArenasBlueprintFunctionLibrary::IsTowerActor(CheckedActor)) return false;
 
 	if (GetTeamAttitudeTowards(*CheckedActor) == ETeamAttitude::Hostile)
 	{

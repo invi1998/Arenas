@@ -44,6 +44,9 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Shoot_hand_R);
 	// Event-Lazer
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Lazer_Fire);
+	// Event-FallingStar
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_FallingStar_Falling);
+	
 	
 
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Combo_Damage);
@@ -71,6 +74,7 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_GroundBlast);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Lazer);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_BlackHole);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_FallingStar);
 	// Cooldown for Item Active Ability
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Item_ArcaneBoots);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Item_BlackKingBar);

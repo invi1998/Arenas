@@ -67,5 +67,5 @@ private:
 	void DoTargetCheckAndReport();
 	void UpdateTargetTrace();
 
-	bool ShouldReportActorAsTarget(const AActor* CheckedActor) const;
+	bool ShouldReportActorAsTarget(AActor* CheckedActor) const;
 };

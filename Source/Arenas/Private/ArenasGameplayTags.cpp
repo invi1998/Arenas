@@ -42,6 +42,9 @@ namespace ArenasGameplayTags
 	
 	// Event-Lazer
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Lazer_Fire, "Event.Ability.Lazer.Fire", "激光技能发射" );
+
+	// Event-FallingStar
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_FallingStar_Falling, "Event.Ability.FallingStar.Falling", "陨星技能陨落" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	
@@ -66,6 +69,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_GroundBlast, "Cooldown.Ability.GroundBlast", "地面爆破技能冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Lazer, "Cooldown.Ability.Lazer", "激光技能冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_BlackHole, "Cooldown.Ability.BlackHole", "黑洞技能冷却" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_FallingStar, "Cooldown.Ability.FallingStar", "陨星技能冷却" );
 	// Cooldown-Item
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Item_ArcaneBoots, "Cooldown.Item.ArcaneBoots", "奥术鞋物品冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Item_BlackKingBar, "Cooldown.Item.BlackKingBar", "黑皇杖物品冷却" );
