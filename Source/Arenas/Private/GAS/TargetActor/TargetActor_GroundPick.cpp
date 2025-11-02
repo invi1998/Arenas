@@ -16,6 +16,7 @@ ATargetActor_GroundPick::ATargetActor_GroundPick()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComponent"));
 	DecalComponent->SetupAttachment(GetRootComponent());
+
 }
 
 void ATargetActor_GroundPick::ConfirmTargetingAndContinue()

@@ -73,8 +73,6 @@ void ATargetActor_BlackHole::ConfigureBlackHoleTargetActor(float InBlackHoleRadi
 
 	DetectionSphereComponent->SetSphereRadius(BlackHoleRadius);
 
-
-
 }
 
 void ATargetActor_BlackHole::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

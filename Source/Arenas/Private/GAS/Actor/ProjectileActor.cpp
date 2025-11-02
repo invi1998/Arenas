@@ -129,11 +129,6 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 					SendLocalGameplayCue(OtherActor, HitResult);
 				}
 			}
-			else
-			{
-				// 如果没有拥有者，则使用本地方式触发游戏提示
-				SendLocalGameplayCue(OtherActor, HitResult);
-			}
 			
 			Destroy();
 			

@@ -31,7 +31,10 @@ protected:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Decal")
-	UDecalComponent* DecalComponent;
+	UDecalComponent* DecalComponent;		// 技能指示器
+
+	// UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	// UDecalComponent* CastRangeDecalComponent;	// 施法范围指示器
 	
 	FVector GetTargetPoint() const;
 

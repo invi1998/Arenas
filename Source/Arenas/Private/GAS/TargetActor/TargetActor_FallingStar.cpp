@@ -14,8 +14,6 @@ ATargetActor_FallingStar::ATargetActor_FallingStar()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
-	ShouldProduceTargetDataOnServer = true;
 
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
 	SetRootComponent(RootComp);
@@ -27,8 +25,12 @@ ATargetActor_FallingStar::ATargetActor_FallingStar()
 
 	FallingStarVFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FallingStarVFXComp"));
 	FallingStarVFXComp->SetupAttachment(GetRootComponent());
-	FallingStarVFXComp->SetAutoActivate(false);	// 默认不激活特效
+	FallingStarVFXComp->SetAutoActivate(true);	// 默认激活特效
 	
+	bReplicates = true;
+	ShouldProduceTargetDataOnServer = true;
+
+	AvatarActor = nullptr;
 }
 
 // Called every frame
@@ -74,13 +76,15 @@ void ATargetActor_FallingStar::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(ATargetActor_FallingStar, SpawnRate);
 	DOREPLIFETIME(ATargetActor_FallingStar, SpawnHeight);
 	DOREPLIFETIME(ATargetActor_FallingStar, FallingSpeed);
-	DOREPLIFETIME(ATargetActor_FallingStar, bIsActiveVFX);
+	DOREPLIFETIME_CONDITION_NOTIFY(ATargetActor_FallingStar, bIsActiveVFX, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME(ATargetActor_FallingStar, AvatarActor);
 	
 }
 
 void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius, float InLoopDuration,
 	float InSpawnRate, float InSpawnHeight, float InFallingSpeed, const FGenericTeamId& OwningTeamId)
 {
+	// 该函数只会在服务端被调用
 	AOERadius = InAOERadius;
 	LoopDuration = InLoopDuration;
 	SpawnRate = InSpawnRate;
@@ -88,31 +92,11 @@ void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius
 	FallingSpeed = InFallingSpeed;
 	SetGenericTeamId(OwningTeamId);
 
+	// 打印参数
+	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::ConfigureFallingStarTargetActor: AOERadius = %f, LoopDuration = %f, SpawnRate = %f, SpawnHeight = %f, FallingSpeed = %f"), 
+		AOERadius, LoopDuration, SpawnRate, SpawnHeight, FallingSpeed);
+
 	DetectionSphereComponent->SetSphereRadius(AOERadius);
-}
-
-void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
-{
-	Super::StartTargeting(Ability);
-
-	if (!OwningAbility) return;
-	
-	AvatarActor = Ability->GetAvatarActorFromActorInfo();
-
-	if (UWorld* World = GetWorld())
-	{
-		const float OnceFallTime = SpawnHeight / FallingSpeed;
-		World->GetTimerManager().ClearTimer(FallingStarImpactTimerHandle);
-		World->GetTimerManager().ClearTimer(FallingStarSpawnTimerHandle);
-		World->GetTimerManager().SetTimer(FallingStarSpawnTimerHandle, this, &ATargetActor_FallingStar::StopFallingStar, LoopDuration, false);
-		World->GetTimerManager().SetTimer(FallingStarImpactTimerHandle, this, &ATargetActor_FallingStar::DoTargetCheckAndReport, OnceFallTime, true, OnceFallTime);
-	}
-
-	if (HasAuthority())
-	{
-		bIsActiveVFX = true;
-	}
-	
 	// 激活特效
 	if (FallingStarVFXComp)
 	{
@@ -124,25 +108,55 @@ void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 		FallingStarVFXComp->SetVariableVec3(VFXParamName_Offset, Offset);
 		const FVector Velocity = FVector(0.f, 0.f, -FallingSpeed);
 		FallingStarVFXComp->SetVariableVec3(VFXParamName_Velocity, Velocity);
-		
+
 		FallingStarVFXComp->Activate(true);
+
+		UE_LOG(LogTemp, Warning, TEXT(" 909090909090 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
+		
+		UE_LOG(LogTemp, Warning, TEXT(" 000000000 ATargetActor_FallingStar::ConfigureFallingStarTargetActor: Activating FallingStarVFXComp"));
+	}
+}
+
+void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
+{
+	Super::StartTargeting(Ability);
+
+	// 打印是否是服务端
+	UE_LOG(LogTemp, Warning, TEXT(" 11111111 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
+	
+	if (!OwningAbility) return;
+
+	UE_LOG(LogTemp, Warning, TEXT(" 2222222 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
+	
+	AvatarActor = Ability->GetAvatarActorFromActorInfo();
+	
+	if (HasAuthority())
+	{
+		bIsActiveVFX = true;
+		if (UWorld* World = GetWorld())
+		{
+			
+			const float OnceFallTime = SpawnHeight / FallingSpeed;
+			UE_LOG(LogTemp, Warning, TEXT(" ---------------- ATargetActor_FallingStar::StartTargeting: Setting up timers. LoopDuration = %f, OnceFallTime = %f"), LoopDuration, OnceFallTime);
+			World->GetTimerManager().ClearTimer(FallingStarImpactTimerHandle);
+			World->GetTimerManager().ClearTimer(FallingStarSpawnTimerHandle);
+			World->GetTimerManager().SetTimer(FallingStarSpawnTimerHandle, this, &ATargetActor_FallingStar::StopFallingStar, LoopDuration, false);
+			World->GetTimerManager().SetTimer(FallingStarImpactTimerHandle, this, &ATargetActor_FallingStar::DoTargetCheckAndReport, OnceFallTime, true, OnceFallTime);
+		}
 	}
 	
 }
 
-void ATargetActor_FallingStar::ConfirmTargetingAndContinue()
+void ATargetActor_FallingStar::BeginDestroy()
 {
-	StopFallingStar();
-}
-
-void ATargetActor_FallingStar::CancelTargeting()
-{
-	StopFallingStar();
-	Super::CancelTargeting();
+	UE_LOG(LogTemp, Warning, TEXT("???????????????????? ATargetActor_FallingStar::BeginDestroy called."));
+	Super::BeginDestroy();
 }
 
 void ATargetActor_FallingStar::OnRep_IsActiveVFX()
 {
+	UE_LOG(LogTemp, Warning, TEXT(" 33333333 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
+	
 	if (bIsActiveVFX && FallingStarVFXComp)
 	{
 		// 设置特效参数
@@ -153,11 +167,14 @@ void ATargetActor_FallingStar::OnRep_IsActiveVFX()
 		FallingStarVFXComp->SetVariableVec3(VFXParamName_Offset, Offset);
 		const FVector Velocity = FVector(0.f, 0.f, -FallingSpeed);
 		FallingStarVFXComp->SetVariableVec3(VFXParamName_Velocity, Velocity);
-		
+
+		UE_LOG(LogTemp, Warning, TEXT(" --------------- OnRep_IsActiveVFX: Activating FallingStarVFXComp"));
 		FallingStarVFXComp->Activate(true);
 	}
 	else if (FallingStarVFXComp)
 	{
+		UE_LOG(LogTemp, Warning, TEXT(" 4444444444 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
+	
 		FallingStarVFXComp->Deactivate();
 	}
 }
@@ -173,7 +190,7 @@ void ATargetActor_FallingStar::StopFallingStar()
 
 void ATargetActor_FallingStar::DoTargetCheckAndReport()
 {
-	if (!OwningAbility) return;
+	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::DoTargetCheckAndReport: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
 	if (!HasAuthority()) return;
 	
 	TSet<AActor*> OverlappingActorSet;
@@ -192,6 +209,8 @@ void ATargetActor_FallingStar::DoTargetCheckAndReport()
 	FGameplayAbilityTargetData_ActorArray* TargetData = new FGameplayAbilityTargetData_ActorArray();
 	TargetData->SetActors(OverlappingActorsWeakPtrArray);
 	TargetDataHandle.Add(TargetData);
+
+	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::DoTargetCheckAndReport: Reporting %d targets."), OverlappingActorsWeakPtrArray.Num());
 
 	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 	
