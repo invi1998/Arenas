@@ -50,7 +50,7 @@ void UArenasGA_FallingStar::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	{
 		TargetActor_GroundPick->SetShouldDrawDebugSphere(bShowDebugLine);
 		TargetActor_GroundPick->SetTargetAreaRadius(AOERadius);
-		TargetActor_GroundPick->SetTargetTraceDistance(0.f); // 不需要追踪距离，直接在角色脚下生成
+		TargetActor_GroundPick->SetTargetTraceDistance(TargetRange);
 	}
 	WaitPlacementTask->FinishSpawningActor(this, TargetActor);
 

@@ -91,11 +91,7 @@ void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius
 	SpawnHeight = InSpawnHeight;
 	FallingSpeed = InFallingSpeed;
 	SetGenericTeamId(OwningTeamId);
-
-	// 打印参数
-	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::ConfigureFallingStarTargetActor: AOERadius = %f, LoopDuration = %f, SpawnRate = %f, SpawnHeight = %f, FallingSpeed = %f"), 
-		AOERadius, LoopDuration, SpawnRate, SpawnHeight, FallingSpeed);
-
+	
 	DetectionSphereComponent->SetSphereRadius(AOERadius);
 	// 激活特效
 	if (FallingStarVFXComp)
@@ -111,23 +107,15 @@ void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius
 
 		FallingStarVFXComp->Activate(true);
 
-		UE_LOG(LogTemp, Warning, TEXT(" 909090909090 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
-		
-		UE_LOG(LogTemp, Warning, TEXT(" 000000000 ATargetActor_FallingStar::ConfigureFallingStarTargetActor: Activating FallingStarVFXComp"));
 	}
 }
 
 void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
-
-	// 打印是否是服务端
-	UE_LOG(LogTemp, Warning, TEXT(" 11111111 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
 	
 	if (!OwningAbility) return;
 
-	UE_LOG(LogTemp, Warning, TEXT(" 2222222 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
-	
 	AvatarActor = Ability->GetAvatarActorFromActorInfo();
 	
 	if (HasAuthority())
@@ -137,7 +125,6 @@ void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 		{
 			
 			const float OnceFallTime = SpawnHeight / FallingSpeed;
-			UE_LOG(LogTemp, Warning, TEXT(" ---------------- ATargetActor_FallingStar::StartTargeting: Setting up timers. LoopDuration = %f, OnceFallTime = %f"), LoopDuration, OnceFallTime);
 			World->GetTimerManager().ClearTimer(FallingStarImpactTimerHandle);
 			World->GetTimerManager().ClearTimer(FallingStarSpawnTimerHandle);
 			World->GetTimerManager().SetTimer(FallingStarSpawnTimerHandle, this, &ATargetActor_FallingStar::StopFallingStar, LoopDuration, false);
@@ -149,14 +136,11 @@ void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 
 void ATargetActor_FallingStar::BeginDestroy()
 {
-	UE_LOG(LogTemp, Warning, TEXT("???????????????????? ATargetActor_FallingStar::BeginDestroy called."));
 	Super::BeginDestroy();
 }
 
 void ATargetActor_FallingStar::OnRep_IsActiveVFX()
 {
-	UE_LOG(LogTemp, Warning, TEXT(" 33333333 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
-	
 	if (bIsActiveVFX && FallingStarVFXComp)
 	{
 		// 设置特效参数
@@ -168,14 +152,7 @@ void ATargetActor_FallingStar::OnRep_IsActiveVFX()
 		const FVector Velocity = FVector(0.f, 0.f, -FallingSpeed);
 		FallingStarVFXComp->SetVariableVec3(VFXParamName_Velocity, Velocity);
 
-		UE_LOG(LogTemp, Warning, TEXT(" --------------- OnRep_IsActiveVFX: Activating FallingStarVFXComp"));
 		FallingStarVFXComp->Activate(true);
-	}
-	else if (FallingStarVFXComp)
-	{
-		UE_LOG(LogTemp, Warning, TEXT(" 4444444444 ATargetActor_FallingStar::StartTargeting: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
-	
-		FallingStarVFXComp->Deactivate();
 	}
 }
 
@@ -190,7 +167,6 @@ void ATargetActor_FallingStar::StopFallingStar()
 
 void ATargetActor_FallingStar::DoTargetCheckAndReport()
 {
-	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::DoTargetCheckAndReport: IsServer = %s"), HasAuthority() ? TEXT("True") : TEXT("False"));
 	if (!HasAuthority()) return;
 	
 	TSet<AActor*> OverlappingActorSet;
@@ -209,9 +185,7 @@ void ATargetActor_FallingStar::DoTargetCheckAndReport()
 	FGameplayAbilityTargetData_ActorArray* TargetData = new FGameplayAbilityTargetData_ActorArray();
 	TargetData->SetActors(OverlappingActorsWeakPtrArray);
 	TargetDataHandle.Add(TargetData);
-
-	UE_LOG(LogTemp, Warning, TEXT(" ATargetActor_FallingStar::DoTargetCheckAndReport: Reporting %d targets."), OverlappingActorsWeakPtrArray.Num());
-
+	
 	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 	
 }
