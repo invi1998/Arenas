@@ -68,6 +68,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UNiagaraComponent* FallingStarVFXComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UNiagaraComponent* DreamImpactVFXComp;		// 星落冲击特效组件
+
 	FTimerHandle FallingStarSpawnTimerHandle;	// 星落生成定时器
 	FTimerHandle FallingStarImpactTimerHandle;		// 星落冲击定时器（每隔一段时间检查一次星落伤害）
 
@@ -85,6 +88,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "VFX Param Name")
 	FName VFXParamName_Velocity = "Velocity";
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX Param Name")
+	FName VFXParamName_LoopDuration_DreamImpact = "Loop Duration Middle";
 
 	UPROPERTY(Replicated)
 	const AActor* AvatarActor;		// 持有该TargetActor的角色

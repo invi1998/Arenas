@@ -26,6 +26,10 @@ ATargetActor_FallingStar::ATargetActor_FallingStar()
 	FallingStarVFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FallingStarVFXComp"));
 	FallingStarVFXComp->SetupAttachment(GetRootComponent());
 	FallingStarVFXComp->SetAutoActivate(true);	// 默认激活特效
+
+	DreamImpactVFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DreamImpactVFXComp"));
+	DreamImpactVFXComp->SetupAttachment(GetRootComponent());
+	DreamImpactVFXComp->SetAutoActivate(true);	// 默认激活特效
 	
 	bReplicates = true;
 	ShouldProduceTargetDataOnServer = true;
@@ -107,6 +111,13 @@ void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius
 		FallingStarVFXComp->Activate(true);
 
 	}
+
+	if (DreamImpactVFXComp)
+	{
+		DreamImpactVFXComp->SetVariableFloat(VFXParamName_LoopDuration_DreamImpact, LoopDuration);
+		DreamImpactVFXComp->Activate(true);
+	}
+	
 }
 
 void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
@@ -154,6 +165,7 @@ void ATargetActor_FallingStar::StopFallingStar()
 	{
 		World->GetTimerManager().ClearTimer(FallingStarImpactTimerHandle);
 		World->GetTimerManager().ClearTimer(FallingStarSpawnTimerHandle);
+		
 	}
 }
 
