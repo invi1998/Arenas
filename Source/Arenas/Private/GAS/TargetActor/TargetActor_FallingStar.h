@@ -32,7 +32,6 @@ public:
 	
 	virtual void StartTargeting(UGameplayAbility* Ability) override;	// 开始选择目标
 	virtual void CancelTargeting() override;		// 取消选择目标
-	virtual void BeginDestroy() override;
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
@@ -40,12 +39,6 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USphereComponent* DetectionSphereComponent;
-
-	UPROPERTY(ReplicatedUsing = OnRep_IsActiveVFX)
-	bool bIsActiveVFX = false;	// 特效是否处于激活状态
-
-	UFUNCTION()
-	void OnRep_IsActiveVFX();
 	
 	UPROPERTY(Replicated)
 	float AOERadius = 1200.f;		// 范围伤害半径

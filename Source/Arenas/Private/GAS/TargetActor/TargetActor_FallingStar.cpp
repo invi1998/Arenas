@@ -80,7 +80,6 @@ void ATargetActor_FallingStar::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(ATargetActor_FallingStar, SpawnRate);
 	DOREPLIFETIME(ATargetActor_FallingStar, SpawnHeight);
 	DOREPLIFETIME(ATargetActor_FallingStar, FallingSpeed);
-	DOREPLIFETIME_CONDITION_NOTIFY(ATargetActor_FallingStar, bIsActiveVFX, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME(ATargetActor_FallingStar, AvatarActor);
 	
 }
@@ -130,7 +129,6 @@ void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 	
 	if (HasAuthority())
 	{
-		bIsActiveVFX = true;
 		if (UWorld* World = GetWorld())
 		{
 			
@@ -148,15 +146,6 @@ void ATargetActor_FallingStar::CancelTargeting()
 {
 	StopFallingStar();
 	Super::CancelTargeting();
-}
-
-void ATargetActor_FallingStar::BeginDestroy()
-{
-	Super::BeginDestroy();
-}
-
-void ATargetActor_FallingStar::OnRep_IsActiveVFX()
-{
 }
 
 void ATargetActor_FallingStar::StopFallingStar()
