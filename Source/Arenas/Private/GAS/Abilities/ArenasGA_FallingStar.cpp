@@ -87,7 +87,7 @@ void UArenasGA_FallingStar::OnFallingStarTargetDataReceived(const FGameplayAbili
 	if (K2_HasAuthority())
 	{
 
-		BP_ApplyGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		ApplyAbilityMagicGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 
 		// 给目标施加灼烧特效
 

@@ -191,3 +191,13 @@ FGenericTeamId UArenasGameplayAbility::GetOwningTeamId() const
 	return FGenericTeamId::NoTeam;
 }
 
+void UArenasGameplayAbility::ApplyAbilityMagicGameplayEffectToTarget(FGameplayAbilityTargetDataHandle TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel)
+{
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectClass, GameplayEffectLevel);
+	float MagicDamageValue = MagicDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_MagicDamage, MagicDamageValue);
+	
+	K2_ApplyGameplayEffectSpecToTarget(EffectSpecHandle, TargetData);
+	
+}
+

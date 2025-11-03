@@ -51,9 +51,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Cue")
 	FGameplayTag BlastGameplayCueTag; // 施法时播放的GameplayCue标签
-
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	FScalableFloat BlastDamage; // 爆炸伤害
 	
 	UFUNCTION()
 	void OnTargetConfirmed(const FGameplayAbilityTargetDataHandle& InTargetDataHandle);

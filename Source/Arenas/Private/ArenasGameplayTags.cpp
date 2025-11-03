@@ -52,6 +52,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_BaseDamage, "SetByCaller.BaseDamage", "基础伤害" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_MagicDamage, "SetByCaller.MagicDamage", "魔法伤害" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_ComboIndex, "SetByCaller.ComboIndex", "连招索引" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Reward_Exp, "SetByCaller.Reward.Exp", "奖励经验值" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Reward_Gold, "SetByCaller.Reward.Gold", "奖励金币" );

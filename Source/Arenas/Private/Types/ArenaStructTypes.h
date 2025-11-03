@@ -22,6 +22,7 @@ enum class EArenasComboTextType : uint8
 	Heal				UMETA(DisplayName = "Heal"),
 	Experience			UMETA(DisplayName = "Experience"),
 	Damaged				UMETA(DisplayName = "Damaged"),		// 受到伤害
+	MagicDamaged		UMETA(DisplayName = "MagicDamaged"),	// 受到魔法伤害（来自技能）
 };
 
 UENUM(BlueprintType)
@@ -119,6 +120,9 @@ struct FHeroBaseStats : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseArmor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseMagicResist;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseAttackSpeed;

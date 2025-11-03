@@ -132,7 +132,7 @@ float UPlayerUIComponent::GetCurrentHealthRegenNumber() const
 	{
 		bool bFound = false;
 		float Strength = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetStrengthAttribute(), bFound);
-		float HealthRegen = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetHealthRegenAttribute(), bFound);
+		float HealthRegen = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetHealthRegenAttribute(), bFound);
 		if (bFound)
 		{
 			// 回血公式 0.1 * 力量值 + 基础回血（装备等提供）
@@ -148,7 +148,7 @@ float UPlayerUIComponent::GetCurrentManaRegenNumber() const
 	{
 		bool bFound = false;
 		float Intelligence = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetIntelligenceAttribute(), bFound);
-		float ManaRegen = CachedArenasASC->GetGameplayAttributeValue(UArenasHeroAttributeSet::GetManaRegenAttribute(), bFound);
+		float ManaRegen = CachedArenasASC->GetGameplayAttributeValue(UArenasAttributeSet::GetManaRegenAttribute(), bFound);
 		if (bFound)
 		{
 			// 回蓝公式 0.05 * 智力值 + 基础回蓝（装备等提供）

@@ -26,6 +26,8 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackDamageEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, ArmorEx, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MagicResist, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MagicResistEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackSpeedEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, AttackRange, COND_None, REPNOTIFY_Always);
@@ -33,6 +35,8 @@ void UArenasAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, DogeChanceEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, ManaRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveSpeedEx, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UArenasAttributeSet, MoveAcceleration, COND_None, REPNOTIFY_Always);
 }
@@ -203,6 +207,16 @@ void UArenasAttributeSet::OnRep_ArmorEx(const FGameplayAttributeData& OldValue) 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, ArmorEx, OldValue);
 }
 
+void UArenasAttributeSet::OnRep_MagicResist(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MagicResist, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_MagicResistEx(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MagicResistEx, OldValue);
+}
+
 void UArenasAttributeSet::OnRep_AttackSpeed(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, AttackSpeed, OldValue);
@@ -241,6 +255,16 @@ void UArenasAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue) co
 void UArenasAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, MoveSpeed, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_ManaRegen(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, ManaRegen, OldValue);
+}
+
+void UArenasAttributeSet::OnRep_HealthRegen(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UArenasAttributeSet, HealthRegen, OldValue);
 }
 
 void UArenasAttributeSet::OnRep_MoveSpeedEx(const FGameplayAttributeData& OldValue) const

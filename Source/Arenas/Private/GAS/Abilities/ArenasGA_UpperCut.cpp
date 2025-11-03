@@ -89,7 +89,7 @@ void UArenasGA_UpperCut::OnUpperCutLaunch(FGameplayEventData Payload)
 
 			// 添加SetByCaller参数
 			float LaunchedDamage = LaunchDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, LaunchedDamage);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_MagicDamage, LaunchedDamage);
 
 			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
 			EffectContext.AddHitResult(Hit);
@@ -201,7 +201,7 @@ void UArenasGA_UpperCut::HandleComboDamageEvent(FGameplayEventData Payload)
 
 			// 添加SetByCaller参数
 			float ComboDamageTemp = ComboDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, ComboDamageTemp);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_MagicDamage, ComboDamageTemp);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_ComboIndex, ComboIndex);
 
 			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
@@ -235,7 +235,7 @@ void UArenasGA_UpperCut::HandleUpperCutFinalBlow(FGameplayEventData Payload)
 
 			// 添加SetByCaller参数
 			float FinalBlowDamageTemp = FinalBlowDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, FinalBlowDamageTemp);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_MagicDamage, FinalBlowDamageTemp);
 			
 			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
 			EffectContext.AddHitResult(Hit);

@@ -21,7 +21,7 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Blink")
-	float BlinkDistance = 1000.f;		// 闪现距离
+	float BlinkDistance = 2000.f;		// 闪现距离
 
 	UPROPERTY(EditDefaultsOnly, Category = "Anim")
 	UAnimMontage* TargetingMontage;
@@ -33,13 +33,10 @@ private:
 	TSubclassOf<ATargetActor_GroundPick> GroundPickTargetActorClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	TSubclassOf<UGameplayEffect> DamageEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	float BlinkLandTargetPushSpeed = 5000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
-	float TargetAreaRadius = 1000;
+	float TargetAreaRadius = 500;
 
 	UFUNCTION()
 	void GroundPickTargetReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);

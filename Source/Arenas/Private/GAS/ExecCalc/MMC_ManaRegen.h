@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
 #include "GameplayModMagnitudeCalculation.h"
+#include "GAS/ArenasAttributeSet.h"
 #include "GAS/ArenasHeroAttributeSet.h"
 #include "MMC_ManaRegen.generated.h"
 
@@ -20,7 +21,7 @@ struct FArenasManaRegenCalculationData
 	FArenasManaRegenCalculationData()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Intelligence, Source, true);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, ManaRegen, Source, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, ManaRegen, Source, true);
 	}
 	
 };

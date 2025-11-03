@@ -39,6 +39,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* ArmorGauge;
+	
+	UPROPERTY(meta=(BindWidget))
+	UHeroStatsGauge* MagicResistGauge;
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* AttackRangeGauge;
@@ -48,9 +51,6 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* MoveSpeedGauge;
-
-	UPROPERTY(meta=(BindWidget))
-	UHeroStatsGauge* DogeChanceGauge;
 
 	UPROPERTY(meta=(BindWidget))
 	UHeroStatsGauge* StrengthGauge;

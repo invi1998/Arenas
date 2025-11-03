@@ -27,6 +27,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float BaseDamage = 10.f;	// 基础伤害
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat MagicDamage;		// 魔法伤害（技能伤害）
 	
 	UAnimInstance* GetOwnerAnimInstance() const;
 	
@@ -52,6 +55,8 @@ protected:
 	void SendLocalGameplayEvent(const FGameplayTag EventTag, const FGameplayEventData& Payload);
 
 	FGenericTeamId GetOwningTeamId() const;
+
+	void ApplyAbilityMagicGameplayEffectToTarget(FGameplayAbilityTargetDataHandle TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel = 1);
 
 private:
 	UPROPERTY()

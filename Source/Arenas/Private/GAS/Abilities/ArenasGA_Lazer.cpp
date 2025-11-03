@@ -75,7 +75,7 @@ void UArenasGA_Lazer::TargetDataReceived(const FGameplayAbilityTargetDataHandle&
 {
 	if (K2_HasAuthority())
 	{
-		BP_ApplyGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		ApplyAbilityMagicGameplayEffectToTarget(Data, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 		// 推开命中的目标
 		const FVector PushDirection = GetAvatarActorFromActorInfo()->GetActorForwardVector();
 		PushTargets(Data, PushDirection * HitPushSpeed);

@@ -68,6 +68,14 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_ArmorEx)
 	FGameplayAttributeData ArmorEx;	// 额外护甲（来自物品等）
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, ArmorEx);
+	
+	UPROPERTY(ReplicatedUsing = OnRep_MagicResist)
+	FGameplayAttributeData MagicResist;		// 魔法抗性，百分比表示法，25表示25%魔抗
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MagicResist);
+	
+	UPROPERTY(ReplicatedUsing = OnRep_MagicResistEx)
+	FGameplayAttributeData MagicResistEx;	// 额外魔法抗性，百分比表示法，25表示25%魔抗
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MagicResistEx);
 
 	UPROPERTY(ReplicatedUsing = OnRep_AttackSpeed)
 	FGameplayAttributeData AttackSpeed;		// 攻击速度，百分比表示法，100表示1倍攻速，150表示1.5倍攻速
@@ -104,6 +112,16 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_MoveAcceleration)
 	FGameplayAttributeData MoveAcceleration;
 	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, MoveAcceleration);
+
+	// 魔法恢复
+	UPROPERTY(ReplicatedUsing = OnRep_ManaRegen)
+	FGameplayAttributeData ManaRegen;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, ManaRegen);
+
+	// 生命恢复
+	UPROPERTY(ReplicatedUsing = OnRep_HealthRegen)
+	FGameplayAttributeData HealthRegen;
+	ATTRIBUTE_ACCESSORS(UArenasAttributeSet, HealthRegen);
 
 	// 缓存的血量和蓝量百分比，在最大血量和蓝量变化时，我们希望同步缩放血量和蓝量，该比例只存在服务端，不需要同步
 	UPROPERTY()
@@ -145,6 +163,12 @@ private:
 	void OnRep_ArmorEx(const FGameplayAttributeData& OldValue) const;
 
 	UFUNCTION()
+	void OnRep_MagicResist(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_MagicResistEx(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
 	void OnRep_AttackSpeed(const FGameplayAttributeData& OldValue) const;
 
 	UFUNCTION()
@@ -164,6 +188,12 @@ private:
 
 	UFUNCTION()
 	void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_ManaRegen(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_HealthRegen(const FGameplayAttributeData& OldValue);
 
 	UFUNCTION()
 	void OnRep_MoveSpeedEx(const FGameplayAttributeData& OldValue) const;

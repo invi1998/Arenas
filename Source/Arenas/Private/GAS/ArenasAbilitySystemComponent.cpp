@@ -53,6 +53,7 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasAttributeSet::GetAttackRangeAttribute(), BaseStats->BaseAttackRange);
 	SetNumericAttributeBase(UArenasAttributeSet::GetDogeChanceAttribute(), BaseStats->BaseDogeChance);
 	SetNumericAttributeBase(UArenasAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
+	SetNumericAttributeBase(UArenasAttributeSet::GetMagicResistAttribute(), BaseStats->BaseMagicResist);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
 
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);

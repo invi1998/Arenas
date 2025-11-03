@@ -69,20 +69,7 @@ void UArenasGA_GroundBlast::OnTargetConfirmed(const FGameplayAbilityTargetDataHa
 	
 		PushTargets(TargetActors, PushVelocity);
 		
-		for (AActor* TargetActor : TargetActors)
-		{
-			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-
-			float DamageValue = BlastDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
-			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_BaseDamage, DamageValue);
-
-			ApplyGameplayEffectSpecToTarget(
-				GetCurrentAbilitySpecHandle(),
-				GetCurrentActorInfo(),
-				GetCurrentActivationInfo(),
-				EffectSpecHandle,
-				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor));
-		}
+		ApplyAbilityMagicGameplayEffectToTarget(InTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 	}
 	
 	FGameplayCueParameters BlastingCueParameters;

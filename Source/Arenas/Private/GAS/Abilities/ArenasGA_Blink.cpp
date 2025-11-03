@@ -86,7 +86,8 @@ void UArenasGA_Blink::Teleport(FGameplayEventData Payload)
 		FVector PickedTeleportLocation = PickedLocationHit.ImpactPoint;
 
 		GetAvatarActorFromActorInfo()->SetActorLocation(PickedTeleportLocation, false, nullptr, ETeleportType::TeleportPhysics);
-		BP_ApplyGameplayEffectToTarget(BlinkTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		// BP_ApplyGameplayEffectToTarget(BlinkTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		ApplyAbilityMagicGameplayEffectToTarget(BlinkTargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 		PushTargets(BlinkTargetDataHandle, PickedTeleportLocation, BlinkLandTargetPushSpeed);
 		
 	}
