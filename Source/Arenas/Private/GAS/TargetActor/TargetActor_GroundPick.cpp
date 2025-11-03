@@ -4,6 +4,7 @@
 #include "TargetActor_GroundPick.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "Arenas/Arenas.h"
@@ -40,6 +41,12 @@ void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
 		{
 			for (const FOverlapResult& OverlapResult : Overlaps)
 			{
+				// 过滤掉防御塔
+				if (UArenasBlueprintFunctionLibrary::IsTowerActor(OverlapResult.GetActor()))
+				{
+					continue;
+				}
+				
 				if (bShouldTargetEnemies)
 				{
 					// 选择敌人

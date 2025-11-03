@@ -46,6 +46,8 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Lazer_Fire);
 	// Event-FallingStar
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_FallingStar_Falling);
+	// Event-Blink-Teleport
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Ability_Blink_Teleport);
 	
 	
 
@@ -75,6 +77,7 @@ namespace ArenasGameplayTags
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Lazer);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_BlackHole);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_FallingStar);
+	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Ability_Blink);
 	// Cooldown for Item Active Ability
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Item_ArcaneBoots);
 	ARENAS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Item_BlackKingBar);
