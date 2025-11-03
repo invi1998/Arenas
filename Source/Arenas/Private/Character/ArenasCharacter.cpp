@@ -242,6 +242,7 @@ void AArenasCharacter::OnAimStateChanged(bool bNewAiming)
 void AArenasCharacter::OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
 	BaseMoveSpeed = OnAttributeChangeData.NewValue;
+	UpdateMoveSpeed();
 }
 
 void AArenasCharacter::OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -264,6 +265,11 @@ void AArenasCharacter::OnMoveSpeedExChanged(const FOnAttributeChangeData& OnAttr
 {
 	MoveSpeedEx = OnAttributeChangeData.NewValue;
 	UpdateMoveSpeed();
+}
+
+void AArenasCharacter::OnMoveSpeedAccelerationChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	GetCharacterMovement()->MaxAcceleration = OnAttributeChangeData.NewValue;
 }
 
 void AArenasCharacter::BindGASChangedDelegate()
@@ -294,6 +300,7 @@ void AArenasCharacter::BindGASChangedDelegate()
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedExAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedExChanged);
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
+		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveAccelerationAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedAccelerationChanged);
 		
 	}
 }

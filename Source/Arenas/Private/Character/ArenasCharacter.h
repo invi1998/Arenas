@@ -103,6 +103,7 @@ private:
 	void OnMaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMoveSpeedExChanged(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMoveSpeedAccelerationChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	
 	void BindGASChangedDelegate();
 
