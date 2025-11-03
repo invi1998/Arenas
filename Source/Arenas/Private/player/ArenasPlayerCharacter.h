@@ -75,6 +75,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TMap<EArenasAbilityInputID, UInputAction*> GameplayAbilityInputActions;
 
+	void HandleJumpInputAction(const FInputActionValue& Value);
 	void HandleLookInput(const FInputActionValue& Value);
 	void HandleMoveInput(const FInputActionValue& Value);
 	void HandleAbilityInput(const FInputActionValue& Value, EArenasAbilityInputID AbilityID);

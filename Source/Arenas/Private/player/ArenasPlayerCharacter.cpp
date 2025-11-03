@@ -65,7 +65,7 @@ void AArenasPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleJumpInputAction);
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleLookInput);
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AArenasPlayerCharacter::HandleMoveInput);
 		EnhancedInputComponent->BindAction(UpgradeAbilityLeaderInputAction, ETriggerEvent::Started, this, &AArenasPlayerCharacter::LearnAbilityLeaderDown);
@@ -108,6 +108,13 @@ FVector AArenasPlayerCharacter::GetLookRightDir() const
 FVector AArenasPlayerCharacter::GetMoveForwardDir() const
 {
 	return FVector::CrossProduct(GetLookRightDir(), FVector::UpVector);
+}
+
+void AArenasPlayerCharacter::HandleJumpInputAction(const FInputActionValue& Value)
+{
+	if (IsFocusing()) return;
+
+	Jump();
 }
 
 void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)

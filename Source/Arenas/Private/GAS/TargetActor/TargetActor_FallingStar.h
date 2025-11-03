@@ -31,6 +31,7 @@ public:
 	void ConfigureFallingStarTargetActor(float InAOERadius, float InLoopDuration, float InSpawnRate, float InSpawnHeight, float InFallingSpeed, const FGenericTeamId& OwningTeamId);
 	
 	virtual void StartTargeting(UGameplayAbility* Ability) override;	// 开始选择目标
+	virtual void CancelTargeting() override;		// 取消选择目标
 	virtual void BeginDestroy() override;
 	
 private:

@@ -54,13 +54,7 @@ private:
 
 	UPROPERTY()
 	UAbilityTask_WaitTargetData* WaitFallingStarTargetDataTask;
-
-	UFUNCTION()
-	void PlaceFallingStar(const FGameplayAbilityTargetDataHandle& Data);
 	
-	UFUNCTION()
-	void PlacementCancelled(const FGameplayAbilityTargetDataHandle& Data);
-
 	UFUNCTION()
 	void OnFallingStarTargetDataReceived(const FGameplayAbilityTargetDataHandle& Data);
 

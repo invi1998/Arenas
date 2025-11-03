@@ -84,7 +84,6 @@ void ATargetActor_FallingStar::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 void ATargetActor_FallingStar::ConfigureFallingStarTargetActor(float InAOERadius, float InLoopDuration,
 	float InSpawnRate, float InSpawnHeight, float InFallingSpeed, const FGenericTeamId& OwningTeamId)
 {
-	// 该函数只会在服务端被调用
 	AOERadius = InAOERadius;
 	LoopDuration = InLoopDuration;
 	SpawnRate = InSpawnRate;
@@ -127,11 +126,17 @@ void ATargetActor_FallingStar::StartTargeting(UGameplayAbility* Ability)
 			const float OnceFallTime = SpawnHeight / FallingSpeed;
 			World->GetTimerManager().ClearTimer(FallingStarImpactTimerHandle);
 			World->GetTimerManager().ClearTimer(FallingStarSpawnTimerHandle);
-			World->GetTimerManager().SetTimer(FallingStarSpawnTimerHandle, this, &ATargetActor_FallingStar::StopFallingStar, LoopDuration, false);
+			World->GetTimerManager().SetTimer(FallingStarSpawnTimerHandle, this, &ATargetActor_FallingStar::CancelTargeting, LoopDuration, false);
 			World->GetTimerManager().SetTimer(FallingStarImpactTimerHandle, this, &ATargetActor_FallingStar::DoTargetCheckAndReport, OnceFallTime, true, OnceFallTime);
 		}
 	}
 	
+}
+
+void ATargetActor_FallingStar::CancelTargeting()
+{
+	StopFallingStar();
+	Super::CancelTargeting();
 }
 
 void ATargetActor_FallingStar::BeginDestroy()
@@ -141,19 +146,6 @@ void ATargetActor_FallingStar::BeginDestroy()
 
 void ATargetActor_FallingStar::OnRep_IsActiveVFX()
 {
-	if (bIsActiveVFX && FallingStarVFXComp)
-	{
-		// 设置特效参数
-		FallingStarVFXComp->SetVariableFloat(VFXParamName_AOERadius, AOERadius);
-		FallingStarVFXComp->SetVariableFloat(VFXParamName_LoopDuration, LoopDuration);
-		FallingStarVFXComp->SetVariableFloat(VFXParamName_SpawnRate, SpawnRate);
-		const FVector Offset = FVector(0.f, 0.f, SpawnHeight);
-		FallingStarVFXComp->SetVariableVec3(VFXParamName_Offset, Offset);
-		const FVector Velocity = FVector(0.f, 0.f, -FallingSpeed);
-		FallingStarVFXComp->SetVariableVec3(VFXParamName_Velocity, Velocity);
-
-		FallingStarVFXComp->Activate(true);
-	}
 }
 
 void ATargetActor_FallingStar::StopFallingStar()
