@@ -27,8 +27,7 @@ float UMMC_MagicDamage::CalculateBaseMagnitude_Implementation(const FGameplayEff
 
 	GetCapturedAttributeMagnitude(GetMMCMagicDamageCaptureStatics().MagicResistDef, Spec, EvaluationParameters, MagicResist);
 	GetCapturedAttributeMagnitude(GetMMCMagicDamageCaptureStatics().MagicResistExDef, Spec, EvaluationParameters, MagicResistEx);
-
-	float FinalMagicResist = MagicResist + MagicResistEx;
+	
 	for (const TPair<FGameplayTag, float>& SetByCallerData : Spec.SetByCallerTagMagnitudes)
 	{
 		if (SetByCallerData.Key.MatchesTagExact(ArenasGameplayTags::SetByCaller_MagicDamage))
@@ -38,8 +37,11 @@ float UMMC_MagicDamage::CalculateBaseMagnitude_Implementation(const FGameplayEff
 		}
 	}
 
+	// 最终魔法抗性计算 (总魔法抗性 = 1 - (1 - a) × (1 - b) × (1 - c) × ...）
+	float FinalMagicResit = 1 - (1 - MagicResist / 100.f) * (1 - MagicResistEx / 100.f);
+	
 	// 计算最终魔法伤害
-	float FinalMagicDamage = MagicDamage * (100.f / (100.f + FinalMagicResist));
+	float FinalMagicDamage = MagicDamage * (100.f / (100.f + FinalMagicResit));
 
 	// 显示伤害数字
 	FVector HitLocation = Spec.GetContext().GetHitResult() ? Spec.GetContext().GetHitResult()->ImpactPoint : FVector::ZeroVector;
