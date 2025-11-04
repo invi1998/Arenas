@@ -56,12 +56,12 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 		}
 	}
 	AttackDamage += AttackDamageEx;
-	Armor += ArmorEx;
+	float FinalArmor = 1 - (1 - Armor / 100.f) * (1 - ArmorEx / 100.f);
 	AttackDamage += BaseDamage;
 	AttackDamage += AttackDamage * 0.1f * ComboIndex;
 	
 	// 计算最终伤害值，考虑护甲的减伤效果
-	float FinalDamage = AttackDamage * (100.f / (100.f + Armor));
+	float FinalDamage = AttackDamage * (100.f / (100.f + FinalArmor));
 
 	// 显示伤害数字
 	FVector HitLocation = Spec.GetContext().GetHitResult() ? Spec.GetContext().GetHitResult()->ImpactPoint : FVector::ZeroVector;
@@ -92,8 +92,6 @@ float UMMC_BaseAttackDamage::CalculateBaseMagnitude_Implementation(const FGamepl
 			}
 		}
 	}
-	
-
 	
 
 	return -FinalDamage;

@@ -100,7 +100,8 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (GetTeamAttitudeTowards(*OtherActor) == ProjectileTeamAttitudeType)
 		{
 			// 发送游戏提示
-			FHitResult HitResult;
+			// 	ENGINE_API FHitResult(AActor* InActor, UPrimitiveComponent* InComponent, FVector const& HitLoc, FVector const& HitNorm);
+			FHitResult HitResult(OtherActor, nullptr, GetActorLocation(), FVector::UpVector);
 			HitResult.ImpactNormal = GetActorForwardVector();
 			HitResult.ImpactPoint = GetActorLocation();
 			// 应用效果
@@ -110,7 +111,7 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 				if (HasAuthority() && HitEffectSpecHandle.IsValid())
 				{
 					// 为HitEffectSpecHandle添加上下文信息
-					HitEffectSpecHandle.Data->GetContext().AddHitResult(HitResult);
+					HitEffectSpecHandle.Data->GetContext().AddHitResult(HitResult, true);
 					
 					OtherASC->ApplyGameplayEffectSpecToSelf(*HitEffectSpecHandle.Data.Get());
 					GetWorldTimerManager().ClearTimer(ProjectileTravelTimerHandle); // 清除最大飞行距离计时器
