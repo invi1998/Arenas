@@ -99,22 +99,24 @@ void AProjectileActor::NotifyActorBeginOverlap(AActor* OtherActor)
 		
 		if (GetTeamAttitudeTowards(*OtherActor) == ProjectileTeamAttitudeType)
 		{
+			// 发送游戏提示
+			FHitResult HitResult;
+			HitResult.ImpactNormal = GetActorForwardVector();
+			HitResult.ImpactPoint = GetActorLocation();
 			// 应用效果
 			UAbilitySystemComponent* OtherASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 			if (IsValid(OtherASC))
 			{
 				if (HasAuthority() && HitEffectSpecHandle.IsValid())
 				{
+					// 为HitEffectSpecHandle添加上下文信息
+					HitEffectSpecHandle.Data->GetContext().AddHitResult(HitResult);
+					
 					OtherASC->ApplyGameplayEffectSpecToSelf(*HitEffectSpecHandle.Data.Get());
 					GetWorldTimerManager().ClearTimer(ProjectileTravelTimerHandle); // 清除最大飞行距离计时器
 				}
 			}
-
-			// 发送游戏提示
-			FHitResult HitResult;
-			HitResult.ImpactNormal = GetActorForwardVector();
-			HitResult.ImpactPoint = GetActorLocation();
-
+			
 			// 判断当前弹丸所属的Actor是否是AI角色
 			if (AActor* OwnerActor = GetOwner())
 			{

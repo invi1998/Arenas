@@ -76,7 +76,6 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_Reward_Gold, KillerGoldReward);
 			EffectSpecHandle.Data->GetContext().AddHitResult(DeadHit, true);
 			
-			
 			ApplyGameplayEffectSpecToTarget(
 				GetCurrentAbilitySpecHandle(),
 				GetCurrentActorInfo(),
@@ -84,26 +83,40 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 				EffectSpecHandle,
 				UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(Killer));
 
+			/*
 			// 给击杀者执行金币获取特效 和 敌方死亡金币掉落特效（GameplayCue）
 			if (UArenasAbilitySystemComponent* KillerASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(Killer))
 			{
+				// 立即触发第一个Cue
 				if (ACharacter* SelfOwnerCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 				{
 					FGameplayCueParameters CueParameters;
 					CueParameters.Location = SelfOwnerCharacter->GetMesh()->GetSocketLocation("head"); // 敌方死亡金币掉落特效需要从头部骨骼位置掉落
+					if (ACharacter* KillerCharacter = Cast<ACharacter>(Killer))
+					{
+						CueParameters.TargetAttachComponent = KillerCharacter->GetMesh();
+					}
+					
 					KillerASC->ExecuteGameplayCue(GetDropCoinGameplayCueTag(), CueParameters);
 				}
-				
-				// 金币获取特效需要附着在击杀者头部骨骼上，所以这里需要传入击杀者Character的MeshComponent
-				if (ACharacter* KillerCharacter = Cast<ACharacter>(Killer))
+
+				/*
+				// 延迟触发第二个Cue
+				FTimerHandle GetCoinTimerHandle;
+				FTimerDelegate GetCoinDelegate = FTimerDelegate::CreateLambda([KillerASC, this, Killer]()
 				{
-					FGameplayCueParameters CueParameters;
-					CueParameters.TargetAttachComponent = KillerCharacter->GetMesh();
-					KillerASC->ExecuteGameplayCue(GetGetCoinGameplayCueTag(), CueParameters);
-				}
-				
-			}
+					// 金币获取特效需要附着在击杀者头部骨骼上，所以这里需要传入击杀者Character的MeshComponent
+					if (ACharacter* KillerCharacter = Cast<ACharacter>(Killer))
+					{
+						FGameplayCueParameters CueParameters;
+						CueParameters.TargetAttachComponent = KillerCharacter->GetMesh();
+						KillerASC->ExecuteGameplayCue(GetGetCoinGameplayCueTag(), CueParameters);
+					}
+				});
+				GetWorld()->GetTimerManager().SetTimer(GetCoinTimerHandle, GetCoinDelegate, 0.2f, false);
 			
+			}
+			*/
 		}
 		
 		float TargetExpReward = TotalExpReward * (1.f - KillerRewardPercent) / RewardTargets.Num();

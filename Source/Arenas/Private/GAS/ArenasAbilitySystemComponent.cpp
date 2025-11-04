@@ -536,6 +536,9 @@ void UArenasAbilitySystemComponent::HandleGoldChanged(const FOnAttributeChangeDa
 				{
 					HitLocation = OnAttributeChangeData.GEModData->EffectSpec.GetContext().GetHitResult()->Location;
 				}
+
+				// 打印 HitLocation
+				UE_LOG(LogTemp, Warning, TEXT("Gold HitLocation: %s"), *HitLocation.ToString());
 					
 				ShowComboText(OnAttributeChangeData.NewValue - OnAttributeChangeData.OldValue, EArenasComboTextType::Gold, HitLocation);
 			}
