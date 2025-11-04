@@ -19,12 +19,13 @@ class ATargetActor_GroundPick : public AGameplayAbilityTargetActor
 public:
 	ATargetActor_GroundPick();
 
+	virtual void StartTargeting(UGameplayAbility* Ability) override;
 	virtual void ConfirmTargetingAndContinue() override;
 
 	void SetTargetAreaRadius(float InRadius);
 	void SetTargetOptions(bool bInShouldTargetEnemies, bool bInShouldTargetAllies);
 	FORCEINLINE void SetShouldDrawDebugSphere(bool bInShouldDrawDebugSphere) { bShouldDrawDebugSphere = bInShouldDrawDebugSphere; }
-	FORCEINLINE void SetTargetTraceDistance(float InDistance) { TargetTraceDistance = InDistance; }
+	void SetTargetTraceDistance(float InDistance);
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;
@@ -33,8 +34,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Decal")
 	UDecalComponent* DecalComponent;		// 技能指示器
 
-	// UPROPERTY(EditDefaultsOnly, Category = "Decal")
-	// UDecalComponent* CastRangeDecalComponent;	// 施法范围指示器
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	UDecalComponent* CastRangeDecalComponent;	// 施法范围指示器
 	
 	FVector GetTargetPoint() const;
 
@@ -48,5 +49,8 @@ private:
 	bool bShouldTargetAllies = false;	// 是否应该选择友军
 
 	bool bShouldDrawDebugSphere = false; // 是否绘制调试用的球体
+
+	UPROPERTY()
+	const AActor* AvatarActor;		// 持有该TargetActor的角色
 	
 };

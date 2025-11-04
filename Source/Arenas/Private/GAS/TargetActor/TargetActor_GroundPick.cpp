@@ -18,6 +18,20 @@ ATargetActor_GroundPick::ATargetActor_GroundPick()
 	DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComponent"));
 	DecalComponent->SetupAttachment(GetRootComponent());
 
+	CastRangeDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("CastRangeDecalComponent"));
+	CastRangeDecalComponent->SetupAttachment(GetRootComponent());
+
+}
+
+void ATargetActor_GroundPick::StartTargeting(UGameplayAbility* Ability)
+{
+	Super::StartTargeting(Ability);
+	if (!OwningAbility) return;
+	if (Ability)
+	{
+		AvatarActor = Ability->GetAvatarActorFromActorInfo();
+	}
+	
 }
 
 void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
@@ -91,6 +105,15 @@ void ATargetActor_GroundPick::SetTargetOptions(bool bInShouldTargetEnemies, bool
 	bShouldTargetAllies = bInShouldTargetAllies;
 }
 
+void ATargetActor_GroundPick::SetTargetTraceDistance(float InDistance)
+{
+	TargetTraceDistance = InDistance;
+	if (CastRangeDecalComponent)
+	{
+		CastRangeDecalComponent->DecalSize = FVector(InDistance, InDistance, InDistance);
+	}
+}
+
 void ATargetActor_GroundPick::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -99,6 +122,15 @@ void ATargetActor_GroundPick::Tick(float DeltaSeconds)
 	if (PrimaryPC && PrimaryPC->IsLocalPlayerController())
 	{
 		SetActorLocation(GetTargetPoint());
+		if (AvatarActor)
+		{
+			// 设置施法范围贴花
+			if (CastRangeDecalComponent)
+			{
+				FVector AvatarLocation = AvatarActor->GetActorLocation();
+				CastRangeDecalComponent->SetWorldLocation(AvatarLocation);
+			}
+		}
 	}
 	
 }
