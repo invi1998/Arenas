@@ -192,6 +192,8 @@ void ATargetActor_BlackHole::TryRemoveTarget(AActor* OtherTarget)
 
 void ATargetActor_BlackHole::StopBlackHole()
 {
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	
 	TArray<TWeakObjectPtr<AActor>> FinalTargets;
 	for (TPair<AActor*, UNiagaraComponent*>& Elem : ActorInRangeMap)
 	{
@@ -200,6 +202,31 @@ void ATargetActor_BlackHole::StopBlackHole()
 		if (TargetActor)
 		{
 			FinalTargets.Add(TargetActor);
+
+			FHitResult Hit;
+			// 构建虚假的命中结果，击中部位取角色的头部骨骼位置（如果有的话，没有就用角色位置替代）
+			if (USkeletalMeshComponent* MeshComp = TargetActor->FindComponentByClass<USkeletalMeshComponent>())
+			{
+				FName HeadBoneName = TEXT("head");
+				if (MeshComp->DoesSocketExist(HeadBoneName))
+				{
+					FVector HeadLocation = MeshComp->GetSocketLocation(HeadBoneName);
+					// FHitResult(AActor* InActor, UPrimitiveComponent* InComponent, FVector const& HitLoc, FVector const& HitNorm);
+					FHitResult HitResult(TargetActor, MeshComp, TargetActor->GetActorLocation(), FVector::UpVector);
+					HitResult.ImpactPoint = HeadLocation;
+					Hit = HitResult;
+				}
+			}
+			else
+			{
+				// FHitResult(AActor* InActor, UPrimitiveComponent* InComponent, FVector const& HitLoc, FVector const& HitNorm);
+				FHitResult HitResult(TargetActor, nullptr, TargetActor->GetActorLocation(), FVector::UpVector);
+				HitResult.ImpactPoint = TargetActor->GetActorLocation();
+				Hit = HitResult;
+			}
+			FGameplayAbilityTargetData_SingleTargetHit* HitData = new FGameplayAbilityTargetData_SingleTargetHit();
+			HitData->HitResult = Hit;
+			TargetDataHandle.Add(HitData);
 		}
 
 		if (IsValid(TargetLinkVFXComp))
@@ -208,7 +235,6 @@ void ATargetActor_BlackHole::StopBlackHole()
 		}
 	}
 
-	FGameplayAbilityTargetDataHandle TargetDataHandle;
 	FGameplayAbilityTargetData_ActorArray* TargetData = new FGameplayAbilityTargetData_ActorArray();
 	TargetData->SetActors(FinalTargets);
 	TargetDataHandle.Add(TargetData);

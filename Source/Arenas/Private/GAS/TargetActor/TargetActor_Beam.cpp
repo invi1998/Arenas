@@ -138,16 +138,43 @@ void ATargetActor_Beam::DoTargetCheckAndReport()
 	TSet<AActor*> OverlappingActorSet;
 	TargetEndDetectionSphere->GetOverlappingActors(OverlappingActorSet);
 
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	
 	TArray<TWeakObjectPtr<AActor>> OverlappingActorsWeakPtrArray;
 	for (AActor* OverlappingActor : OverlappingActorSet)
 	{
 		if (ShouldReportActorAsTarget(OverlappingActor))
 		{
 			OverlappingActorsWeakPtrArray.Add(OverlappingActor);
+
+			FHitResult Hit;
+			// 构建虚假的命中结果，击中部位取角色的头部骨骼位置（如果有的话，没有就用角色位置替代）
+			if (USkeletalMeshComponent* MeshComp = OverlappingActor->FindComponentByClass<USkeletalMeshComponent>())
+			{
+				FName HeadBoneName = TEXT("head");
+				if (MeshComp->DoesSocketExist(HeadBoneName))
+				{
+					FVector HeadLocation = MeshComp->GetSocketLocation(HeadBoneName);
+					// FHitResult(AActor* InActor, UPrimitiveComponent* InComponent, FVector const& HitLoc, FVector const& HitNorm);
+					FHitResult HitResult(OverlappingActor, MeshComp, OverlappingActor->GetActorLocation(), FVector::UpVector);
+					HitResult.ImpactPoint = HeadLocation;
+					Hit = HitResult;
+				}
+			}
+			else
+			{
+				// FHitResult(AActor* InActor, UPrimitiveComponent* InComponent, FVector const& HitLoc, FVector const& HitNorm);
+				FHitResult HitResult(OverlappingActor, nullptr, OverlappingActor->GetActorLocation(), FVector::UpVector);
+				HitResult.ImpactPoint = OverlappingActor->GetActorLocation();
+				Hit = HitResult;
+			}
+			FGameplayAbilityTargetData_SingleTargetHit* HitData = new FGameplayAbilityTargetData_SingleTargetHit();
+			HitData->HitResult = Hit;
+			TargetDataHandle.Add(HitData);
 		}
 	}
 	// 生成目标数据句柄
-	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	
 	FGameplayAbilityTargetData_ActorArray* ActorArrayData = new FGameplayAbilityTargetData_ActorArray();
 	ActorArrayData->SetActors(OverlappingActorsWeakPtrArray);
 	TargetDataHandle.Add(ActorArrayData);
