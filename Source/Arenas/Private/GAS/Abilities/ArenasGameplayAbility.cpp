@@ -80,6 +80,15 @@ void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle&
 	PushTargets(TargetActors, PushVelocity);
 }
 
+void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, float PushSpeed)
+{
+	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())
+	{
+		FVector CenterPoint = OwnerAvatarActor->GetActorLocation();
+		PushTargets(TargetData, CenterPoint, PushSpeed);
+	}
+}
+
 void UArenasGameplayAbility::PushTargets(const FGameplayAbilityTargetDataHandle& TargetData, const FVector& CenterPoint, float PushSpeed)
 {
 	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetData);

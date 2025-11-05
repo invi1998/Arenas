@@ -48,8 +48,13 @@ namespace ArenasGameplayTags
 
 	// Event_Ability_Blink_Teleport
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Blink_Teleport, "Event.Ability.Blink.Teleport", "闪现技能传送" );
+
+	// Event-Dash
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Dash_Start, "Event.Ability.Dash.Start", "冲刺技能开始" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Ability_Combo_Damage, "Event.Ability.Combo.Damage", "连招技能伤害" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Generic_Damage, "Event.Generic.Damage", "通用伤害事件" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Generic_Target, "Event.Generic.Target", "通用目标事件" );
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_BaseDamage, "SetByCaller.BaseDamage", "基础伤害" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_MagicDamage, "SetByCaller.MagicDamage", "魔法伤害" );
@@ -75,6 +80,8 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_BlackHole, "Cooldown.Ability.BlackHole", "黑洞技能冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_FallingStar, "Cooldown.Ability.FallingStar", "陨星技能冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Blink, "Cooldown.Ability.Blink", "闪现技能冷却" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Tornado, "Cooldown.Ability.Tornado", "龙卷风技能冷却" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Dash, "Cooldown.Ability.Dash", "冲刺技能冷却" );
 	// Cooldown-Item
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Item_ArcaneBoots, "Cooldown.Item.ArcaneBoots", "奥术鞋物品冷却" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Item_BlackKingBar, "Cooldown.Item.BlackKingBar", "黑皇杖物品冷却" );
