@@ -11,6 +11,7 @@
 #include "GameplayEffectExtension.h"
 #include "PA_AbilitySystemGenerics.h"
 #include "Framework/ArenasGameMode.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "player/ArenasPlayerCharacter.h"
 #include "player/ArenasPlayerController.h"
 
@@ -41,6 +42,12 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 		}
 	}
 
+	// 获取所属角色的行走加速度，以便初始化移动加速度属性
+	if (ACharacter* Character = Cast<ACharacter>(GetOwner()))
+	{
+		SetNumericAttributeBase(UArenasAttributeSet::GetMoveAccelerationAttribute(), Character->GetCharacterMovement()->GetMaxAcceleration());
+	}
+
 	// 此处我们只筛选出英雄类的基础数据，小兵、建筑等其他类型的单位不在此处初始化属性
 	if (!BaseStats) return;
 
@@ -55,6 +62,8 @@ void UArenasAbilitySystemComponent::InitializeBaseAttributes()
 	SetNumericAttributeBase(UArenasAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMagicResistAttribute(), BaseStats->BaseMagicResist);
 	SetNumericAttributeBase(UArenasAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
+	
+	
 
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
 	SetNumericAttributeBase(UArenasHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
