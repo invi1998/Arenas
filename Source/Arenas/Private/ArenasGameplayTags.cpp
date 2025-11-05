@@ -61,6 +61,7 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_ComboIndex, "SetByCaller.ComboIndex", "连招索引" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Reward_Exp, "SetByCaller.Reward.Exp", "奖励经验值" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Reward_Gold, "SetByCaller.Reward.Gold", "奖励金币" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_DashSpeed, "SetByCaller.DashSpeed", "冲刺速度" );
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Dead, "Status.Dead", "死亡状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Stun, "Status.Stun", "眩晕状态" );

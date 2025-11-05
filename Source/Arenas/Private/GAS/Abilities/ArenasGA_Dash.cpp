@@ -7,9 +7,13 @@
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/ArenasAttributeSet.h"
 #include "GAS/TargetActor/TargetActor_Around.h"
+#include "GAS/TargetActor/TargetActor_ChargeIndicator.h"
 
 void UArenasGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -23,19 +27,52 @@ void UArenasGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
-		UAbilityTask_PlayMontageAndWait* PlayDashMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, DashMontage);
-		PlayDashMontageTask->OnCompleted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
-		PlayDashMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
-		PlayDashMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
-		PlayDashMontageTask->OnBlendOut.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
-		PlayDashMontageTask->ReadyForActivation();
+		CurrentChargeTime = 0.f;
+		// 获取角色移动组件
+		if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+		{
+			bool bFound = false;
+			float MoveSpeed = ASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMoveSpeedAttribute(), bFound);
+			float MoveSpeedEX = ASC->GetGameplayAttributeValue(UArenasAttributeSet::GetMoveSpeedExAttribute(), bFound);
+			CurrentCharacterMaxMoveSpeed = MoveSpeed + MoveSpeedEX;
+		}
+		else
+		{
+			K2_EndAbility();
+			return;
+		}
 
-		UAbilityTask_WaitGameplayEvent* WaitSashStartEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Event_Ability_Dash_Start);
-		WaitSashStartEventTask->EventReceived.AddDynamic(this, &UArenasGA_Dash::StartDash);
-		WaitSashStartEventTask->ReadyForActivation();
+		// 获取冲跑所需时间
+		DashMontagePlayDuration = DashMontage->GetPlayLength() / DashMontage->RateScale;
+		
+		UAbilityTask_PlayMontageAndWait* PlayChargeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, DashChargeMontage);
+		// PlayChargeMontageTask->OnCompleted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+		// PlayChargeMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+		// PlayChargeMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+		// PlayChargeMontageTask->OnBlendOut.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+		PlayChargeMontageTask->ReadyForActivation();
+		
+		UAbilityTask_WaitTargetData* WaitChargeTargetDataTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::CustomMulti, ChargeIndicatorTargetActorClass);
+		WaitChargeTargetDataTask->ReadyForActivation();
+
+		AGameplayAbilityTargetActor* TargetActor;
+		WaitChargeTargetDataTask->BeginSpawningActor(this, ChargeIndicatorTargetActorClass, TargetActor);
+		if (ATargetActor_ChargeIndicator* TargetActor_ChargeIndicator = Cast<ATargetActor_ChargeIndicator>(TargetActor))
+		{
+			ChargeIndicatorTargetActor = TargetActor_ChargeIndicator;
+			ChargeIndicatorTargetActor->SetTargetDistance(0.f);
+		}
+		WaitChargeTargetDataTask->FinishSpawningActor(this, TargetActor);
+
+		UAbilityTask_WaitInputPress* WaitInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this, true);
+		WaitInputPressTask->OnPress.AddDynamic(this, &UArenasGA_Dash::StartCharge);
+		WaitInputPressTask->ReadyForActivation();
+		
+		WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
+		WaitInputReleaseTask->OnRelease.AddDynamic(this, &UArenasGA_Dash::ChargeCompleted);
+		WaitInputReleaseTask->ReadyForActivation();
 
 	}
-
 	
 }
 
@@ -69,14 +106,95 @@ void UArenasGA_Dash::PushForward()
 	}
 }
 
-void UArenasGA_Dash::StartDash(FGameplayEventData Payload)
+void UArenasGA_Dash::UpdateCurrentDashDistance()
+{
+	CurrentChargeTime += ChargeTimeInterval;
+	UE_LOG(LogTemp, Warning, TEXT("Current Charge Time: %f"), CurrentChargeTime);
+	float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
+	UE_LOG(LogTemp, Warning, TEXT("Real Dash Time: %f"), RealDashTime);
+	// 根据蓄力时间计算当前冲刺距离
+	float CurrentDashDistance = RealDashTime * MaxDashDistance / DashMontagePlayDuration;
+	UE_LOG(LogTemp, Warning, TEXT("Current Dash Distance: %f"), CurrentDashDistance);
+	if (ChargeIndicatorTargetActor)
+	{
+		ChargeIndicatorTargetActor->SetTargetDistance(CurrentDashDistance);
+	}
+	if (CurrentChargeTime >= MaxChargeTime)
+	{
+		ChargeFinished();
+	}
+}
+
+void UArenasGA_Dash::ChargeFinished()
+{
+	// 玩家达到最大蓄力时间或者主动提前结束蓄力会被调用
+	if (UWorld* World = GetWorld())
+	{
+		if (ChargeTimer.IsValid())
+		{
+			World->GetTimerManager().ClearTimer(ChargeTimer);
+		}
+	}
+	
+	// 如果WaitInputReleaseTask还在等待输入释放，则取消它，防止重复调用
+	if (WaitInputReleaseTask)
+	{
+		WaitInputReleaseTask->EndTask();
+	}
+	
+	// 结束蓄力后，播放冲刺动画
+	UAbilityTask_PlayMontageAndWait* PlayDashMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this,
+		NAME_None,
+		DashMontage);
+	PlayDashMontageTask->OnCompleted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+	PlayDashMontageTask->OnInterrupted.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+	PlayDashMontageTask->OnCancelled.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+	PlayDashMontageTask->OnBlendOut.AddDynamic(this, &UArenasGA_Dash::K2_EndAbility);
+	PlayDashMontageTask->ReadyForActivation();
+
+	StartDash();
+	
+	/*
+	UAbilityTask_WaitGameplayEvent* WaitSashStartEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Event_Ability_Dash_Start);
+	WaitSashStartEventTask->EventReceived.AddDynamic(this, &UArenasGA_Dash::StartDash);
+	WaitSashStartEventTask->ReadyForActivation();
+	*/
+}
+
+void UArenasGA_Dash::StartCharge(float TimeWaited)
+{
+	// 依据蓄力时间，修改角色的冲刺距离
+	if (UWorld* World = GetWorld())
+	{
+		CurrentChargeTime = TimeWaited;
+		
+		World->GetTimerManager().ClearTimer(ChargeTimer);
+		World->GetTimerManager().SetTimer(ChargeTimer, this, &UArenasGA_Dash::UpdateCurrentDashDistance, ChargeTimeInterval, true, TimeWaited);
+	}
+}
+
+void UArenasGA_Dash::ChargeCompleted(float TimeHeld)
+{
+	CurrentChargeTime = TimeHeld;
+	// 主动提前释放蓄力
+	ChargeFinished();
+}
+
+void UArenasGA_Dash::StartDash()
 {
 	if (K2_HasAuthority())
 	{
 		if (DashEffect)
 		{
-			DashEffectHandle = BP_ApplyGameplayEffectToOwner(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-			
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+			float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
+			float CurrentDashDistance = RealDashTime * MaxDashDistance / DashMontagePlayDuration;
+			float ExNeedSpeed = CurrentDashDistance / RealDashTime - CurrentCharacterMaxMoveSpeed;
+			UE_LOG(LogTemp, Warning, TEXT("Dash Need Speed: %f, CurrentDashDistance: %f, RealDashTime: %f"), ExNeedSpeed, CurrentDashDistance, RealDashTime);
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_DashSpeed, ExNeedSpeed);
+			// DashEffectHandle = BP_ApplyGameplayEffectToOwner(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+			DashEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
 	}
 
@@ -103,7 +221,6 @@ void UArenasGA_Dash::StartDash(FGameplayEventData Payload)
 		// 附加到角色组件上
 		DashTargetActor->AttachToComponent(GetOwningComponentFromActorInfo(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TargetActorAttachSocketName);
 	}
-
 	
 }
 
