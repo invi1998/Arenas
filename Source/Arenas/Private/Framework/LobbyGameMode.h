@@ -13,4 +13,10 @@ UCLASS()
 class ARENAS_API ALobbyGameMode : public AArenasGameMode
 {
 	GENERATED_BODY()
+
+public:
+	ALobbyGameMode();
+
+
+	
 };
