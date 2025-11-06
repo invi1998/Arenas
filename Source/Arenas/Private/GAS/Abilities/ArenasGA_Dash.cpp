@@ -60,7 +60,7 @@ void UArenasGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		if (ATargetActor_ChargeIndicator* TargetActor_ChargeIndicator = Cast<ATargetActor_ChargeIndicator>(TargetActor))
 		{
 			ChargeIndicatorTargetActor = TargetActor_ChargeIndicator;
-			ChargeIndicatorTargetActor->SetTargetDistance(0.f);
+			ChargeIndicatorTargetActor->SetTargetDistance(MinDashDistance);
 		}
 		WaitChargeTargetDataTask->FinishSpawningActor(this, TargetActor);
 
@@ -121,7 +121,7 @@ void UArenasGA_Dash::UpdateCurrentDashDistance()
 	float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
 	UE_LOG(LogTemp, Warning, TEXT("Real Dash Time: %f"), RealDashTime);
 	// 根据蓄力时间计算当前冲刺距离
-	float CurrentDashDistance = RealDashTime * MaxDashDistance / DashMontagePlayDuration;
+	float CurrentDashDistance = RealDashTime * (MaxDashDistance - MinDashDistance) / DashMontagePlayDuration + MinDashDistance;
 	UE_LOG(LogTemp, Warning, TEXT("Current Dash Distance: %f"), CurrentDashDistance);
 	if (ChargeIndicatorTargetActor)
 	{
@@ -214,7 +214,7 @@ void UArenasGA_Dash::StartDash()
 		{
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
-			float CurrentDashDistance = RealDashTime * MaxDashDistance / DashMontagePlayDuration;
+			float CurrentDashDistance = RealDashTime * (MaxDashDistance - MinDashDistance) / DashMontagePlayDuration + MinDashDistance;
 			float ExNeedSpeed = CurrentDashDistance / DashMontagePlayDuration - CurrentCharacterMaxMoveSpeed;
 			UE_LOG(LogTemp, Warning, TEXT("Dash Need Speed: %f, CurrentDashDistance: %f, RealDashTime: %f"), ExNeedSpeed, CurrentDashDistance, RealDashTime);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_DashSpeed, ExNeedSpeed);

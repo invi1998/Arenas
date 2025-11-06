@@ -102,7 +102,10 @@ private:
 	float CurrentCharacterMaxMoveSpeed = 0.f;	// 角色当前最大移动速度
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	float MaxDashDistance = 2000.f;	// 最大冲刺距离
+	float MaxDashDistance = 3000.f;	// 最大冲刺距离
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	float MinDashDistance = 1000.f;	// 最小冲刺距离(即不蓄力时的冲刺距离)
 
 	FTimerHandle ChargeTimer;			// 蓄力计时器
 	float ChargeTimeInterval = 0.1f;	// 蓄力时间间隔
