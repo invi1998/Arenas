@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
@@ -117,12 +116,9 @@ void UArenasGA_Dash::PushForward()
 void UArenasGA_Dash::UpdateCurrentDashDistance()
 {
 	CurrentChargeTime += ChargeTimeInterval;
-	UE_LOG(LogTemp, Warning, TEXT("Current Charge Time: %f"), CurrentChargeTime);
 	float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
-	UE_LOG(LogTemp, Warning, TEXT("Real Dash Time: %f"), RealDashTime);
 	// 根据蓄力时间计算当前冲刺距离
-	float CurrentDashDistance = RealDashTime * (MaxDashDistance - MinDashDistance) / DashMontagePlayDuration + MinDashDistance;
-	UE_LOG(LogTemp, Warning, TEXT("Current Dash Distance: %f"), CurrentDashDistance);
+	float CurrentDashDistance = FMath::Max(RealDashTime * MaxDashDistance / DashMontagePlayDuration, MinDashDistance);
 	if (ChargeIndicatorTargetActor)
 	{
 		ChargeIndicatorTargetActor->SetTargetDistance(CurrentDashDistance);
@@ -167,11 +163,6 @@ void UArenasGA_Dash::ChargeFinished()
 
 	StartDash();
 	
-	/*
-	UAbilityTask_WaitGameplayEvent* WaitSashStartEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, ArenasGameplayTags::Event_Ability_Dash_Start);
-	WaitSashStartEventTask->EventReceived.AddDynamic(this, &UArenasGA_Dash::StartDash);
-	WaitSashStartEventTask->ReadyForActivation();
-	*/
 }
 
 void UArenasGA_Dash::StartCharge(float TimeWaited)
@@ -214,11 +205,11 @@ void UArenasGA_Dash::StartDash()
 		{
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
-			float CurrentDashDistance = RealDashTime * (MaxDashDistance - MinDashDistance) / DashMontagePlayDuration + MinDashDistance;
-			float ExNeedSpeed = CurrentDashDistance / DashMontagePlayDuration - CurrentCharacterMaxMoveSpeed;
-			UE_LOG(LogTemp, Warning, TEXT("Dash Need Speed: %f, CurrentDashDistance: %f, RealDashTime: %f"), ExNeedSpeed, CurrentDashDistance, RealDashTime);
+			float CurrentDashDistance = FMath::Max(RealDashTime * MaxDashDistance / DashMontagePlayDuration, MinDashDistance);
+			float ExtSubSpeed = CurrentDashDistance >= MaxDashDistance ? OffsetSpeed : CurrentCharacterMaxMoveSpeed;
+			float ExNeedSpeed = CurrentDashDistance / DashMontagePlayDuration - ExtSubSpeed;
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_DashSpeed, ExNeedSpeed);
-			// DashEffectHandle = BP_ApplyGameplayEffectToOwner(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+			HitPushScale = CurrentDashDistance / MaxDashDistance;
 			DashEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
 	}
@@ -259,6 +250,7 @@ void UArenasGA_Dash::TargetReceived(const FGameplayAbilityTargetDataHandle& Targ
 	if (K2_HasAuthority())
 	{
 		ApplyAbilityMagicGameplayEffectToTarget(TargetDataHandle, DefaultDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
-		PushTargets(TargetDataHandle, TargetHitPushSpeed);
+		float HitScale = FMath::Max(2 * HitPushScale, 0.5f);
+		PushTargets(TargetDataHandle, TargetHitPushSpeed * HitScale);
 	}
 }

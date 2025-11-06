@@ -107,8 +107,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	float MinDashDistance = 1000.f;	// 最小冲刺距离(即不蓄力时的冲刺距离)
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	float OffsetSpeed = -600.f;		// 达到最大冲刺距离时，额外补偿的速度
+
 	FTimerHandle ChargeTimer;			// 蓄力计时器
 	float ChargeTimeInterval = 0.1f;	// 蓄力时间间隔
 
 	float CurrentChargeTime = 0.f;		// 当前蓄力时间
+	float HitPushScale = 1.f;			// 击中目标时的推力比例
 };

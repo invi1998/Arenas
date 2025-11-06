@@ -35,10 +35,19 @@ void ATargetActor_ChargeIndicator::Tick(float DeltaTime)
 		FVector StartLoc;
 		FRotator StartRot;
 		PrimaryPC->GetPlayerViewPoint(StartLoc, StartRot);
-		FRotator DecalRotation = StartRot;
-		DecalRotation.Pitch -= 90.f; // 贴花需要向下倾斜90度
-		DecalRotation.Yaw += 90.f;
-		ChargeDecalComponent->SetWorldRotation(DecalRotation);
+		// 获取当前贴花的旋转
+		FRotator DecalRot = ChargeDecalComponent->GetComponentRotation();
+		// 只修改Yaw值，使其与控制器的朝向一致
+		DecalRot.Yaw = StartRot.Yaw + 90.f; // Decal的朝向需要加90度偏移
+		
+		ChargeDecalComponent->SetWorldRotation(DecalRot);
+
+		if (bNeedsSizeUpdate)
+		{
+			ChargeDecalComponent->DecalSize = FVector(500.F, MaxChargeDistance, 500.f);
+			ChargeDecalComponent->MarkRenderStateDirty();
+			bNeedsSizeUpdate = false;
+		}
 	}
 }
 
@@ -62,7 +71,7 @@ void ATargetActor_ChargeIndicator::ConfirmTargetingAndContinue()
 void ATargetActor_ChargeIndicator::SetTargetDistance(float Distance)
 {
 	MaxChargeDistance = Distance;
-	ChargeDecalComponent->DecalSize = FVector(MaxChargeDistance, MaxChargeDistance, 500.f);
+	bNeedsSizeUpdate = true;
 }
 
 void ATargetActor_ChargeIndicator::StopAttaching()

@@ -38,4 +38,5 @@ private:
 	const AActor* AvatarActor;		// 持有该TargetActor的角色
 	
 	bool bStopAttaching = false;
+	bool bNeedsSizeUpdate = false;
 };
