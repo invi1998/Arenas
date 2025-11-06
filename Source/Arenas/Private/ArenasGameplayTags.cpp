@@ -73,6 +73,8 @@ namespace ArenasGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Mana_Empty, "Status.Mana.Empty", "法力值空状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Damaged, "Status.Damaged", "受伤状态" );
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Crosshair, "Status.Crosshair", "准心状态" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Charge, "Status.Charge", "蓄力状态" );
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Phasing, "Status.Phasing", "相位状态" );	// 相位状态（无视角色间的碰撞）
 
 	// Cooldown
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Ability_Uppercut, "Cooldown.Ability.Uppercut", "上勾拳技能冷却" );

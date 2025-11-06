@@ -45,6 +45,8 @@ public:
 
 	bool IsStunning() const;
 	bool IsFocusing() const;
+	bool IsCharging() const { return bIsCharging; }
+	bool IsPhasing() const { return bIsPhasing; }
 
 	// 当角色被控制器控制时调用(只会在服务端被调用)
 	virtual void PossessedBy(AController* NewController) override;
@@ -97,6 +99,10 @@ private:
 	void StunTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void AimingTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
 	void FocusTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	void ChargeTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	virtual void OnChargeStateChanged(bool bCharging);
+	void PhasingTagUpdated(FGameplayTag GameplayTag, int32 NewCount);
+	
 	void SetIsAiming(bool bNewAiming);
 	virtual void OnAimStateChanged(bool bNewAiming);
 	void OnMoveSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
@@ -112,6 +118,8 @@ private:
 	float BaseMoveSpeed = 0;
 	float MoveSpeedEx = 0;
 	bool bIsFocusingMode = false;
+	bool bIsCharging = false;
+	bool bIsPhasing = false;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	UArenasAbilitySystemComponent* ArenasAbilitySystemComponent;

@@ -226,6 +226,32 @@ void AArenasCharacter::FocusTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
 	bIsFocusingMode = (NewCount > 0);
 }
 
+void AArenasCharacter::ChargeTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
+{
+	bIsCharging = (NewCount > 0);
+	OnChargeStateChanged(bIsCharging);
+}
+
+void AArenasCharacter::OnChargeStateChanged(bool bCharging)
+{
+}
+
+void AArenasCharacter::PhasingTagUpdated(FGameplayTag GameplayTag, int32 NewCount)
+{
+	bIsPhasing = (NewCount > 0);
+
+	// 如果进入相位状态，则禁用与Pawn，胶囊体的碰撞，否则启用碰撞
+	if (bIsPhasing)
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	}
+	else
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	}
+	
+}
+
 void AArenasCharacter::SetIsAiming(bool bNewAiming)
 {
 	// 切换瞄准状态时，调整角色的旋转行为
@@ -272,6 +298,8 @@ void AArenasCharacter::OnMoveSpeedAccelerationChanged(const FOnAttributeChangeDa
 	GetCharacterMovement()->MaxAcceleration = OnAttributeChangeData.NewValue;
 }
 
+
+
 void AArenasCharacter::BindGASChangedDelegate()
 {
 	if (ArenasAbilitySystemComponent)
@@ -280,6 +308,8 @@ void AArenasCharacter::BindGASChangedDelegate()
 		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasCharacter::StunTagUpdated);
 		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Aiming, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasCharacter::AimingTagUpdated);
 		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Focus, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasCharacter::FocusTagUpdated);
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Charge, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasCharacter::ChargeTagUpdated);
+		ArenasAbilitySystemComponent->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Phasing, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AArenasCharacter::PhasingTagUpdated);
 
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedChanged);
 		ArenasAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UArenasAttributeSet::GetMoveSpeedExAttribute()).AddUObject(this, &ThisClass::OnMoveSpeedExChanged);

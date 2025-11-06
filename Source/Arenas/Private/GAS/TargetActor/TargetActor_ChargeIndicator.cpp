@@ -16,13 +16,15 @@ ATargetActor_ChargeIndicator::ATargetActor_ChargeIndicator()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	ChargeDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("ChargeDecalComponent"));
 	ChargeDecalComponent->SetupAttachment(GetRootComponent());
-	
+
+	bStopAttaching = false;
 }
 
 // Called every frame
 void ATargetActor_ChargeIndicator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (bStopAttaching) return;
 	if (PrimaryPC && PrimaryPC->IsLocalPlayerController())
 	{
 		if (AvatarActor)
@@ -44,6 +46,7 @@ void ATargetActor_ChargeIndicator::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
 
+	bStopAttaching = false;
 	if (!OwningAbility) return;
 	if (Ability)
 	{
@@ -60,6 +63,11 @@ void ATargetActor_ChargeIndicator::SetTargetDistance(float Distance)
 {
 	MaxChargeDistance = Distance;
 	ChargeDecalComponent->DecalSize = FVector(MaxChargeDistance, MaxChargeDistance, 500.f);
+}
+
+void ATargetActor_ChargeIndicator::StopAttaching()
+{
+	bStopAttaching = true;
 }
 
 

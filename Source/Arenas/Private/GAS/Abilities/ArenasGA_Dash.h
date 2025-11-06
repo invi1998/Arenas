@@ -55,8 +55,18 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> DashEffect;
-	
+
 	FActiveGameplayEffectHandle DashEffectHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> ChargeEffect;		// 蓄力期间的效果
+
+	FActiveGameplayEffectHandle ChargeEffectHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> PhasingEffect;		// 冲刺期间的穿透效果（相位状态）
+	
+	FActiveGameplayEffectHandle PhasingEffectHandle;
 
 	FTimerHandle PushForwardInputTimerHandle;
 

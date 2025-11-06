@@ -25,6 +25,7 @@ public:
 	virtual void ConfirmTargetingAndContinue() override;
 
 	void SetTargetDistance(float Distance);		// 设置目标距离
+	void StopAttaching();		// 停止附着在角色上
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Decal")
@@ -36,5 +37,5 @@ private:
 	UPROPERTY()
 	const AActor* AvatarActor;		// 持有该TargetActor的角色
 	
-
+	bool bStopAttaching = false;
 };

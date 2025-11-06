@@ -94,6 +94,7 @@ private:
 	virtual void OnStun() override;
 	virtual void OnUnStun() override;
 
+	virtual void OnChargeStateChanged(bool bWasCharged) override;
 	virtual void OnAimStateChanged(bool bNewAiming) override;
 
 	// 瞄准时相机位置的偏移

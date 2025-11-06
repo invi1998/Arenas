@@ -85,6 +85,14 @@ void UArenasGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 		{
 			ASC->RemoveActiveGameplayEffect(DashEffectHandle);
 		}
+		if (PhasingEffectHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(PhasingEffectHandle);
+		}
+		if (ChargeEffectHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(ChargeEffectHandle);
+		}
 	}
 
 	if (PushForwardInputTimerHandle.IsValid())
@@ -127,6 +135,10 @@ void UArenasGA_Dash::UpdateCurrentDashDistance()
 
 void UArenasGA_Dash::ChargeFinished()
 {
+	if (ChargeIndicatorTargetActor)
+	{
+		ChargeIndicatorTargetActor->StopAttaching();
+	}
 	// 玩家达到最大蓄力时间或者主动提前结束蓄力会被调用
 	if (UWorld* World = GetWorld())
 	{
@@ -164,6 +176,11 @@ void UArenasGA_Dash::ChargeFinished()
 
 void UArenasGA_Dash::StartCharge(float TimeWaited)
 {
+	if (ChargeEffect)
+	{
+		ChargeEffectHandle = BP_ApplyGameplayEffectToOwner(ChargeEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+	}
+	
 	// 依据蓄力时间，修改角色的冲刺距离
 	if (UWorld* World = GetWorld())
 	{
@@ -183,6 +200,14 @@ void UArenasGA_Dash::ChargeCompleted(float TimeHeld)
 
 void UArenasGA_Dash::StartDash()
 {
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+	{
+		if (ChargeEffectHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(ChargeEffectHandle);
+		}
+	}
+	
 	if (K2_HasAuthority())
 	{
 		if (DashEffect)
@@ -190,12 +215,17 @@ void UArenasGA_Dash::StartDash()
 			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			float RealDashTime = CurrentChargeTime * DashMontagePlayDuration / MaxChargeTime;
 			float CurrentDashDistance = RealDashTime * MaxDashDistance / DashMontagePlayDuration;
-			float ExNeedSpeed = CurrentDashDistance / RealDashTime - CurrentCharacterMaxMoveSpeed;
+			float ExNeedSpeed = CurrentDashDistance / DashMontagePlayDuration - CurrentCharacterMaxMoveSpeed;
 			UE_LOG(LogTemp, Warning, TEXT("Dash Need Speed: %f, CurrentDashDistance: %f, RealDashTime: %f"), ExNeedSpeed, CurrentDashDistance, RealDashTime);
 			EffectSpecHandle.Data->SetSetByCallerMagnitude(ArenasGameplayTags::SetByCaller_DashSpeed, ExNeedSpeed);
 			// DashEffectHandle = BP_ApplyGameplayEffectToOwner(DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			DashEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 		}
+	}
+
+	if (PhasingEffect)
+	{
+		PhasingEffectHandle = BP_ApplyGameplayEffectToOwner(PhasingEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 	}
 
 	if (IsLocallyControlled())

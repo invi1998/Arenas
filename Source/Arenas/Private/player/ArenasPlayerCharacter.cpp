@@ -112,7 +112,7 @@ FVector AArenasPlayerCharacter::GetMoveForwardDir() const
 
 void AArenasPlayerCharacter::HandleJumpInputAction(const FInputActionValue& Value)
 {
-	if (IsFocusing()) return;
+	if (IsFocusing() || IsCharging()) return;
 
 	Jump();
 }
@@ -127,7 +127,7 @@ void AArenasPlayerCharacter::HandleLookInput(const FInputActionValue& Value)
 
 void AArenasPlayerCharacter::HandleMoveInput(const FInputActionValue& Value)
 {
-	if (IsFocusing()) return;
+	if (IsFocusing() || IsCharging()) return;
 	
 	FVector2D InputVal = Value.Get<FVector2D>();
 	InputVal.Normalize();
@@ -219,6 +219,22 @@ void AArenasPlayerCharacter::OnUnStun()
 	{
 		EnableInput(PC);
 	}
+}
+
+void AArenasPlayerCharacter::OnChargeStateChanged(bool bWasCharged)
+{
+	if (bWasCharged)
+	{
+		// 当角色进入蓄力状态时，让角色跟随控制器的旋转
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+	
 }
 
 void AArenasPlayerCharacter::OnAimStateChanged(bool bNewAiming)
