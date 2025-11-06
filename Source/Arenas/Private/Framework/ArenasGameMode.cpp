@@ -113,6 +113,7 @@ void AArenasGameMode::MatchFinished(AMinionBarrack* DestroyMinionBarrack)
 	// UCameraComponent* StormCoreView = DestroyMinionBarrack->GetStormCore()->GetStormCoreViewCam();
 	AActor* ViewTarget = DestroyMinionBarrack->GetStormCore();
 	FGenericTeamId LooseTeamID = DestroyMinionBarrack->GetBarrackTeamID();
+
 	if (UWorld* World = GetWorld())
 	{
 		for (TActorIterator<AArenasPlayerController> It(World); It; ++It)

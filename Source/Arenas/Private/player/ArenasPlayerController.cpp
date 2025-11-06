@@ -90,8 +90,6 @@ void AArenasPlayerController::MatchFinished(AActor* ViewTarget, FGenericTeamId L
 {
 	if (!HasAuthority()) return;
 
-	SetViewTargetWithBlend(ViewTarget, FinishedMatchViewBlendTimeDuration);
-
 	ArenasPlayerCharacter->DisableInput(this);
 
 	Client_MatchFinished(ViewTarget, LooseTeamID);
@@ -200,8 +198,10 @@ void AArenasPlayerController::Client_ShowCombatText_Implementation(float ValueNu
 
 void AArenasPlayerController::Client_MatchFinished_Implementation(AActor* ViewTarget, FGenericTeamId LooseTeamID)
 {
-	if (!IsLocalPlayerController()) return;
+	// if (!IsLocalPlayerController()) return;
+	
 	bIsWin = (TeamID != LooseTeamID);
+	SetViewTargetWithBlend(ViewTarget, FinishedMatchViewBlendTimeDuration);
 
 	// PlayerUIWidget->ShowMatchResult(MatchResultText);
 	FTimerHandle ShowMatchResultTimerHandle;

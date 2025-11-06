@@ -25,10 +25,16 @@ public:
 
 	UCameraComponent* GetStormCoreViewCam() const { return ViewCam; }
 
+	void SetOwnerBarrack(AMinionBarrack* InBarrack) { OwnedBarrack = InBarrack; }
+	AMinionBarrack* GetOwnedBarrack() const { return OwnedBarrack; }
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	UCameraComponent* ViewCam;
 
 	UPROPERTY()
 	AArenasTowerAIController* CoreAIController;
+
+	UPROPERTY()
+	AMinionBarrack* OwnedBarrack;
 };

@@ -154,7 +154,12 @@ void UArenaGA_AIShoot::ShootProjectile(FGameplayEventData Payload)
 		if (IArenasCombatInterface* CombatInterface = Cast<IArenasCombatInterface>(OwnerAvatarActor))
 		{
 			AActor* TargetActor = CombatInterface->GetCurrentTargetActor();
-
+			if (!TargetActor)
+			{
+				K2_EndAbility();
+				return;
+			}
+			
 			FVector SocketLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
 			if (USkeletalMeshComponent* MeshComp = GetOwningComponentFromActorInfo())
 			{

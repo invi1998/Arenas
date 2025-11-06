@@ -321,6 +321,7 @@ void UArenasAbilitySystemComponent::HandleHealthChanged(const FOnAttributeChange
 
 	if (HasMatchingGameplayTag(ArenasGameplayTags::Status_Dead))
 	{
+		OnActorDeath.Broadcast(GetOwner());
 		return;	// 已经死亡的角色不处理血量变化
 	}
 

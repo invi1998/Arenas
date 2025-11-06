@@ -78,9 +78,12 @@ void AMinionBarrack::OnDefenseTowerDeath(AActor* TowerActor)
 
 void AMinionBarrack::OnStormCoreDestroyedInGame(AActor* Actor)
 {
-	if (AMinionBarrack* Barrack = Cast<AMinionBarrack>(Actor->GetOwner()))
+	if (AStormCore* Core = Cast<AStormCore>(Actor))
 	{
-		OnStormCoreDestroyed.Broadcast(Barrack);
+		if (AMinionBarrack* Barrack = Core->GetOwnedBarrack())
+		{
+			OnStormCoreDestroyed.Broadcast(Barrack);
+		}
 	}
 }
 
@@ -98,7 +101,7 @@ void AMinionBarrack::SpawnDefenseTowers()
 			{
 				Core->SetGenericTeamId(BarrackTeamID);
 				Core->FinishSpawning(SpawnPointTransform);
-				
+				Core->SetOwnerBarrack(this);
 				SpawnedStormCore = Core;
 
 				if (UArenasAbilitySystemComponent* CoreASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(Core))
