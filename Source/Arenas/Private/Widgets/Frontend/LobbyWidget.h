@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+struct FPlayerSelection;
+class AArenasGameState;
+class ALobbyPlayerController;
 class UTeamSelectionWidget;
 class UUniformGridPanel;
 class UArenasButton;
@@ -43,5 +46,16 @@ private:
 	void ClearAndPopulateTeamSelectionSlots();		// 清空并填充队伍选择槽
 	void SlotSelectedTeamSelection(uint8 InTeamSelectionSlotId);
 
+	UPROPERTY()
+	ALobbyPlayerController* LobbyPlayerController;
+
+	void UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& InPlayerSelections);
+	void ConfigureGameState();
+
+	UPROPERTY()
+	AArenasGameState* ArenasGameState;
+
+	FTimerHandle RequestArenasGameStateTimerHandle;
+	
 	
 };

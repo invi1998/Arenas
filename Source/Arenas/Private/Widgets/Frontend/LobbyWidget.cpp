@@ -5,15 +5,21 @@
 
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "Framework/ArenasGameState.h"
 #include "Network/ArenasNetFunctionLibrary.h"
+#include "player/LobbyPlayerController.h"
+#include "Types/PlayerInfoTypes.h"
 #include "Widgets/Frontend/TeamSelectionWidget.h"
 
 void ULobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ClearAndPopulateTeamSelectionSlots();
+	LobbyPlayerController = GetOwningPlayer<ALobbyPlayerController>();
 	
+	ClearAndPopulateTeamSelectionSlots();
+
+	ConfigureGameState();
 }
 
 void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
@@ -45,5 +51,43 @@ void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
 
 void ULobbyWidget::SlotSelectedTeamSelection(uint8 InTeamSelectionSlotId)
 {
-	UE_LOG(LogTemp, Log, TEXT("SlotSelectedTeamSelection: %d"), InTeamSelectionSlotId);
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_RequestChangeSlotSelection(InTeamSelectionSlotId);
+	}
+}
+
+void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& InPlayerSelections)
+{
+	for (UTeamSelectionWidget* SlotWidget : TeamSelectionSlots)
+	{
+		SlotWidget->UpdateSlotInfoText("...");
+	}
+
+	for (const FPlayerSelection& PlayerSelection : InPlayerSelections)
+	{
+		if (PlayerSelection.IsValid())
+		{
+			TeamSelectionSlots[PlayerSelection.GetSlot()]->UpdateSlotInfoText(PlayerSelection.GetPlayerNickName());
+		}
+	}
+	
+}
+
+void ULobbyWidget::ConfigureGameState()
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	ArenasGameState = World->GetGameState<AArenasGameState>();
+	if (!ArenasGameState)
+	{
+		World->GetTimerManager().SetTimer(RequestArenasGameStateTimerHandle, this, &ULobbyWidget::ConfigureGameState, 1.f, false);
+	}
+	else
+	{
+		ArenasGameState->OnPlayerSelectionChangedSignature.AddUObject(this, &ULobbyWidget::UpdatePlayerSelectionDisplay);
+		UpdatePlayerSelectionDisplay(ArenasGameState->GetPlayerSelectionArray());		// 立即更新一次显示
+	}
+	
 }

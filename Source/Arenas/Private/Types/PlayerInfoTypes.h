@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerInput.generated.h"
+#include "PlayerInfoTypes.generated.h"
 
 /**
  * 
