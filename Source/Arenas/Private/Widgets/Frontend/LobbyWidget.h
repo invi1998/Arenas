@@ -22,7 +22,6 @@ class ARENAS_API ULobbyWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	
 	virtual void NativeConstruct() override;
 
 private:
@@ -65,5 +64,7 @@ private:
 	void OnStartHeroSelectionClicked();
 
 	void SwitchToHeroSelectionPhase();
+
+	void OnLoadCharacterDefinitions();
 	
 };

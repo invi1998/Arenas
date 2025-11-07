@@ -3,6 +3,7 @@
 
 #include "ArenasAssetManager.h"
 
+#include "Character/PA_CharacterDefinition.h"
 #include "Inventory/PA_ShopItem.h"
 
 UArenasAssetManager& UArenasAssetManager::Get()
@@ -35,6 +36,28 @@ bool UArenasAssetManager::GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutSho
 	}
 
 	return Loaded;
+}
+
+void UArenasAssetManager::LoadCharacterDefinitions(const FStreamableDelegate& LoadFinishedCallback)
+{
+	LoadPrimaryAssetsWithType(UPA_CharacterDefinition::GetCharacterDefinitionAssetType(), TArray<FName>(), LoadFinishedCallback);
+}
+
+bool UArenasAssetManager::GetLoadedCharacterDefinitions(TArray<UPA_CharacterDefinition*>& OutCharacterDefinitions) const
+{
+	TArray<UObject*> LoadedObjects;
+	bool Loaded = GetPrimaryAssetObjectList(UPA_CharacterDefinition::GetCharacterDefinitionAssetType(), LoadedObjects);
+
+	if (Loaded)
+	{
+		for (UObject* Item : LoadedObjects)
+		{
+			OutCharacterDefinitions.Add(Cast<UPA_CharacterDefinition>(Item));
+		}
+	}
+
+	return Loaded;
+	
 }
 
 const FItemCollectionEntry* UArenasAssetManager::GetCombinationEntry(const UPA_ShopItem* CombinationItem) const
