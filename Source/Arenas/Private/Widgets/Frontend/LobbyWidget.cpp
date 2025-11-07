@@ -4,6 +4,7 @@
 #include "LobbyWidget.h"
 
 #include "Character/PA_CharacterDefinition.h"
+#include "Components/TileView.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/WidgetSwitcher.h"
@@ -132,9 +133,6 @@ void ULobbyWidget::OnLoadCharacterDefinitions()
 	TArray<UPA_CharacterDefinition*> LoadedCharacterDefinitions;
 	if (UArenasAssetManager::Get().GetLoadedCharacterDefinitions(LoadedCharacterDefinitions))
 	{
-		for (UPA_CharacterDefinition* CharacterDefinition : LoadedCharacterDefinitions)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Loaded Character Definition: %s"), *CharacterDefinition->GetCharacterName());
-		}
+		CharacterSelectionTileView->SetListItems(LoadedCharacterDefinitions);
 	}
 }

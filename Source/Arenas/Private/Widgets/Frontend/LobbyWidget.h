@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class UTileView;
 struct FPlayerSelection;
 class AArenasGameState;
 class ALobbyPlayerController;
@@ -32,13 +33,16 @@ private:
 	UWidget* TeamSelectionRoot;
 
 	UPROPERTY(meta=(BindWidget))
-	UWidget* HeroSelectionRoot;
-
-	UPROPERTY(meta=(BindWidget))
 	UArenasButton* StartHeroSelectionButton;
 
 	UPROPERTY(meta=(BindWidget))
 	UUniformGridPanel* TeamSelectionSlotGridPanel;		// 队伍选择槽的网格面板
+	
+	UPROPERTY(meta=(BindWidget))
+	UWidget* HeroSelectionRoot;
+
+	UPROPERTY(meta=(BindWidget))
+	UTileView* CharacterSelectionTileView;		// 角色选择的TileView
 
 	UPROPERTY(EditDefaultsOnly, Category="TeamSelection")
 	TSubclassOf<UTeamSelectionWidget> TeamSelectionWidgetClass;
