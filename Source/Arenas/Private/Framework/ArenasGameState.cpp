@@ -3,8 +3,10 @@
 
 #include "ArenasGameState.h"
 
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "player/ArenasPlayerController.h"
+#include "Types/PlayerInfoTypes.h"
 
 void AArenasGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -12,6 +14,7 @@ void AArenasGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(AArenasGameState, TeamOnePlayerKillCount);
 	DOREPLIFETIME(AArenasGameState, TeamTwoPlayerKillCount);
+	DOREPLIFETIME_CONDITION_NOTIFY(AArenasGameState, PlayerSelectionArray, COND_None, REPNOTIFY_Always);
 	
 }
 
@@ -25,6 +28,47 @@ void AArenasGameState::AddTeamTwoPlayerKillCount()
 {
 	if (!HasAuthority()) return;
 	TeamTwoPlayerKillCount++;
+}
+
+void AArenasGameState::RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId)
+{
+	if (!HasAuthority()) return;
+	if (IsSlotOccupied(InTeamSelectionSlotId)) return;
+
+	FPlayerSelection* SelectionPtr = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& SelectionData)
+		{
+			return SelectionData.IsForPlayer(InPlayerState);
+		});
+
+	if (SelectionPtr)
+	{
+		// 更新已有玩家的选择数据
+		SelectionPtr->SetSlot(InTeamSelectionSlotId);
+	}
+	else
+	{
+		// 添加新的玩家选择数据
+		FPlayerSelection NewSelectionData(InTeamSelectionSlotId, InPlayerState);
+		PlayerSelectionArray.Add(NewSelectionData);
+	}
+
+	OnPlayerSelectionChangedSignature.Broadcast(PlayerSelectionArray);
+	
+}
+
+bool AArenasGameState::IsSlotOccupied(uint8 InTeamSelectionSlotId) const
+{
+	for (const FPlayerSelection& SelectionData : PlayerSelectionArray)
+	{
+		if (SelectionData.GetSlot() == InTeamSelectionSlotId)
+		{
+			// 该槽位已被占用
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void AArenasGameState::OnRep_TeamOnePlayerKillCount()
@@ -41,5 +85,10 @@ void AArenasGameState::OnRep_TeamTwoPlayerKillCount()
 	{
 		PC->UpdateTeamTwoPlayerKillCount(TeamTwoPlayerKillCount);
 	}
+}
+
+void AArenasGameState::OnRep_PlayerSelectionArray()
+{
+	OnPlayerSelectionChangedSignature.Broadcast(PlayerSelectionArray);
 }
 

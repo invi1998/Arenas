@@ -6,6 +6,10 @@
 #include "GameFramework/GameStateBase.h"
 #include "ArenasGameState.generated.h"
 
+struct FPlayerSelection;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerSelectionChangedSignature, const TArray<FPlayerSelection>& /*NewPlayerSelectionArray*/);
+
 /**
  * 
  */
@@ -19,6 +23,13 @@ public:
 
 	void AddTeamOnePlayerKillCount();
 	void AddTeamTwoPlayerKillCount();
+
+	FOnPlayerSelectionChangedSignature OnPlayerSelectionChangedSignature;
+
+	void RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId);
+	bool IsSlotOccupied(uint8 InTeamSelectionSlotId) const;		// 是否有玩家占用了该槽位
+	const TArray<FPlayerSelection>& GetPlayerSelectionArray() const { return PlayerSelectionArray; }
+	
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_TeamOnePlayerKillCount)
 	int32 TeamOnePlayerKillCount;
@@ -31,5 +42,12 @@ private:
 
 	UFUNCTION()
 	void OnRep_TeamTwoPlayerKillCount();
+
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerSelectionArray)
+	TArray<FPlayerSelection> PlayerSelectionArray;
+
+	UFUNCTION()
+	void OnRep_PlayerSelectionArray();
+	
 	
 };

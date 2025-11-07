@@ -6,11 +6,11 @@
 #include "GameFramework/PlayerState.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 
-FPlayerInfoData::FPlayerInfoData() : Slot(GetInvalidSlot()), PlayerUniqueId{FUniqueNetIdRepl::Invalid()}, PlayerNickName(TEXT(""))
+FPlayerSelection::FPlayerSelection() : Slot(GetInvalidSlot()), PlayerUniqueId{FUniqueNetIdRepl::Invalid()}, PlayerNickName(TEXT(""))
 {
 }
 
-FPlayerInfoData::FPlayerInfoData(uint8 InSlot, const APlayerState* InPlayerState)
+FPlayerSelection::FPlayerSelection(uint8 InSlot, const APlayerState* InPlayerState)
 	: Slot(InSlot)
 {
 	if (InPlayerState)
@@ -20,7 +20,7 @@ FPlayerInfoData::FPlayerInfoData(uint8 InSlot, const APlayerState* InPlayerState
 	}
 }
 
-bool FPlayerInfoData::IsForPlayer(const APlayerState* InPlayerState) const
+bool FPlayerSelection::IsForPlayer(const APlayerState* InPlayerState) const
 {
 	if (!InPlayerState) return false;
 
@@ -34,7 +34,7 @@ bool FPlayerInfoData::IsForPlayer(const APlayerState* InPlayerState) const
 	
 }
 
-bool FPlayerInfoData::IsValid() const
+bool FPlayerSelection::IsValid() const
 {
 #if WITH_EDITOR
 	return true;

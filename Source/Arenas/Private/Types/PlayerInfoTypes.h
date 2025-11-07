@@ -12,13 +12,13 @@
 class APlayerState;
 
 USTRUCT()
-struct FPlayerInfoData
+struct FPlayerSelection
 {
 	GENERATED_BODY()
 
 public:
-	FPlayerInfoData();
-	FPlayerInfoData(uint8 InSlot, const APlayerState* InPlayerState);
+	FPlayerSelection();
+	FPlayerSelection(uint8 InSlot, const APlayerState* InPlayerState);
 
 	static uint8 GetInvalidSlot() { return 255; }
 
