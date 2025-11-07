@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class UTeamSelectionWidget;
 class UUniformGridPanel;
 class UArenasButton;
 class UWidgetSwitcher;
@@ -16,6 +17,9 @@ UCLASS()
 class ARENAS_API ULobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	virtual void NativeConstruct() override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -29,6 +33,15 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UUniformGridPanel* TeamSelectionSlotGridPanel;		// 队伍选择槽的网格面板
+
+	UPROPERTY(EditDefaultsOnly, Category="TeamSelection")
+	TSubclassOf<UTeamSelectionWidget> TeamSelectionWidgetClass;
+
+	UPROPERTY()
+	TArray<UTeamSelectionWidget*> TeamSelectionSlots;
+
+	void ClearAndPopulateTeamSelectionSlots();		// 清空并填充队伍选择槽
+	void SlotSelectedTeamSelection(uint8 InTeamSelectionSlotId);
 
 	
 };
