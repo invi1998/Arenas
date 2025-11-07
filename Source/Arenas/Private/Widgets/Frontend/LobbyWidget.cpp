@@ -5,10 +5,12 @@
 
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "Components/WidgetSwitcher.h"
 #include "Framework/ArenasGameState.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "player/LobbyPlayerController.h"
 #include "Types/PlayerInfoTypes.h"
+#include "Widgets/Component/ArenasButton.h"
 #include "Widgets/Frontend/TeamSelectionWidget.h"
 
 void ULobbyWidget::NativeConstruct()
@@ -20,6 +22,14 @@ void ULobbyWidget::NativeConstruct()
 	ClearAndPopulateTeamSelectionSlots();
 
 	ConfigureGameState();
+
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->OnSwitchToHeroSelectionPhase.BindUObject(this, &ULobbyWidget::SwitchToHeroSelectionPhase);
+	}
+
+	StartHeroSelectionButton->ButtonArea->SetIsEnabled(false);
+	StartHeroSelectionButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartHeroSelectionClicked);
 }
 
 void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
@@ -71,6 +81,11 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 			TeamSelectionSlots[PlayerSelection.GetSlot()]->UpdateSlotInfoText(PlayerSelection.GetPlayerNickName());
 		}
 	}
+
+	if (ArenasGameState)
+	{
+		StartHeroSelectionButton->ButtonArea->SetIsEnabled(ArenasGameState->CanStartHeroSelection());
+	}
 	
 }
 
@@ -90,4 +105,18 @@ void ULobbyWidget::ConfigureGameState()
 		UpdatePlayerSelectionDisplay(ArenasGameState->GetPlayerSelectionArray());		// 立即更新一次显示
 	}
 	
+}
+
+void ULobbyWidget::OnStartHeroSelectionClicked()
+{
+	// 切换到英雄选择界面
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_StartHeroSelection();
+	}
+}
+
+void ULobbyWidget::SwitchToHeroSelectionPhase()
+{
+	MainSwitcher->SetActiveWidget(HeroSelectionRoot);
 }

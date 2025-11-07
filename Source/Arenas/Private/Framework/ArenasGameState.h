@@ -29,6 +29,8 @@ public:
 	void RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId);
 	bool IsSlotOccupied(uint8 InTeamSelectionSlotId) const;		// 是否有玩家占用了该槽位
 	const TArray<FPlayerSelection>& GetPlayerSelectionArray() const { return PlayerSelectionArray; }
+
+	bool CanStartHeroSelection() const;		// 是否可以开始英雄选择
 	
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_TeamOnePlayerKillCount)

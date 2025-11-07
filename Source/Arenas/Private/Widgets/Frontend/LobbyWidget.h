@@ -22,6 +22,7 @@ class ARENAS_API ULobbyWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	
 	virtual void NativeConstruct() override;
 
 private:
@@ -30,6 +31,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UWidget* TeamSelectionRoot;
+
+	UPROPERTY(meta=(BindWidget))
+	UWidget* HeroSelectionRoot;
 
 	UPROPERTY(meta=(BindWidget))
 	UArenasButton* StartHeroSelectionButton;
@@ -56,6 +60,10 @@ private:
 	AArenasGameState* ArenasGameState;
 
 	FTimerHandle RequestArenasGameStateTimerHandle;
-	
+
+	UFUNCTION()
+	void OnStartHeroSelectionClicked();
+
+	void SwitchToHeroSelectionPhase();
 	
 };

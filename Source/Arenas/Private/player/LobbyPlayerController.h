@@ -6,6 +6,8 @@
 #include "MenuPlayerController.h"
 #include "LobbyPlayerController.generated.h"
 
+DECLARE_DELEGATE(FOnSwitchToHeroSelectionPhaseSignature);	// 切换到英雄选择阶段委托
+
 /**
  * 玩家在大厅中的控制器
  */
@@ -18,7 +20,14 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestChangeSlotSelection(uint8 InRequestedSlotID);		// 向服务端请求改变队列插槽
 
-	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_StartHeroSelection();
+
+	UFUNCTION(Client, Reliable)
+	void Client_StartHeroSelection();
+
+	FOnSwitchToHeroSelectionPhaseSignature OnSwitchToHeroSelectionPhase;		// 切换到英雄选择阶段委托
+
 private:
 	
 	

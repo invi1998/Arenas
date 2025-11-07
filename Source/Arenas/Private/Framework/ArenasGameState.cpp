@@ -71,6 +71,11 @@ bool AArenasGameState::IsSlotOccupied(uint8 InTeamSelectionSlotId) const
 	return false;
 }
 
+bool AArenasGameState::CanStartHeroSelection() const
+{
+	return PlayerSelectionArray.Num() == PlayerArray.Num();		// 所有玩家都已选择槽位
+}
+
 void AArenasGameState::OnRep_TeamOnePlayerKillCount()
 {
 	if (AArenasPlayerController* PC = Cast<AArenasPlayerController>(GetWorld()->GetFirstPlayerController()))
