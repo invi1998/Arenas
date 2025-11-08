@@ -30,6 +30,11 @@ void AArenasGameState::AddTeamTwoPlayerKillCount()
 	TeamTwoPlayerKillCount++;
 }
 
+void AArenasGameState::SetCharacterSelected(const APlayerState* InSelectingPlayer,
+	const UPA_CharacterDefinition* InSelectedCharacter)
+{
+}
+
 void AArenasGameState::RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId)
 {
 	if (!HasAuthority()) return;

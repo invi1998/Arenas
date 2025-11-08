@@ -9,6 +9,7 @@
  * 
  */
 
+class UPA_CharacterDefinition;
 class APlayerState;
 
 USTRUCT()
@@ -26,6 +27,8 @@ public:
 	FORCEINLINE uint8 GetSlot() const { return Slot; }
 	FORCEINLINE FUniqueNetIdRepl GetPlayerUniqueId() const { return PlayerUniqueId; }
 	FORCEINLINE FString GetPlayerNickName() const { return PlayerNickName; }
+	FORCEINLINE const UPA_CharacterDefinition* GetSelectedCharacter() const { return SelectedCharacter; }
+	FORCEINLINE void SetSelectedCharacter(const UPA_CharacterDefinition* InSelectedCharacter) { SelectedCharacter = InSelectedCharacter; }
 
 	bool IsForPlayer(const APlayerState* InPlayerState) const;
 	bool IsValid() const;
@@ -40,7 +43,8 @@ private:
 	UPROPERTY()
 	FString PlayerNickName;				// 玩家昵称
 
-	
+	UPROPERTY()
+	const UPA_CharacterDefinition* SelectedCharacter;	// 玩家选择的角色
 	
 };
 

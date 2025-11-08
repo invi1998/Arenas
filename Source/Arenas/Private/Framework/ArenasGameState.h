@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "ArenasGameState.generated.h"
 
+class UPA_CharacterDefinition;
 struct FPlayerSelection;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerSelectionChangedSignature, const TArray<FPlayerSelection>& /*NewPlayerSelectionArray*/);
@@ -23,6 +24,8 @@ public:
 
 	void AddTeamOnePlayerKillCount();
 	void AddTeamTwoPlayerKillCount();
+
+	void SetCharacterSelected(const APlayerState* InSelectingPlayer, const UPA_CharacterDefinition* InSelectedCharacter);		// 设置玩家已选择角色
 
 	FOnPlayerSelectionChangedSignature OnPlayerSelectionChangedSignature;
 
