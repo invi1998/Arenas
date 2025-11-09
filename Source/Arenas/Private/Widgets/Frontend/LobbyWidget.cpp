@@ -3,6 +3,7 @@
 
 #include "LobbyWidget.h"
 
+#include "CharacterEntryWidget.h"
 #include "Character/PA_CharacterDefinition.h"
 #include "Components/TileView.h"
 #include "Components/UniformGridPanel.h"
@@ -12,6 +13,7 @@
 #include "Framework/ArenasGameState.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "player/LobbyPlayerController.h"
+#include "player/State/ArenasPlayerState.h"
 #include "Types/PlayerInfoTypes.h"
 #include "Widgets/Component/ArenasButton.h"
 #include "Widgets/Frontend/TeamSelectionWidget.h"
@@ -36,6 +38,11 @@ void ULobbyWidget::NativeConstruct()
 
 	// 加载角色PA
 	UArenasAssetManager::Get().LoadCharacterDefinitions(FStreamableDelegate::CreateUObject(this, &ULobbyWidget::OnLoadCharacterDefinitions));
+
+	if (CharacterSelectionTileView)
+	{
+		CharacterSelectionTileView->OnItemSelectionChanged().AddUObject(this, &ULobbyWidget::OnCharacterSelected);
+	}
 	
 }
 
@@ -81,11 +88,27 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 		SlotWidget->UpdateSlotInfoText("...");
 	}
 
+	// 先清除所有角色的选中状态
+	for (UUserWidget* CharacterEntryAsWidget : CharacterSelectionTileView->GetDisplayedEntryWidgets())
+	{
+		if (UCharacterEntryWidget* CharacterEntryWidget = Cast<UCharacterEntryWidget>(CharacterEntryAsWidget))
+		{
+			CharacterEntryWidget->SetSelectedState(false);
+		}
+	}
+
 	for (const FPlayerSelection& PlayerSelection : InPlayerSelections)
 	{
 		if (PlayerSelection.IsValid())
 		{
 			TeamSelectionSlots[PlayerSelection.GetSlot()]->UpdateSlotInfoText(PlayerSelection.GetPlayerNickName());
+
+			// 设置已选择角色的选中状态
+			if (UCharacterEntryWidget* SelectedCharacterEntryWidget = CharacterSelectionTileView->GetEntryWidgetFromItem<UCharacterEntryWidget>(PlayerSelection.GetSelectedCharacter()))
+			{
+				SelectedCharacterEntryWidget->SetSelectedState(true);
+			}
+
 		}
 	}
 
@@ -135,4 +158,20 @@ void ULobbyWidget::OnLoadCharacterDefinitions()
 	{
 		CharacterSelectionTileView->SetListItems(LoadedCharacterDefinitions);
 	}
+}
+
+void ULobbyWidget::OnCharacterSelected(UObject* InSelectedObject)
+{
+	if (!OwningArenasPlayerState)
+	{
+		OwningArenasPlayerState = GetOwningPlayerState<AArenasPlayerState>();
+		if (!OwningArenasPlayerState) return;
+	}
+
+	if (const UPA_CharacterDefinition* SelectedCharacterDef = Cast<UPA_CharacterDefinition>(InSelectedObject))
+	{
+		// 通知服务器设置所选角色，服务端进行合法性校验后，设置完成会通知客户端进行UI更新（上面绑定的委托OnPlayerSelectionChangedSignature会被调用）
+		OwningArenasPlayerState->Server_SetSelectedCharacter(SelectedCharacterDef);
+	}
+	
 }

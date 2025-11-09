@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class AArenasPlayerState;
 class UTileView;
 struct FPlayerSelection;
 class AArenasGameState;
@@ -70,5 +71,10 @@ private:
 	void SwitchToHeroSelectionPhase();
 
 	void OnLoadCharacterDefinitions();
+
+	UPROPERTY()
+	AArenasPlayerState* OwningArenasPlayerState;
+	
+	void OnCharacterSelected(UObject* InSelectedObject);
 	
 };
