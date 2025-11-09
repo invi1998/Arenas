@@ -40,6 +40,7 @@ public:
 
 	// 从Ability中获取静态的冷却时间和消耗（不考虑任何加成，这些是技能的原始数据，没有上下文）
 	static float GetStaticCooldownDurationFromAbility(const UGameplayAbility* InAbility);
+	static float GetStaticManaCostFromAbility(const UGameplayAbility* InAbility);
 
 	// 动态获取技能的消耗和冷却时间（考虑了所有加成，这些是技能当前的实际数据，有上下文）
 	static float GetAbilityManaCost(const UGameplayAbility* InAbility, const UArenasAbilitySystemComponent* InArenasASC, float AbilityLevel);

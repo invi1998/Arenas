@@ -94,6 +94,21 @@ float UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(cons
 	return 0.f;
 }
 
+float UArenasBlueprintFunctionLibrary::GetStaticManaCostFromAbility(const UGameplayAbility* InAbility)
+{
+	if (!InAbility) return 0.f;
+	if (const UGameplayEffect* CostGE = InAbility->GetCostGameplayEffect())
+	{
+		if (CostGE->Modifiers.Num() > 0)
+		{
+			float ManaCost = 0.f;
+			CostGE->Modifiers[0].ModifierMagnitude.GetStaticMagnitudeIfPossible(1, ManaCost);
+			return FMath::Abs(ManaCost);
+		}
+	}
+	return 0.f;
+}
+
 float UArenasBlueprintFunctionLibrary::GetAbilityManaCost(const UGameplayAbility* InAbility, const UArenasAbilitySystemComponent* InArenasASC, float AbilityLevel)
 {
 	float ManaCost = 0.f;

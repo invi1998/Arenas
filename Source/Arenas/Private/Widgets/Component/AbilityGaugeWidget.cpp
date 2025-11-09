@@ -76,15 +76,13 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	if (AbilityCDO && CostText && CooldownDurationText && LevelImage)
 	{
-
-		const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec();
-		float Cooldown = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
-		float ManaCost = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
+		float Cooldown = UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(AbilityCDO);
+		float ManaCost = UArenasBlueprintFunctionLibrary::GetStaticManaCostFromAbility(AbilityCDO);
 
 		CooldownDurationText->SetText(FText::AsNumber(Cooldown));
 		CostText->SetText(FText::AsNumber(ManaCost, &WholeNumberFormatOptions));
 		
-		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(LevelMaterialParamName, AbilitySpec->Level);
+		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(LevelMaterialParamName, 0);
 		LevelImage->GetDynamicMaterial()->SetScalarParameterValue(MaxLevelMaterialParamName, 4); // 假设最大等级为4
 		
 	}
