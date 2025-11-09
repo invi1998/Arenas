@@ -3,7 +3,7 @@
 
 #include "CharacterDisplay.h"
 
-#include "Camera/CameraComponent.h"
+#include "CineCameraComponent.h"
 #include "Character/PA_CharacterDefinition.h"
 
 
@@ -18,9 +18,12 @@ ACharacterDisplay::ACharacterDisplay()
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(GetRootComponent());
 
-	ViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("ViewCameraComponent"));
+	ViewCameraComponent = CreateDefaultSubobject<UCineCameraComponent>(FName("ViewCameraComponent"));
 	ViewCameraComponent->SetupAttachment(GetRootComponent());
-
+	// 摄像机不裁剪画面
+	ViewCameraComponent->bUseFieldOfViewForLOD = false;
+	// 设置手动对焦距离
+	ViewCameraComponent->FocusSettings.FocusMethod = ECameraFocusMethod::Manual;	// 手动对焦
 	
 }
 
@@ -31,6 +34,14 @@ void ACharacterDisplay::ConfigureWithCharacterDefinition(const UPA_CharacterDefi
 	SkeletalMeshComponent->SetSkeletalMeshAsset(InCharacterDefinition->LoadDisplaySkeletalMesh());
 	SkeletalMeshComponent->SetAnimationMode(EAnimationMode::Type::AnimationBlueprint);
 	SkeletalMeshComponent->SetAnimInstanceClass(InCharacterDefinition->LoadCharacterDisplayAnimBP());
+
+	// 如果摄像机组件是CineCameraComponent类，则需要调整焦距以适应不同的角色模型大小
+	ViewCameraComponent->SetWorldLocation(InCharacterDefinition->GetCineCameraLocation());
+	ViewCameraComponent->SetWorldRotation(InCharacterDefinition->GetCineCameraRotation());
+	
+	ViewCameraComponent->FocusSettings.ManualFocusDistance = InCharacterDefinition->GetCineCameraManualFocusDistance();
+	
+	
 	
 }
 

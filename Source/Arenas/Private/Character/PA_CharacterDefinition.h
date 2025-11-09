@@ -24,7 +24,10 @@ public:
 	TSubclassOf<AArenasCharacter> LoadCharacterClass() const;
 	TSubclassOf<UAnimInstance> LoadCharacterDisplayAnimBP() const;
 	USkeletalMesh* LoadDisplaySkeletalMesh() const;
-	
+
+	FORCEINLINE FVector GetCineCameraLocation() const { return CineCameraLocation; }
+	FORCEINLINE FRotator GetCineCameraRotation() const { return CineCameraRotation; }
+	FORCEINLINE float GetCineCameraManualFocusDistance() const { return CineCameraManualFocusDistance; }
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
@@ -38,6 +41,16 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	TSoftClassPtr<UAnimInstance> CharacterDisplayAnimBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	FVector CineCameraLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	FRotator CineCameraRotation;
+
+	// 手动聚焦距离
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	float CineCameraManualFocusDistance;
 
 	
 };

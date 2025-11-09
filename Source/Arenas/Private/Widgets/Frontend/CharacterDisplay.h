@@ -6,8 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "CharacterDisplay.generated.h"
 
+class UCineCameraComponent;
 class UPA_CharacterDefinition;
-class UCameraComponent;
 
 UCLASS()
 class ARENAS_API ACharacterDisplay : public AActor
@@ -25,7 +25,7 @@ private:
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Character Display")
-	UCameraComponent* ViewCameraComponent;
+	UCineCameraComponent* ViewCameraComponent;
 	
 	
 
