@@ -3,6 +3,8 @@
 
 #include "ArenasPlayerState.h"
 
+#include "Character/PA_CharacterDefinition.h"
+#include "player/ArenasPlayerCharacter.h"
 #include "Framework/ArenasGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -33,6 +35,15 @@ void AArenasPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(AArenasPlayerState, PlayerSelectionData);
 
 	
+}
+
+TSubclassOf<APawn> AArenasPlayerState::GetSelectedPawnClass() const
+{
+	if (PlayerSelectionData.GetSelectedCharacter())
+	{
+		return PlayerSelectionData.GetSelectedCharacter()->LoadCharacterClass();
+	}
+	return nullptr;
 }
 
 void AArenasPlayerState::Server_SetSelectedCharacter_Implementation(const UPA_CharacterDefinition* InSelectedCharacter)

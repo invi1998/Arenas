@@ -27,8 +27,8 @@ public:
 	// 客户端UI请求服务端更新英雄角色选择
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SetSelectedCharacter(const UPA_CharacterDefinition* InSelectedCharacter);
-	
-	
+	TSubclassOf<APawn> GetSelectedPawnClass() const;
+
 private:
 	UPROPERTY(Replicated)
 	FPlayerSelection PlayerSelectionData;

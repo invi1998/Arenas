@@ -3,6 +3,8 @@
 
 #include "LobbyWidget.h"
 
+#include "AbilitySystemComponent.h"
+#include "ArenasBlueprintFunctionLibrary.h"
 #include "CharacterDisplay.h"
 #include "CharacterEntryWidget.h"
 #include "Character/PA_CharacterDefinition.h"
@@ -13,11 +15,14 @@
 #include "Framework/ArenasAssetManager.h"
 #include "Framework/ArenasGameState.h"
 #include "GameFramework/PlayerStart.h"
+#include "GAS/ArenasAbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Network/ArenasNetFunctionLibrary.h"
+#include "player/ArenasPlayerCharacter.h"
 #include "player/LobbyPlayerController.h"
 #include "player/State/ArenasPlayerState.h"
 #include "Types/PlayerInfoTypes.h"
+#include "Widgets/Component/AbilityListView.h"
 #include "Widgets/Component/ArenasButton.h"
 #include "Widgets/Frontend/TeamSelectionWidget.h"
 
@@ -206,4 +211,15 @@ void ULobbyWidget::UpdateCharacterDisplay(const FPlayerSelection& InPlayerSelect
 {
 	if (!InPlayerSelection.GetSelectedCharacter()) return;
 	CurrentCharacterDisplay->ConfigureWithCharacterDefinition(InPlayerSelection.GetSelectedCharacter());
+	AbilityListView->ClearListItems();
+	if (const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>* AbilityMap = InPlayerSelection.GetSelectedCharacter()->GetCharacterAbilityMap())
+	{
+		/*
+		AArenasPlayerCharacter* DisplayCharacter = Cast<AArenasPlayerCharacter>(OwningArenasPlayerState->GetSelectedPawnClass().GetDefaultObject());
+		UArenasAbilitySystemComponent* ArenasASC = UArenasBlueprintFunctionLibrary::NativeGetArenasASCFromActor(DisplayCharacter);
+		if (!ArenasASC) return;
+		*/
+		AbilityListView->ConfigureAbilities(*AbilityMap);
+	}
+	
 }

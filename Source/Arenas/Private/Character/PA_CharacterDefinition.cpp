@@ -58,3 +58,15 @@ USkeletalMesh* UPA_CharacterDefinition::LoadDisplaySkeletalMesh() const
 	return CharacterCDO->GetMesh()->GetSkeletalMeshAsset();
 	
 }
+
+const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>* UPA_CharacterDefinition::GetCharacterAbilityMap() const
+{
+	TSubclassOf<AArenasCharacter> CharacterBPClass = LoadCharacterClass();
+	if (!CharacterBPClass) return nullptr;
+
+	AArenasCharacter* CharacterDO = CharacterBPClass->GetDefaultObject<AArenasCharacter>();
+	if (!CharacterDO) return nullptr;
+
+	return &(CharacterDO->GetAbilities());
+	
+}

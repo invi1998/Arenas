@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Types/ArenaStructTypes.h"
 #include "PA_CharacterDefinition.generated.h"
 
 class AArenasCharacter;
+class UGameplayAbility;
 /**
  * 
  */
@@ -28,6 +30,8 @@ public:
 	FORCEINLINE FVector GetCineCameraLocation() const { return CineCameraLocation; }
 	FORCEINLINE FRotator GetCineCameraRotation() const { return CineCameraRotation; }
 	FORCEINLINE float GetCineCameraManualFocusDistance() const { return CineCameraManualFocusDistance; }
+
+	const TMap<EArenasAbilityInputID, TSubclassOf<UGameplayAbility>>* GetCharacterAbilityMap() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
@@ -52,5 +56,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	float CineCameraManualFocusDistance;
 
+	// 角色技能相关
+	
 	
 };

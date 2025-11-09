@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "player/ArenasPlayerController.h"
+#include "player/State/ArenasPlayerState.h"
 
 AArenasGameMode::AArenasGameMode()
 {
@@ -49,6 +50,21 @@ APlayerController* AArenasGameMode::SpawnPlayerController(ENetRole InRemoteRole,
 	}
 	
 	return NewPlayerController;
+}
+
+UClass* AArenasGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	AArenasPlayerState* ArenasPlayerState = InController ? InController->GetPlayerState<AArenasPlayerState>() : nullptr;
+	if (ArenasPlayerState && ArenasPlayerState->GetSelectedPawnClass())
+	{
+		return ArenasPlayerState->GetSelectedPawnClass();
+	}
+	return BackupPawn;
+}
+
+APawn* AArenasGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
+{
+	return Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
 }
 
 void AArenasGameMode::RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack)

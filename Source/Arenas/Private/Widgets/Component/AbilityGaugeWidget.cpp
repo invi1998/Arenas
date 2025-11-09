@@ -3,6 +3,7 @@
 
 #include "AbilityGaugeWidget.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "Abilities/GameplayAbility.h"
 #include "Components/Image.h"
@@ -75,6 +76,7 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	if (AbilityCDO && CostText && CooldownDurationText && LevelImage)
 	{
+
 		const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec();
 		float Cooldown = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
 		float ManaCost = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
@@ -144,6 +146,7 @@ const FGameplayAbilitySpec* UAbilityGaugeWidget::GetAbilitySpec()
 		if (FGameplayAbilitySpec* FoundAbilitySpec = OwnerAbilitySystemComponent->FindAbilitySpecFromClass(AbilityCDO->GetClass()))
 		{
 			CachedAbilitySpecHandle = FoundAbilitySpec->Handle;
+			return FoundAbilitySpec;
 		}
 	}
 
