@@ -26,11 +26,13 @@ public:
 	void AddTeamTwoPlayerKillCount();
 
 	void SetCharacterSelected(const APlayerState* InSelectingPlayer, const UPA_CharacterDefinition* InSelectedCharacter);		// 设置玩家已选择角色
-
+	void DeSelectedCharacter(const UPA_CharacterDefinition* InSelectedCharacter);	// 取消选择该角色
+	
 	FOnPlayerSelectionChangedSignature OnPlayerSelectionChangedSignature;
 
 	void RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId);
 	bool IsSlotOccupied(uint8 InTeamSelectionSlotId) const;		// 是否有玩家占用了该槽位
+	bool IsDefinitionSelected(const UPA_CharacterDefinition* InCharacterDef) const;		// 该角色定义是否已被选择
 	const TArray<FPlayerSelection>& GetPlayerSelectionArray() const { return PlayerSelectionArray; }
 
 	bool CanStartHeroSelection() const;		// 是否可以开始英雄选择

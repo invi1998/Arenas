@@ -30,9 +30,43 @@ void AArenasGameState::AddTeamTwoPlayerKillCount()
 	TeamTwoPlayerKillCount++;
 }
 
-void AArenasGameState::SetCharacterSelected(const APlayerState* InSelectingPlayer,
-	const UPA_CharacterDefinition* InSelectedCharacter)
+void AArenasGameState::SetCharacterSelected(const APlayerState* InSelectingPlayer, const UPA_CharacterDefinition* InSelectedCharacter)
 {
+	// 同一个角色不能被多个玩家选择
+	if (IsDefinitionSelected(InSelectedCharacter)) return;
+
+	FPlayerSelection* SelectionPtr = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& SelectionData)
+		{
+			return SelectionData.IsForPlayer(InSelectingPlayer);
+		});
+
+	if (SelectionPtr)
+	{
+		SelectionPtr->SetSelectedCharacter(InSelectedCharacter);
+		OnPlayerSelectionChangedSignature.Broadcast(PlayerSelectionArray);
+	}
+
+	
+}
+
+void AArenasGameState::DeSelectedCharacter(const UPA_CharacterDefinition* InSelectedCharacter)
+{
+	if (!InSelectedCharacter) return;
+
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& SelectionData)
+		{
+			return SelectionData.GetSelectedCharacter() == InSelectedCharacter;
+		});
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetSelectedCharacter(nullptr);
+		OnPlayerSelectionChangedSignature.Broadcast(PlayerSelectionArray);
+	}
+	
+	
 }
 
 void AArenasGameState::RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId)
@@ -74,6 +108,17 @@ bool AArenasGameState::IsSlotOccupied(uint8 InTeamSelectionSlotId) const
 	}
 
 	return false;
+}
+
+bool AArenasGameState::IsDefinitionSelected(const UPA_CharacterDefinition* InCharacterDef) const
+{
+	const FPlayerSelection* SelectionPtr = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& SelectionData)
+		{
+			return SelectionData.GetSelectedCharacter() == InCharacterDef;
+		});
+
+	return SelectionPtr != nullptr;
 }
 
 bool AArenasGameState::CanStartHeroSelection() const
