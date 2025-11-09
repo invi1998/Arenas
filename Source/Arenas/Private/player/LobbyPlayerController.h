@@ -17,6 +17,8 @@ class ARENAS_API ALobbyPlayerController : public AMenuPlayerController
 	GENERATED_BODY()
 
 public:
+	ALobbyPlayerController();
+	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestChangeSlotSelection(uint8 InRequestedSlotID);		// 向服务端请求改变队列插槽
 

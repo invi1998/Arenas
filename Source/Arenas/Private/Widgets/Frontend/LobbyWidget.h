@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class ACharacterDisplay;
 class AArenasPlayerState;
 class UTileView;
 struct FPlayerSelection;
@@ -76,5 +77,14 @@ private:
 	AArenasPlayerState* OwningArenasPlayerState;
 	
 	void OnCharacterSelected(UObject* InSelectedObject);
+
+	UPROPERTY(EditDefaultsOnly, Category="Character Display")
+	TSubclassOf<ACharacterDisplay> CharacterDisplayClass;
+
+	UPROPERTY()
+	ACharacterDisplay* CurrentCharacterDisplay;
+
+	void SpawnCharacterDisplay();
+	void UpdateCharacterDisplay(const FPlayerSelection& InPlayerSelection);
 	
 };

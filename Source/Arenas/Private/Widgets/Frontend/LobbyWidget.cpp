@@ -3,6 +3,7 @@
 
 #include "LobbyWidget.h"
 
+#include "CharacterDisplay.h"
 #include "CharacterEntryWidget.h"
 #include "Character/PA_CharacterDefinition.h"
 #include "Components/TileView.h"
@@ -11,6 +12,8 @@
 #include "Components/WidgetSwitcher.h"
 #include "Framework/ArenasAssetManager.h"
 #include "Framework/ArenasGameState.h"
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "player/LobbyPlayerController.h"
 #include "player/State/ArenasPlayerState.h"
@@ -43,6 +46,8 @@ void ULobbyWidget::NativeConstruct()
 	{
 		CharacterSelectionTileView->OnItemSelectionChanged().AddUObject(this, &ULobbyWidget::OnCharacterSelected);
 	}
+
+	SpawnCharacterDisplay();
 	
 }
 
@@ -107,6 +112,11 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 			if (UCharacterEntryWidget* SelectedCharacterEntryWidget = CharacterSelectionTileView->GetEntryWidgetFromItem<UCharacterEntryWidget>(PlayerSelection.GetSelectedCharacter()))
 			{
 				SelectedCharacterEntryWidget->SetSelectedState(true);
+			}
+
+			if (PlayerSelection.IsForPlayer(GetOwningPlayerState()))
+			{
+				UpdateCharacterDisplay(PlayerSelection);
 			}
 
 		}
@@ -174,4 +184,26 @@ void ULobbyWidget::OnCharacterSelected(UObject* InSelectedObject)
 		OwningArenasPlayerState->Server_SetSelectedCharacter(SelectedCharacterDef);
 	}
 	
+}
+
+void ULobbyWidget::SpawnCharacterDisplay()
+{
+	if (CurrentCharacterDisplay) return;
+	if (!CharacterDisplayClass) return;
+	FTransform CharacterDisplayTransform = FTransform::Identity;
+	if (AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()))
+	{
+		CharacterDisplayTransform = PlayerStart->GetActorTransform();
+	}
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	CurrentCharacterDisplay = GetWorld()->SpawnActor<ACharacterDisplay>(CharacterDisplayClass, CharacterDisplayTransform, SpawnInfo);
+	GetOwningPlayer()->SetViewTarget(CurrentCharacterDisplay);
+}
+
+void ULobbyWidget::UpdateCharacterDisplay(const FPlayerSelection& InPlayerSelection)
+{
+	if (!InPlayerSelection.GetSelectedCharacter()) return;
+	CurrentCharacterDisplay->ConfigureWithCharacterDefinition(InPlayerSelection.GetSelectedCharacter());
 }
