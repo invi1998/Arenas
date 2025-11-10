@@ -42,7 +42,7 @@ private:
 	USphereComponent* DetectionSphereComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
-	UParticleSystemComponent* VFXComp;
+	UNiagaraComponent* VFXComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "VFX")
 	UNiagaraSystem* BlackHoleLinkVFX;

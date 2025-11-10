@@ -28,7 +28,7 @@ ATargetActor_BlackHole::ATargetActor_BlackHole()
 	DetectionSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ATargetActor_BlackHole::ActorInBlackHoleArea);
 	DetectionSphereComponent->OnComponentEndOverlap.AddDynamic(this, &ATargetActor_BlackHole::ActorOutBlackHoleArea);
 
-	VFXComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("VFXComp"));
+	VFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("VFXComp"));
 	VFXComp->SetupAttachment(GetRootComponent());
 
 	bReplicates = true;
