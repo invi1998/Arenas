@@ -4,6 +4,7 @@
 #include "ArenasGA_Tornado.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "ArenasGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitCancel.h"
@@ -40,6 +41,9 @@ void UArenasGA_Tornado::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 			WaitTornadoDamageEventTask->EventReceived.AddDynamic(this, &UArenasGA_Tornado::TornadoDamageEventReceived);
 			WaitTornadoDamageEventTask->ReadyForActivation();
+
+			// 技能期间获得额外的魔抗效果
+			TornadoMagicResistEffectHandle = BP_ApplyGameplayEffectToOwner(TornadoMagicResistEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 			
 		}
 
@@ -54,6 +58,24 @@ void UArenasGA_Tornado::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		
 	}
 	
+}
+
+void UArenasGA_Tornado::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (K2_HasAuthority())
+	{
+		if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+		{
+			if (TornadoMagicResistEffectHandle.IsValid())
+			{
+				ASC->RemoveActiveGameplayEffect(TornadoMagicResistEffectHandle);
+				TornadoMagicResistEffectHandle.Invalidate();
+			}
+		}
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UArenasGA_Tornado::TornadoDamageEventReceived(FGameplayEventData Payload)
