@@ -4,6 +4,7 @@
 #include "AbilityGaugeWidget.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilityToolTip.h"
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "Abilities/GameplayAbility.h"
 #include "Components/Image.h"
@@ -65,6 +66,8 @@ void UAbilityGaugeWidget::ConfigureWidgetData(const FAbilityWidgetData* AbilityW
 			InputKey = InputKey.LeftChop(3); // 去掉最后的 " / "
 		}
 		InputKeyText->SetText(FText::FromString(InputKey));
+
+		CreateToolTip(AbilityWidgetData);
 	}
 }
 
@@ -87,6 +90,47 @@ void UAbilityGaugeWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		
 	}
 	
+}
+
+void UAbilityGaugeWidget::CreateToolTip(const FAbilityWidgetData* AbilityWidgetData)
+{
+	if (!AbilityToolTipClass || !AbilityWidgetData) return;
+
+	if (UAbilityToolTip* InstantiatedToolTip = CreateWidget<UAbilityToolTip>(GetOwningPlayer(), AbilityToolTipClass))
+	{
+		UTexture2D* InAbilityIcon = AbilityWidgetData->AbilityIcon.LoadSynchronous();
+		FName InAbilityName = AbilityWidgetData->AbilityName;
+		FText InAbilityDescription = AbilityWidgetData->Description;
+		FText InAbilityLevel;
+		FText InAbilityCooldown;
+		FText InAbilityManaCost;
+		if (OwnerAbilitySystemComponent)
+		{
+			if (const FGameplayAbilitySpec* AbilitySpec = GetAbilitySpec())
+			{
+				float ManaCostValue = 0.f;
+				float CooldownValue = 0.f;
+				CooldownValue = UArenasBlueprintFunctionLibrary::GetAbilityCooldownDuration(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
+				ManaCostValue = UArenasBlueprintFunctionLibrary::GetAbilityManaCost(AbilityCDO, OwnerAbilitySystemComponent, AbilitySpec->Level);
+				InAbilityLevel = FText::FromString(FString::Printf(TEXT("等级 %d"), AbilitySpec->Level));
+				InAbilityCooldown = FText::AsNumber(CooldownValue, &WholeNumberFormatOptions);
+				InAbilityManaCost = FText::AsNumber(ManaCostValue, &WholeNumberFormatOptions);
+			}
+		}
+		else
+		{
+			float ManaCostValue = UArenasBlueprintFunctionLibrary::GetStaticManaCostFromAbility(AbilityCDO);
+			float CooldownValue = UArenasBlueprintFunctionLibrary::GetStaticCooldownDurationFromAbility(AbilityCDO);
+			InAbilityLevel = FText::FromString(TEXT("等级 0"));
+			InAbilityCooldown = FText::AsNumber(CooldownValue, &WholeNumberFormatOptions);
+			InAbilityManaCost = FText::AsNumber(ManaCostValue, &WholeNumberFormatOptions);
+		}
+		
+		FText InAbilityEffects = AbilityWidgetData->AbilityEffectsRichText;
+		FText InAbilitySubDescription = AbilityWidgetData->AbilitySubDescriptionText;
+		InstantiatedToolTip->SetAbilityInfo(InAbilityIcon, InAbilityName, InAbilityLevel, InAbilityDescription, InAbilityCooldown, InAbilityManaCost, InAbilityEffects, InAbilitySubDescription);
+		this->SetToolTip(InstantiatedToolTip);
+	}
 }
 
 void UAbilityGaugeWidget::OnAbilityCommited(UGameplayAbility* InAbility)

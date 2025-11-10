@@ -7,17 +7,18 @@
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 
-void UAbilityToolTip::SetAbilityInfo(UTexture2D* InAbilityIcon, const FString& InAbilityName,
-                                     const FString& InAbilityDescription, const FString& InAbilityCooldown, const FString& InAbilityManaCost,
-                                     const FString& InAbilityEffects, const FString& InAbilitySubDescription)
+void UAbilityToolTip::SetAbilityInfo(UTexture2D* InAbilityIcon, const FName& InAbilityName, const FText& InAbilityLevel,
+                                     const FText& InAbilityDescription, const FText& InAbilityCooldown, const FText& InAbilityManaCost,
+                                     const FText& InAbilityEffects, const FText& InAbilitySubDescription)
 {
 
 	AbilityIconImage->SetBrushFromTexture(InAbilityIcon);
-	AbilityNameText->SetText(FText::FromString(InAbilityName));
-	AbilityDescriptionText->SetText(FText::FromString(InAbilityDescription));
-	AbilityCooldownText->SetText(FText::FromString(InAbilityCooldown));
-	AbilityManaCostText->SetText(FText::FromString(InAbilityManaCost));
-	AbilityEffectsRichText->SetText(FText::FromString(InAbilityEffects));
-	AbilitySubDescriptionText->SetText(FText::FromString(InAbilitySubDescription));
+	AbilityNameText->SetText(FText::FromName(InAbilityName));
+	AbilityLevelText->SetText(InAbilityLevel);
+	AbilityDescriptionText->SetText(InAbilityDescription);
+	AbilityCooldownText->SetText(InAbilityCooldown);
+	AbilityManaCostText->SetText(InAbilityManaCost);
+	AbilityEffectsRichText->SetText(InAbilityEffects);
+	AbilitySubDescriptionText->SetText(InAbilitySubDescription);
 	
 }

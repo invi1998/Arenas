@@ -18,7 +18,7 @@ class ARENAS_API UAbilityToolTip : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetAbilityInfo(UTexture2D* InAbilityIcon, const FString& InAbilityName, const FString& InAbilityDescription, const FString& InAbilityCooldown, const FString& InAbilityManaCost, const FString& InAbilityEffects, const FString& InAbilitySubDescription);
+	void SetAbilityInfo(UTexture2D* InAbilityIcon, const FName& InAbilityName, const FText& InAbilityLevel, const FText& InAbilityDescription, const FText& InAbilityCooldown, const FText& InAbilityManaCost, const FText& InAbilityEffects, const FText& InAbilitySubDescription);
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -26,6 +26,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* AbilityNameText;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* AbilityLevelText;
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* AbilityDescriptionText;

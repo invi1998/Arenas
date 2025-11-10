@@ -96,6 +96,12 @@ struct FAbilityWidgetData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UInputAction* InputAction;
+
+	UPROPERTY(EditAnywhere, meta = (MultiLine = true))
+	FText AbilityEffectsRichText;		// 技能效果富文本描述
+
+	UPROPERTY(EditAnywhere, meta = (MultiLine = true))
+	FText AbilitySubDescriptionText;	// 技能子描述文本
 	
 };
 

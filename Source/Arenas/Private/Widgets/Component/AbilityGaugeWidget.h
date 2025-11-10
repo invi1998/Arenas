@@ -10,6 +10,7 @@
 #include "Types/ArenaStructTypes.h"
 #include "AbilityGaugeWidget.generated.h"
 
+class UAbilityToolTip;
 class UArenasAbilitySystemComponent;
 struct FGameplayAbilitySpec;
 class UTextBlock;
@@ -72,8 +73,13 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* InputKeyText;			// 施法按键
 
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	TSubclassOf<UAbilityToolTip> AbilityToolTipClass;
+
 	UPROPERTY()
 	UGameplayAbility* AbilityCDO;		// 该技能的CDO(Class Default Object)
+
+	void CreateToolTip(const FAbilityWidgetData* AbilityWidgetData);
 
 	void OnAbilityCommited(UGameplayAbility* InAbility);
 
