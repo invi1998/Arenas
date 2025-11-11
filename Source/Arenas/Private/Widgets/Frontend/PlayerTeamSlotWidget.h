@@ -41,6 +41,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	FName CharacterEmptyIconMaterialParamName = "Empty";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName TeamLeftOrRightMaterialParamName = "Right";
+
 	FString CachedPlayerNameString;
 	FString CachedCharacterNameString;
 
