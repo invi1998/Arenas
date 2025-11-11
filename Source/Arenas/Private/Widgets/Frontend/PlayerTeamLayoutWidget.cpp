@@ -42,7 +42,7 @@ void UPlayerTeamLayoutWidget::NativeConstruct()
 	
 }
 
-void UPlayerTeamLayoutWidget::UpdatePlayerelection(const TArray<FPlayerSelection>& InPlayerSelections)
+void UPlayerTeamLayoutWidget::UpdatePlayerSelection(const TArray<FPlayerSelection>& InPlayerSelections)
 {
 	for (UPlayerTeamSlotWidget* TeamSlotWidget : TeamSlotWidgets)
 	{

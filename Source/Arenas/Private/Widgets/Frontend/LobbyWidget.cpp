@@ -135,7 +135,7 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 
 	if (TeamLayoutWidget)
 	{
-		TeamLayoutWidget->UpdatePlayerelection(InPlayerSelections);
+		TeamLayoutWidget->UpdatePlayerSelection(InPlayerSelections);
 	}
 	
 }

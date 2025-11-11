@@ -20,7 +20,7 @@ class ARENAS_API UPlayerTeamLayoutWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void UpdatePlayerelection(const TArray<FPlayerSelection>& InPlayerSelections);
+	void UpdatePlayerSelection(const TArray<FPlayerSelection>& InPlayerSelections);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")

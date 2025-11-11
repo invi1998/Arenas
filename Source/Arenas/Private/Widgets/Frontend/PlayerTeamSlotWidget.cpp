@@ -34,22 +34,25 @@ void UPlayerTeamSlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 void UPlayerTeamSlotWidget::UpdateSlot(const FString& InPlayerName, const UPA_CharacterDefinition* InCharacterDef)
 {
 	CachedPlayerNameString = InPlayerName;
+	
 	if (InCharacterDef)
 	{
 		CachedCharacterNameString = InCharacterDef->GetCharacterName();
 		PlayerCharacterImage->GetDynamicMaterial()->SetTextureParameterValue(CharacterIconMaterialParamName, InCharacterDef->LoadCharacterIcon());
 		PlayerCharacterImage->GetDynamicMaterial()->SetScalarParameterValue(CharacterEmptyIconMaterialParamName, 0.f);
+		NameTextBlock->SetText(FText::FromString(CachedCharacterNameString));
 	}
 	else
 	{
 		CachedCharacterNameString = TEXT("...");
 		PlayerCharacterImage->GetDynamicMaterial()->SetScalarParameterValue(CharacterEmptyIconMaterialParamName, 1.f);
+		NameTextBlock->SetText(FText::FromString(CachedPlayerNameString));
 	}
 }
 
 void UPlayerTeamSlotWidget::UpdateTeamSide(bool bIsRightSide)
 {
-	PlayerCharacterImage->GetDynamicMaterial()->SetScalarParameterValue(TeamLeftOrRightMaterialParamName, bIsRightSide ? 1.f : 0.f);
+	BP_UpdateTeamSide(bIsRightSide);
 }
 
 void UPlayerTeamSlotWidget::UpdateNameText()
