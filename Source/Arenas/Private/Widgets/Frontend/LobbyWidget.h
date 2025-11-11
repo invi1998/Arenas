@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class UPlayerTeamLayoutWidget;
 class UAbilityListView;
 class ACharacterDisplay;
 class AArenasPlayerState;
@@ -49,6 +50,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UAbilityListView* AbilityListView;		// 技能列表视图
+
+	UPROPERTY(meta=(BindWidget))
+	UPlayerTeamLayoutWidget* TeamLayoutWidget;		// 玩家队伍布局Widget
 
 	UPROPERTY(EditDefaultsOnly, Category="TeamSelection")
 	TSubclassOf<UTeamSelectionWidget> TeamSelectionWidgetClass;

@@ -47,6 +47,11 @@ void UPlayerTeamSlotWidget::UpdateSlot(const FString& InPlayerName, const UPA_Ch
 	}
 }
 
+void UPlayerTeamSlotWidget::UpdateTeamSide(bool bIsRightSide)
+{
+	PlayerCharacterImage->GetDynamicMaterial()->SetScalarParameterValue(TeamLeftOrRightMaterialParamName, bIsRightSide ? 1.f : 0.f);
+}
+
 void UPlayerTeamSlotWidget::UpdateNameText()
 {
 	if (IsHovered())

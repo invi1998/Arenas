@@ -7,6 +7,7 @@
 #include "ArenasBlueprintFunctionLibrary.h"
 #include "CharacterDisplay.h"
 #include "CharacterEntryWidget.h"
+#include "PlayerTeamLayoutWidget.h"
 #include "Character/PA_CharacterDefinition.h"
 #include "Components/TileView.h"
 #include "Components/UniformGridPanel.h"
@@ -130,6 +131,11 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 	if (ArenasGameState)
 	{
 		StartHeroSelectionButton->ButtonArea->SetIsEnabled(ArenasGameState->CanStartHeroSelection());
+	}
+
+	if (TeamLayoutWidget)
+	{
+		TeamLayoutWidget->UpdatePlayerelection(InPlayerSelections);
 	}
 	
 }

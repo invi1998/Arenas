@@ -24,6 +24,7 @@ public:
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 	void UpdateSlot(const FString& InPlayerName, const UPA_CharacterDefinition* InCharacterDef);
+	void UpdateTeamSide(bool bIsRightSide);
 
 private:
 	UPROPERTY(meta=(BindWidget))
