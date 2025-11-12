@@ -6,12 +6,13 @@
 #include "GameFramework/PlayerState.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 
-FPlayerSelection::FPlayerSelection() : Slot(GetInvalidSlot()), PlayerUniqueId{FUniqueNetIdRepl::Invalid()}, PlayerNickName(TEXT(""))
+FPlayerSelection::FPlayerSelection() : Slot(GetInvalidSlot()), PlayerUniqueId{FUniqueNetIdRepl::Invalid()},
+                                       PlayerNickName(TEXT("")), SelectedCharacter(nullptr)
 {
 }
 
 FPlayerSelection::FPlayerSelection(uint8 InSlot, const APlayerState* InPlayerState)
-	: Slot(InSlot)
+	: Slot(InSlot), SelectedCharacter(nullptr)
 {
 	if (InPlayerState)
 	{

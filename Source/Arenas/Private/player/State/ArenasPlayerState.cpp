@@ -37,6 +37,19 @@ void AArenasPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	
 }
 
+void AArenasPlayerState::CopyProperties(APlayerState* PlayerState)
+{
+	// 复制玩家状态属性到新的PlayerState实例，只会发生在服务端
+	// 例如：切换关卡时，PlayerState会被复制到新的实例中
+	Super::CopyProperties(PlayerState);
+
+	if (AArenasPlayerState* NewArenasPlayerState = Cast<AArenasPlayerState>(PlayerState))
+	{
+		NewArenasPlayerState->PlayerSelectionData = PlayerSelectionData;
+	}
+	
+}
+
 TSubclassOf<APawn> AArenasPlayerState::GetSelectedPawnClass() const
 {
 	if (PlayerSelectionData.GetSelectedCharacter())
@@ -44,6 +57,11 @@ TSubclassOf<APawn> AArenasPlayerState::GetSelectedPawnClass() const
 		return PlayerSelectionData.GetSelectedCharacter()->LoadCharacterClass();
 	}
 	return nullptr;
+}
+
+FGenericTeamId AArenasPlayerState::GetTeamIdBasedOnSlot() const
+{
+	return PlayerSelectionData.GetSlot() < UArenasNetFunctionLibrary::GetPlayerCounterPerTeam() ? FGenericTeamId(0) : FGenericTeamId(1);
 }
 
 void AArenasPlayerState::Server_SetSelectedCharacter_Implementation(const UPA_CharacterDefinition* InSelectedCharacter)
