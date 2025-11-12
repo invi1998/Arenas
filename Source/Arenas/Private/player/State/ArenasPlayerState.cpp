@@ -39,7 +39,7 @@ void AArenasPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 
 void AArenasPlayerState::CopyProperties(APlayerState* PlayerState)
 {
-	// 复制玩家状态属性到新的PlayerState实例，只会发生在服务端
+	// 复制玩家状态属性到新的PlayerState实例，只会发生在服务端，同时，只有当游戏模式允许无缝旅行时，才会调用此函数。
 	// 例如：切换关卡时，PlayerState会被复制到新的实例中
 	Super::CopyProperties(PlayerState);
 

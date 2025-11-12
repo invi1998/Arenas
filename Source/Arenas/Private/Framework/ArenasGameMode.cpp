@@ -64,7 +64,17 @@ UClass* AArenasGameMode::GetDefaultPawnClassForController_Implementation(AContro
 
 APawn* AArenasGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
+	FGenericTeamId TeamID = GetTeamIDFromPlayerController(NewPlayer);
+	if (IGenericTeamAgentInterface* NewPlayerTeamAgent = Cast<IGenericTeamAgentInterface>(NewPlayer))
+	{
+		
+		NewPlayerTeamAgent->SetGenericTeamId(TeamID);
+	}
+
+	StartSpot = FindNextStartingSpotForTeam(TeamID);
+	NewPlayer->StartSpot = StartSpot;		// 设置玩家控制器的起始点
 	return Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+	
 }
 
 void AArenasGameMode::RegisterMinionBarrack(const FGenericTeamId& InTeamID, AMinionBarrack* InBarrack)
@@ -95,8 +105,14 @@ void AArenasGameMode::AddPlayerKillForTeam(const FGenericTeamId& InTeamID)
 	}
 }
 
-FGenericTeamId AArenasGameMode::GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const
+FGenericTeamId AArenasGameMode::GetTeamIDFromPlayerController(const AController* InController) const
 {
+	if (AArenasPlayerState* ArenasPlayerState = InController ? InController->GetPlayerState<AArenasPlayerState>() : nullptr)
+	{
+		// 通过玩家状态获取队伍ID
+		return ArenasPlayerState->GetTeamIdBasedOnSlot();
+	}
+	
 	static int PlayerCount = 0;
 	++PlayerCount;
 	return FGenericTeamId(PlayerCount % 2); // 简单地将玩家分配到两个队伍

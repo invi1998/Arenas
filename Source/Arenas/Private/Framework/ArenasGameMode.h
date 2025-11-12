@@ -39,7 +39,7 @@ public:
 	void AddPlayerKillForTeam(const FGenericTeamId& InTeamID);
 
 private:
-	FGenericTeamId GetTeamIDFromPlayerController(const APlayerController* InPlayerController) const;
+	FGenericTeamId GetTeamIDFromPlayerController(const AController* InController) const;
 
 	AActor* FindNextStartingSpotForTeam(const FGenericTeamId& InTeamID) const;
 
