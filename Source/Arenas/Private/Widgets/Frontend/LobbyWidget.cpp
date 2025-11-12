@@ -44,7 +44,8 @@ void ULobbyWidget::NativeConstruct()
 
 	StartHeroSelectionButton->ButtonArea->SetIsEnabled(false);
 	StartHeroSelectionButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartHeroSelectionClicked);
-
+	StartMatchButton->ButtonArea->SetIsEnabled(false);
+	StartMatchButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartMatchClicked);
 	// 加载角色PA
 	UArenasAssetManager::Get().LoadCharacterDefinitions(FStreamableDelegate::CreateUObject(this, &ULobbyWidget::OnLoadCharacterDefinitions));
 
@@ -131,6 +132,7 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 	if (ArenasGameState)
 	{
 		StartHeroSelectionButton->ButtonArea->SetIsEnabled(ArenasGameState->CanStartHeroSelection());
+		StartMatchButton->ButtonArea->SetIsEnabled(ArenasGameState->CanStartMatch());
 	}
 
 	if (TeamLayoutWidget)
@@ -228,4 +230,12 @@ void ULobbyWidget::UpdateCharacterDisplay(const FPlayerSelection& InPlayerSelect
 		AbilityListView->ConfigureAbilities(*AbilityMap);
 	}
 	
+}
+
+void ULobbyWidget::OnStartMatchClicked()
+{
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_RequestStartMatch();
+	}
 }

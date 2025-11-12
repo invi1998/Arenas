@@ -69,6 +69,19 @@ void AArenasGameState::DeSelectedCharacter(const UPA_CharacterDefinition* InSele
 	
 }
 
+bool AArenasGameState::CanStartMatch() const
+{
+	// 所有玩家都已选择角色
+	for (const FPlayerSelection& SelectionData : PlayerSelectionArray)
+	{
+		if (!SelectionData.GetSelectedCharacter())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 void AArenasGameState::RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId)
 {
 	if (!HasAuthority()) return;

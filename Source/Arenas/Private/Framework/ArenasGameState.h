@@ -27,7 +27,8 @@ public:
 
 	void SetCharacterSelected(const APlayerState* InSelectingPlayer, const UPA_CharacterDefinition* InSelectedCharacter);		// 设置玩家已选择角色
 	void DeSelectedCharacter(const UPA_CharacterDefinition* InSelectedCharacter);	// 取消选择该角色
-	
+	bool CanStartMatch() const;		// 是否可以开始比赛
+
 	FOnPlayerSelectionChangedSignature OnPlayerSelectionChangedSignature;
 
 	void RequestPlayerSelection(const APlayerState* InPlayerState, uint8 InTeamSelectionSlotId);

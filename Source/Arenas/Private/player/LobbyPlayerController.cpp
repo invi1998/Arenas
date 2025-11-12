@@ -3,12 +3,26 @@
 
 #include "LobbyPlayerController.h"
 
+#include "Framework/ArenasGameInstance.h"
 #include "GameFramework/PlayerState.h"
 #include "Framework/ArenasGameState.h"
 
 ALobbyPlayerController::ALobbyPlayerController()
 {
 	bAutoManageActiveCameraTarget = false;		// 禁用自动管理活动摄像机目标，因为在大厅界面，我们希望在玩家选择英雄后，才切换摄像机视角
+}
+
+void ALobbyPlayerController::Server_RequestStartMatch_Implementation()
+{
+	if (UArenasGameInstance* ArenasGameInstance = GetGameInstance<UArenasGameInstance>())
+	{
+		ArenasGameInstance->StartMatch();
+	}
+}
+
+bool ALobbyPlayerController::Server_RequestStartMatch_Validate()
+{
+	return true;
 }
 
 void ALobbyPlayerController::Server_RequestChangeSlotSelection_Implementation(uint8 InRequestedSlotID)
