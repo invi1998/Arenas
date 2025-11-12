@@ -77,3 +77,9 @@ AMyActor();
 在这个例子中，AMyActor类被声明为Blueprintable，这意味着它可以在蓝图中被继承，并且可以在蓝图中添加新的属性和方法。
 
 总结来说，**BlueprintType**用于使类或结构体在蓝图中作为变量使用，而**Blueprintable**用于使类能够被蓝图继承和扩展。它们在蓝图系统中的应用场景不同，但都是为了增强C++代码与蓝图系统的交互性和灵活性。
+
+
+
+只克隆最后一次提交
+
+$ git clone --release --depth 1 git@github.com:invi1998/UnrealEngine.git
