@@ -63,6 +63,7 @@ void ADefenseTowerCharacter::SetDefenseTowerFaceGoal(AActor* NewFaceGoal)
 	}
 }
 
+#if WITH_EDITOR
 void ADefenseTowerCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -73,6 +74,7 @@ void ADefenseTowerCharacter::PostEditChangeProperty(struct FPropertyChangedEvent
 		GroundDecalComponent->DecalSize = FVector(DecalSize.X, DefaultAttackRange, DefaultAttackRange);
 	}
 }
+#endif
 
 void ADefenseTowerCharacter::BeginPlay()
 {

@@ -9,6 +9,7 @@
 
 // 兵营
 
+class APlayerStart;
 class AStormCore;
 class ADefenseTowerCharacter;
 class AMinionCharacter;

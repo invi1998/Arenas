@@ -188,9 +188,9 @@ const APlayerStart* AMinionBarrack::GetNextSpawnPoint()
 void AMinionBarrack::SpawnOrFindOneMinion()
 {
 	FTransform SpawnPointTransform = GetActorTransform();
-	if (const APlayerStart* SpawnPoint = GetNextSpawnPoint())
+	if (const APlayerStart* TempSpawnPoint = GetNextSpawnPoint())
 	{
-		SpawnPointTransform = SpawnPoint->GetActorTransform();
+		SpawnPointTransform = TempSpawnPoint->GetActorTransform();
 	}
 
 	if (AMinionCharacter* MinionToSpawn = GetNextAvailableMinionFromPool())
@@ -238,9 +238,9 @@ void AMinionBarrack::SpawnMinionGroup()
 void AMinionBarrack::SpawnMinionsToPool()
 {
 	FTransform SpawnPointTransform = GetActorTransform();
-	if (const APlayerStart* SpawnPoint = GetNextSpawnPoint())
+	if (const APlayerStart* TempSpawnPoint = GetNextSpawnPoint())
 	{
-		SpawnPointTransform = SpawnPoint->GetActorTransform();
+		SpawnPointTransform = TempSpawnPoint->GetActorTransform();
 	}
 
 	AMinionCharacter* NewMinion = GetWorld()->SpawnActorDeferred<AMinionCharacter>(

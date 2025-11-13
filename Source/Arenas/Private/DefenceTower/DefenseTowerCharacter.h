@@ -25,7 +25,9 @@ public:
 
 	void SetDefenseTowerFaceGoal(AActor* NewFaceGoal);
 
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 	virtual void BeginPlay() override;
 
