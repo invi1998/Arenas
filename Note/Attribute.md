@@ -80,6 +80,3 @@ AMyActor();
 
 
 
-只克隆最后一次提交
-
-$ git clone --release --depth 1 git@github.com:invi1998/UnrealEngine.git
