@@ -65,7 +65,7 @@ public:
 	FORCEINLINE float GetRightSpeed() const { return RightSpeed; }
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
-	FORCEINLINE bool ShouldDoFullBody() const;
+	bool ShouldDoFullBody() const;
 	
 protected:
 
