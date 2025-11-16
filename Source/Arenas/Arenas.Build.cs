@@ -29,6 +29,12 @@ public class Arenas : ModuleRules
 			"AIModule",
 			"Niagara",
 			"CinematicCamera",
+			"OnlineSubsystem",
+			"OnlineSubsystemEOS",
+			"OnlineSubsystemUtils",
+			"Networking",
+			"HTTP",
+			"Json",
 		});
 
 		// Uncomment if you are using Slate UI
