@@ -16,7 +16,18 @@ class ARENAS_API UArenasGameInstance : public UGameInstance
 
 public:
 	void StartMatch();
+	virtual void Init() override;
 
+	
+/********************************************************/
+/*					Session Server						*/
+/********************************************************/
+private:
+	void CreateSession();		// 创建会话
+	
+	FString ServerSessionName;		// 服务器会话名称
+	int SessionServerPort;			// 服务器会话端口
+	
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
