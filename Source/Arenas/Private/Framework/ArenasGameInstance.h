@@ -23,10 +23,22 @@ public:
 /*					Session Server						*/
 /********************************************************/
 private:
+	// 会话创建完成回调
+	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+	
 	void CreateSession();		// 创建会话
 	
 	FString ServerSessionName;		// 服务器会话名称
 	int SessionServerPort;			// 服务器会话端口
+	FTimerHandle WaitPlayerJoinSessionTimeoutHandle;		// 等待玩家加入会话超时句柄
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float WaitPlayerJoinTimeoutDuration = 60.f;				// 等待玩家加入会话超时时长（秒）
+	
+	void WaitPlayerJoinSessionTimeout();		// 等待玩家加入会话超时处理函数
+
+	void OnEndSessionComplete(FName SessionName, bool bWasSuccessful); // 结束会话完成回调
+	void TerminateSessionServer();		// 终止会话服务
 	
 
 private:
