@@ -9,11 +9,14 @@
 #include "DefenceTower/StormCore.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "Network/ArenasGameSession.h"
 #include "player/ArenasPlayerController.h"
 #include "player/State/ArenasPlayerState.h"
 
 AArenasGameMode::AArenasGameMode()
 {
+	// 设置游戏会话类
+	GameSessionClass = AArenasGameSession::StaticClass();
 }
 
 void AArenasGameMode::PostLogin(APlayerController* NewPlayer)

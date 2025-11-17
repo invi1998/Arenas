@@ -31,6 +31,25 @@ void UArenasGameInstance::Init()
 	
 }
 
+void UArenasGameInstance::PlayerJoinedSession(const FUniqueNetIdRepl& UniqueId)
+{
+	PlayerJoinedSessions.Add(UniqueId);
+	if (WaitPlayerJoinSessionTimeoutHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(WaitPlayerJoinSessionTimeoutHandle);
+	}
+}
+
+void UArenasGameInstance::PlayerLeftSession(const FUniqueNetIdRepl& UniqueId)
+{
+	PlayerJoinedSessions.Remove(UniqueId);
+	if (PlayerJoinedSessions.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### All players have left the session."));
+		TerminateSessionServer();		// 终止会话服务
+	}
+}
+
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	if (bWasSuccessful)
@@ -76,13 +95,17 @@ void UArenasGameInstance::CreateSession()
 			UE_LOG(LogTemp, Error, TEXT("#### Failed to create session: %s"), *ServerSessionName);
 			SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
 			TerminateSessionServer();		// 终止会话服务
+			return;
 		}
 	
 		UE_LOG(LogTemp, Warning, TEXT("#### Creating Session: %s on Port: %d with SearchId: %s"), *ServerSessionName, SessionServerPort, *SessionSearchId);
 	
 	}
-	
-	
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get SessionPtr when creating session."));
+		TerminateSessionServer();		// 终止会话服务
+	}
 	
 }
 

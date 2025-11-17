@@ -17,9 +17,11 @@ class ARENAS_API UArenasGameInstance : public UGameInstance
 public:
 	void StartMatch();
 	virtual void Init() override;
+	void PlayerJoinedSession(const FUniqueNetIdRepl& UniqueId);		// 玩家加入会话
+	void PlayerLeftSession(const FUniqueNetIdRepl& UniqueId);		// 玩家离开会话
 
-	
-/********************************************************/
+
+	/********************************************************/
 /*					Session Server						*/
 /********************************************************/
 private:
@@ -39,6 +41,8 @@ private:
 
 	void OnEndSessionComplete(FName SessionName, bool bWasSuccessful); // 结束会话完成回调
 	void TerminateSessionServer();		// 终止会话服务
+	
+	TSet<FUniqueNetIdRepl> PlayerJoinedSessions;		// 已加入会话的玩家列表
 	
 
 private:
