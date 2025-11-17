@@ -51,3 +51,28 @@ Windows>Arenas.exe -log -window
 
 ```
 
+
+
+## 启用EOS子系统
+
+[Online Subsystem EOS Plugin in Unreal Engine | Unreal Engine 5.7 Documentation | Epic Developer Community](https://dev.epicgames.com/documentation/en-us/unreal-engine/online-subsystem-eos-plugin-in-unreal-engine)
+
+```shell
+
+[OnlineSubsystemEOS]
+bEnabled=true
+
+[OnlineSubsystem]
+DefaultPlatformService=EOS
+
+[/Script/Engine.Engine]
+!NetDriverDefinitions=ClearArray
++NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="/Script/SocketSubsystemEOS.NetDriverEOSBase",DriverClassNameFallback="/Script/OnlineSubsystemUtils.IpNetDriver")
++NetDriverDefinitions=(DefName="DemoNetDriver",DriverClassName="/Script/Engine.DemoNetDriver",DriverClassNameFallback="/Script/Engine.DemoNetDriver")
+
+# 下面这行是启用P2P套接字，因为我们使用的是专用服务器，所以，用不到这项配置，所以下面这里无需添加到项目ini里
+[/Script/SocketSubsystemEOS.NetDriverEOSBase]
+bIsUsingP2PSockets=true
+
+```
+
