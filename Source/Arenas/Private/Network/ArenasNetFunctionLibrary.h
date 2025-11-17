@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+
 #include "ArenasNetFunctionLibrary.generated.h"
 
 /**
@@ -15,6 +18,12 @@ class ARENAS_API UArenasNetFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	static IOnlineSessionPtr GetSessionPtr();		// 获取在线会话对象指针
+	static IOnlineIdentityPtr GetIdentityPtr();	// 获取在线身份对象指针
+	
+	// 生成在线会话设置
+	static FOnlineSessionSettings GenerateOnlineSessionSettings(const FName& SessionName, int Port, const FString& SessionSearchId);
+	
 	static uint8 GetPlayerCounterPerTeam();		// 获取每个队伍的玩家数量
 
 	static bool IsSessionServer(const UObject* WorldContextObject);			// 是否为会话服务器

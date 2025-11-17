@@ -3,6 +3,48 @@
 
 #include "ArenasNetFunctionLibrary.h"
 
+IOnlineSessionPtr UArenasNetFunctionLibrary::GetSessionPtr()
+{
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (!Subsystem) return nullptr;
+	return Subsystem->GetSessionInterface();
+}
+
+IOnlineIdentityPtr UArenasNetFunctionLibrary::GetIdentityPtr()
+{
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (!Subsystem) return nullptr;
+	return Subsystem->GetIdentityInterface();
+}
+
+FOnlineSessionSettings UArenasNetFunctionLibrary::GenerateOnlineSessionSettings(const FName& SessionName, int Port,
+	const FString& SessionSearchId)
+{
+	int NumPublicConnections = GetPlayerCounterPerTeam() * 2; // 每队玩家数量乘以2作为公共连接数
+	
+	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bIsLANMatch = false;									// 非局域网匹配
+	SessionSettings.bUsesPresence = false;									// 不使用在线状态，因为我们是服务器创建会话，而服务器不需要登录状态
+	SessionSettings.NumPublicConnections = NumPublicConnections;			// 公共连接数
+	SessionSettings.NumPrivateConnections = 0;								// 私有连接数
+	SessionSettings.bAllowJoinInProgress = false;							// 不允许中途加入
+	SessionSettings.bAllowJoinViaPresence = false;							// 不允许通过在线状态加入
+	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;				// 不允许仅通过在线状态的好友加入
+	SessionSettings.bShouldAdvertise = true;								// 应该被广告宣传，即公开可见
+	SessionSettings.bAllowInvites = true;									// 允许邀请
+	SessionSettings.bIsDedicated = true;									// 专用服务器
+	SessionSettings.bUseLobbiesIfAvailable = false;							// 不使用大厅功能
+	SessionSettings.bUseLobbiesVoiceChatIfAvailable = false;				// 不使用大厅
+	SessionSettings.bUsesStats = true;										// 使用统计数据(例如：胜率，成就等)
+
+	// 自定义设置，ViaOnlineServiceAndPing表示该数据会被广告宣传，并且可以通过ping值进行过滤
+	SessionSettings.Set(GetSessionNameKey(), SessionName.ToString(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(GetSessionSearchIdKey(), SessionSearchId, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(GetSessionPortKey(), Port, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
+	return SessionSettings;
+}
+
 uint8 UArenasNetFunctionLibrary::GetPlayerCounterPerTeam()
 {
 	return 5;
