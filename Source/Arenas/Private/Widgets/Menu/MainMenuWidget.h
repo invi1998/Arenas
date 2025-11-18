@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuWidget.generated.h"
 
+class AMainMenuPlayerController;
 class UArenasButton;
 class UArenasGameInstance;
 class UWidgetSwitcher;
@@ -33,9 +34,27 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UArenasButton* LoginButton;
 	
+	UPROPERTY()
+	AMainMenuPlayerController* OwnerMainMenuPlayerController;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	float CameraBlendTime = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	float CameraBlendExp = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	FName DefaultCameraTag = FName("Default");
+	
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	FName MainMenuCameraTag = FName("MainMenu");
+	
 	UFUNCTION()
 	void OnLoginButtonClicked();
 	
 	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickname, const FString& ErrorMessage);
+	
+	// 切换摄像机视角到指定标签的摄像机，并带有混合效果
+	void SwitchCameraByTagWithBlend(const FName& InCameraTag);
 	
 };

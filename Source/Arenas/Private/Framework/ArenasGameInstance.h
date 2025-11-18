@@ -6,6 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "ArenasGameInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*Error*/);
+
 /**
  * 
  */
@@ -19,12 +21,28 @@ public:
 	virtual void Init() override;
 	void PlayerJoinedSession(const FUniqueNetIdRepl& UniqueId);		// 玩家加入会话
 	void PlayerLeftSession(const FUniqueNetIdRepl& UniqueId);		// 玩家离开会话
-
-
+	
+	
+public:
 	/********************************************************/
-/*					Session Server						*/
-/********************************************************/
+	/*					Login								*/
+	/********************************************************/
+	bool IsLoggedIn() const;		// 是否已登录
+	bool IsLoggingIn() const;		// 是否正在登录
+	void ClientAccountPortalLogin();		// 客户端账号门户登录
+	FOnLoginCompletedDelegate OnLoginCompletedDelegate;		// 登录完成委托
+	
 private:
+	void ClientLoginComplete(int NumOfLocalPlayer, bool  bWasSuccessful, const FUniqueNetId& UserUniqueNetId, const FString& ErrorMessage);
+	void ClientLogin(const FString& Type, const FString& Id, const FString& Token);		// 客户端登录
+	FDelegateHandle LoggingInDelegateHandle;		// 登录委托句柄
+	
+
+private:
+	/********************************************************/
+	/*					Session Server						*/
+	/********************************************************/
+	
 	// 会话创建完成回调
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	

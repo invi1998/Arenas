@@ -50,6 +50,81 @@ void UArenasGameInstance::PlayerLeftSession(const FUniqueNetIdRepl& UniqueId)
 	}
 }
 
+bool UArenasGameInstance::IsLoggedIn() const
+{
+	if (IOnlineIdentityPtr IdentityPtr = UArenasNetFunctionLibrary::GetIdentityPtr())
+	{
+		return IdentityPtr->GetLoginStatus(0) == ELoginStatus::LoggedIn;
+	}
+	return false;
+}
+
+bool UArenasGameInstance::IsLoggingIn() const
+{
+	// 正在登录当且仅当登录委托句柄有效，表示登录过程尚未完成，否则表示未在登录中
+	return LoggingInDelegateHandle.IsValid();
+}
+
+void UArenasGameInstance::ClientAccountPortalLogin()
+{
+	// 使用账号门户登录，即不需要提供具体的账号和密码，通过网页进行登录
+	ClientLogin("AccountPortal", "", "");
+}
+
+void UArenasGameInstance::ClientLoginComplete(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserUniqueNetId, const FString& ErrorMessage)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UArenasNetFunctionLibrary::GetIdentityPtr())
+	{
+		// 移除登录完成委托
+		if (LoggingInDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);
+			LoggingInDelegateHandle.Reset();		// 重置登录委托句柄，表示登录过程已完成
+		}
+		
+		FString PlayerNickName = "";
+		if (bWasSuccessful)
+		{
+			PlayerNickName = IdentityPtr->GetPlayerNickname(UserUniqueNetId);
+			UE_LOG(LogTemp, Warning, TEXT("#### Id(%s) Login Successful. Player Nickname: %s"), *UserUniqueNetId.ToString(), *PlayerNickName);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("#### Id(%s) Login Failed. Error: %s"), *UserUniqueNetId.ToString(), *ErrorMessage);
+		}
+		
+		OnLoginCompletedDelegate.Broadcast(bWasSuccessful, PlayerNickName, ErrorMessage);
+		
+	}
+	else
+	{
+		OnLoginCompletedDelegate.Broadcast(bWasSuccessful, "", "无法获取在线身份接口指针...");
+	}
+}
+
+void UArenasGameInstance::ClientLogin(const FString& Type, const FString& Id, const FString& Token)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UArenasNetFunctionLibrary::GetIdentityPtr())
+	{
+		if (LoggingInDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);		// 移除之前的登录委托（如果有的话）
+			LoggingInDelegateHandle.Reset();
+		}
+		// 添加登录完成委托，并保存句柄，以便用于检测登录中状态
+		LoggingInDelegateHandle = IdentityPtr->OnLoginCompleteDelegates->AddUObject(this, &UArenasGameInstance::ClientLoginComplete);
+		if (!IdentityPtr->Login(0, FOnlineAccountCredentials(Type, Id, Token)))
+		{
+			UE_LOG(LogTemp, Error, TEXT("#### Id(%s) Failed to initiate login process."), *Id);
+			if (LoggingInDelegateHandle.IsValid())
+			{
+				IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingInDelegateHandle);		// 移除之前的登录委托（如果有的话）
+				LoggingInDelegateHandle.Reset();
+			}
+		}
+	}
+}
+
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	if (bWasSuccessful)
