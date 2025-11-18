@@ -22,7 +22,6 @@ public:
 	void PlayerJoinedSession(const FUniqueNetIdRepl& UniqueId);		// 玩家加入会话
 	void PlayerLeftSession(const FUniqueNetIdRepl& UniqueId);		// 玩家离开会话
 	
-	
 public:
 	/********************************************************/
 	/*					Login								*/
@@ -37,6 +36,12 @@ private:
 	void ClientLogin(const FString& Type, const FString& Id, const FString& Token);		// 客户端登录
 	FDelegateHandle LoggingInDelegateHandle;		// 登录委托句柄
 	
+public:
+	/********************************************************/
+	/*					Client Session						*/
+	/********************************************************/
+	void RequestCreateAndJoinSession(const FName& NewSessionName);		// 请求创建并加入会话
+	void CancelCreateSession();		// 取消创建
 
 private:
 	/********************************************************/

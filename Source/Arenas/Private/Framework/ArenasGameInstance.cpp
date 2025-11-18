@@ -125,6 +125,17 @@ void UArenasGameInstance::ClientLogin(const FString& Type, const FString& Id, co
 	}
 }
 
+void UArenasGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Request to create and join session: %s"), *NewSessionName.ToString());
+	// CreateSession();
+}
+
+void UArenasGameInstance::CancelCreateSession()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Cancel create session request received."));
+}
+
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	if (bWasSuccessful)

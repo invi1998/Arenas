@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "MainMenuWidget.generated.h"
 
+class UEditableText;
 class UWaitWidget;
 class AMainMenuPlayerController;
 class UArenasButton;
@@ -38,6 +39,22 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	UWidget* MainWidgetRoot;
+	
+	/* Session */
+	UPROPERTY(meta=(BindWidget))
+	UArenasButton* CreateSessionButton;
+	
+	UPROPERTY(meta=(BindWidget))
+	UEditableText* NewSessionNameText;
+
+	UFUNCTION()
+	void CancelCreateSession();
+	
+	UFUNCTION()
+	void OnCreateSessionButtonClicked();
+	
+	UFUNCTION()
+	void OnNewSessionNameTextChanged(const FText& InText);
 		
 	/* Login */
 	UPROPERTY(meta=(BindWidget))
@@ -57,7 +74,7 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UWaitWidget* WaitWidget;
 	
-	FOnButtonClickedEvent& SwitchToWaitWidget(const FText& InWaitInfoText, bool bAllowCancel = false);
+	FOnButtonClickedEvent& SwitchToWaitWidget(const FText& InWaitInfoText, bool bAllowCancel = false, bool bSwitchCamera = false);
 	
 	/* Camera */
 	UPROPERTY(EditDefaultsOnly, Category="Camera")
@@ -71,6 +88,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Camera")
 	FName MainMenuCameraTag = FName("MainMenu");
+	
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	FName WaitCameraTag = FName("Wait");
 	
 	// 切换摄像机视角到指定标签的摄像机，并带有混合效果
 	void SwitchCameraByTagWithBlend(const FName& InCameraTag);

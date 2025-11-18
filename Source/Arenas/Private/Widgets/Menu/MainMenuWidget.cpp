@@ -5,6 +5,7 @@
 
 #include "CineCameraActor.h"
 #include "WaitWidget.h"
+#include "Components/EditableText.h"
 #include "Components/WidgetSwitcher.h"
 #include "Widgets/Component/ArenasButton.h"
 #include "Framework/ArenasGameInstance.h"
@@ -13,6 +14,7 @@
 
 #define LOCTEXT_NAMESPACE "MainMenuWidget"
 FText LoggingInText = LOCTEXT("LoggingInText", "正在登录");
+FText CreatingSessionText = LOCTEXT("CreatingSessionText", "正在创建会话");
 #undef LOCTEXT_NAMESPACE
 
 void UMainMenuWidget::NativeConstruct()
@@ -37,7 +39,10 @@ void UMainMenuWidget::NativeConstruct()
 	
 	LoginButton->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnLoginButtonClicked);
 	
-
+	CreateSessionButton->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnCreateSessionButtonClicked);
+	CreateSessionButton->SetIsEnabled(false);
+	
+	NewSessionNameText->OnTextChanged.AddDynamic(this, &UMainMenuWidget::OnNewSessionNameTextChanged);
 }
 
 void UMainMenuWidget::SwitchToMainWidget()
@@ -46,6 +51,36 @@ void UMainMenuWidget::SwitchToMainWidget()
 	{
 		MainSwitcher->SetActiveWidget(MainWidgetRoot);
 		SwitchCameraByTagWithBlend(MainMenuCameraTag);
+	}
+}
+
+void UMainMenuWidget::CancelCreateSession()
+{
+	if (OwnerArenasGameInstance)
+	{
+		OwnerArenasGameInstance->CancelCreateSession();
+	}
+	SwitchToMainWidget();
+}
+
+void UMainMenuWidget::OnCreateSessionButtonClicked()
+{
+	if (OwnerArenasGameInstance && OwnerArenasGameInstance->IsLoggedIn())
+	{
+		OwnerArenasGameInstance->RequestCreateAndJoinSession(FName(NewSessionNameText->GetText().ToString()));
+		SwitchToWaitWidget(CreatingSessionText, true, true).AddDynamic(this, &UMainMenuWidget::CancelCreateSession);
+	}
+}
+
+void UMainMenuWidget::OnNewSessionNameTextChanged(const FText& InText)
+{
+	if (InText.IsEmpty())
+	{
+		CreateSessionButton->SetIsEnabled(false);
+	}
+	else
+	{
+		CreateSessionButton->SetIsEnabled(true);
 	}
 }
 
@@ -81,10 +116,16 @@ void UMainMenuWidget::LoginCompleted(bool bWasSuccessful, const FString& PlayerN
 	}
 }
 
-FOnButtonClickedEvent& UMainMenuWidget::SwitchToWaitWidget(const FText& InWaitInfoText, bool bAllowCancel)
+FOnButtonClickedEvent& UMainMenuWidget::SwitchToWaitWidget(const FText& InWaitInfoText, bool bAllowCancel, bool bSwitchCamera)
 {
 	MainSwitcher->SetActiveWidget(WaitWidget);
 	WaitWidget->SetWaitInfo(InWaitInfoText, bAllowCancel);
+	
+	if (bSwitchCamera)
+	{
+		SwitchCameraByTagWithBlend(WaitCameraTag);
+	}
+	
 	return WaitWidget->ClearAndGetButtonClickedEvent();
 }
 
