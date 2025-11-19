@@ -40,4 +40,9 @@ public:
 	static FString GetCommandlineAreAsString(const FName& ParamName);		// 获取命令行参数字符串值
 	static int GetCommandlineAreAsInt(const FName& ParamName);			// 获取命令行参数整数值
 	
+	// 协调器URL，用于注册和发现会话服务器
+	static FName GetCoordinatorURLKey();			// 获取协调器URL键
+	static FString GetCoordinatorURL();				// 获取协调器URL字符串值
+	static FString GetDefaultCoordinatorURL();		// 获取默认协调器URL字符串值
+	
 };

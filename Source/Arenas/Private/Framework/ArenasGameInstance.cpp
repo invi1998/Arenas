@@ -3,6 +3,8 @@
 
 #include "ArenasGameInstance.h"
 
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
@@ -129,6 +131,15 @@ void UArenasGameInstance::RequestCreateAndJoinSession(const FName& NewSessionNam
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Request to create and join session: %s"), *NewSessionName.ToString());
 	// CreateSession();
+	// 在我们的游戏里，创建会话实际就是启动一个服务器实例
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+	Request->SetURL(UArenasNetFunctionLibrary::GetCoordinatorURL());
+	Request->SetVerb("POST");
+	Request->SetHeader("Content-Type", "application/json");
+	
+	FGuid SessionSearchId = FGuid::NewGuid();		// 生成唯一的会话搜索ID
+	TSharedPtr<FJsonObject> RequestJsonObject = MakeShareable(new FJsonObject);
+	
 }
 
 void UArenasGameInstance::CancelCreateSession()

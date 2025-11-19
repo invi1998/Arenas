@@ -107,3 +107,39 @@ int UArenasNetFunctionLibrary::GetCommandlineAreAsInt(const FName& ParamName)
 	return OutVal;
 }
 
+FName UArenasNetFunctionLibrary::GetCoordinatorURLKey()
+{
+	return FName("COORDINATOR_URL");
+}
+
+FString UArenasNetFunctionLibrary::GetCoordinatorURL()
+{
+	FString OutVal = "";
+	// 将参数名称转换为命令行参数格式（例如：-ParamName=）
+	FString CommandLineArg = FString::Printf(TEXT("%s="), *GetCoordinatorURLKey().ToString());
+	// 从命令行中提取参数值
+	FParse::Value(FCommandLine::Get(), *CommandLineArg, OutVal);
+	
+	if (!OutVal.IsEmpty())
+	{
+		return OutVal;
+	}
+	else
+	{
+		return GetDefaultCoordinatorURL();
+	}
+}
+
+FString UArenasNetFunctionLibrary::GetDefaultCoordinatorURL()
+{
+	// 从配置文件中读取默认的协调器URL
+	FString CoordinatorURL = "";
+	GConfig->GetString(
+		TEXT("Arenas.Net"),
+		TEXT("CoordinatorURL"),
+		CoordinatorURL,
+		GGameIni
+	);
+	return CoordinatorURL;
+}
+
