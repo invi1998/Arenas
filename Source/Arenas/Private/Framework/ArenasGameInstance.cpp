@@ -5,6 +5,7 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
@@ -133,18 +134,52 @@ void UArenasGameInstance::RequestCreateAndJoinSession(const FName& NewSessionNam
 	// CreateSession();
 	// 在我们的游戏里，创建会话实际就是启动一个服务器实例
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
-	Request->SetURL(UArenasNetFunctionLibrary::GetCoordinatorURL());
+	
+	FString CoordinatorURL = UArenasNetFunctionLibrary::GetCoordinatorURL();
+	UE_LOG(LogTemp, Warning, TEXT("#### Coordinator URL: %s"), *CoordinatorURL);
+	
+	FString URL = FString::Printf(TEXT("%s/Session"), *CoordinatorURL);
+	UE_LOG(LogTemp, Warning, TEXT("#### Full Coordinator Session URL: %s"), *URL);
+	
+	Request->SetURL(URL);
 	Request->SetVerb("POST");
 	Request->SetHeader("Content-Type", "application/json");
 	
 	FGuid SessionSearchId = FGuid::NewGuid();		// 生成唯一的会话搜索ID
-	TSharedPtr<FJsonObject> RequestJsonObject = MakeShareable(new FJsonObject);
 	
+	// 构建请求的JSON体
+	TSharedPtr<FJsonObject> RequestJsonObject = MakeShareable(new FJsonObject);
+	RequestJsonObject->SetStringField(UArenasNetFunctionLibrary::GetSessionNameKey().ToString(), NewSessionName.ToString());
+	RequestJsonObject->SetStringField(UArenasNetFunctionLibrary::GetSessionSearchIdKey().ToString(), SessionSearchId.ToString());
+	
+	// 将JSON体序列化为字符串并设置为请求内容
+	FString RequestBody;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
+	FJsonSerializer::Serialize(RequestJsonObject.ToSharedRef(), Writer);
+	Request->SetContentAsString(RequestBody);
+	
+	Request->OnProcessRequestComplete().BindUObject(this, &UArenasGameInstance::OnCreateAndJoinSessionResponseReceived, NewSessionName, SessionSearchId);
+	if (!Request->ProcessRequest())
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to send create session request to coordinator."));
+	}
 }
 
 void UArenasGameInstance::CancelCreateSession()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Cancel create session request received."));
+}
+
+void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
+{
+	if (bConnectedSuccessful)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### Session created response received. Response Code: %d"), HttpResponse->GetResponseCode());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### Session created response failed to connect to coordinator."));
+	}
 }
 
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)

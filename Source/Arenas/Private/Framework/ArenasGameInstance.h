@@ -6,7 +6,10 @@
 #include "Engine/GameInstance.h"
 #include "ArenasGameInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*Error*/);
+class IHttpResponse;
+class IHttpRequest;
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/,
+                                       const FString& /*PlayerNickName*/, const FString& /*Error*/);
 
 /**
  * 
@@ -42,6 +45,9 @@ public:
 	/********************************************************/
 	void RequestCreateAndJoinSession(const FName& NewSessionName);		// 请求创建并加入会话
 	void CancelCreateSession();		// 取消创建
+	
+private:
+	void OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId);
 
 private:
 	/********************************************************/
