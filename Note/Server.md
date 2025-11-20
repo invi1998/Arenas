@@ -92,3 +92,13 @@ python -m venv .venv
 .\.venv\Scripts\activate
 ```
 
+
+
+## 安装flask库
+
+注意，我们是在python虚拟隔离环境下安装的库，所以该库不会被安装到系统环境里，只会在我们项目里存在
+
+```shell
+pip install flask
+```
+
