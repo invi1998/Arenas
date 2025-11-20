@@ -10,13 +10,37 @@ app = Flask(__name__)
 # TODO: 在后续接入Docker容器化后，此处应该被删除
 nextAvailablePort = 7777
 
+def CreateServerLocalTest(sessionName, sessionSearchID):
+    global nextAvailablePort
+    subprocess.Popen(
+        [
+            'F:/UE_Source/UnrealEngine/Engine/Binaries/Win64/UnrealEditor.exe',
+            'F:/study/Arenas/Arenas.uproject',
+            '-server',
+            '-log',
+            '-epicapp="ServerClient"',
+            f'-SESSION_NAME="{sessionName}"',
+            f'-SESSION_SEARCH_ID="{sessionSearchID}"',
+            f'-PORT={nextAvailablePort}',
+        ]
+    )
+    usedPort = nextAvailablePort
+    nextAvailablePort += 1
+    return usedPort
+
 @app.route('/Session', methods=['POST'])
 def CreateSession():
     print("CreateSession called, request data:", request.json)
 
-    port = nextAvailablePort
+    sessionName = request.json.get(SESSION_NAME_KEY)
+    sessionSearchID = request.json.get(SESSION_SEARCH_ID_KEY)
 
-    return jsonify({"status": "Session created successfully"}, {PORT_KEY: port}), 200
+    port = CreateServerLocalTest(
+        sessionName,
+        sessionSearchID,
+    )
+
+    return jsonify({"status": "Session created successfully", PORT_KEY: port}), 200
 
 
 if __name__ == '__main__':
