@@ -76,3 +76,19 @@ bIsUsingP2PSockets=true
 
 ```
 
+
+
+## Python环境
+
+用于创建 Python 虚拟环境的命令。虚拟环境是一种隔离的 Python 运行环境，可以让不同项目使用不同的依赖包和 Python 版本，而不会互相干扰。
+
+```python
+python -m venv .venv
+```
+
+运行python虚拟环境
+
+```python
+.\.venv\Scripts\activate
+```
+
