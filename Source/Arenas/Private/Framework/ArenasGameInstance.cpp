@@ -174,12 +174,91 @@ void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHtt
 {
 	if (bConnectedSuccessful)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("#### Session created response received. Response Code: %d"), HttpResponse->GetResponseCode());
+		int32 ResponseCode = HttpResponse->GetResponseCode();
+		if (ResponseCode != 200)
+		{
+			UE_LOG(LogTemp, Error, TEXT("#### Session created response failed with code: %d"), ResponseCode);
+			return;
+		}
+		
+		// 解析响应的JSON体
+		TSharedPtr<FJsonObject> ResponseJsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(HttpResponse->GetContentAsString());
+		if (!FJsonSerializer::Deserialize(Reader, ResponseJsonObject) || !ResponseJsonObject.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("#### Failed to parse session created response JSON，please check coordinator server."));
+			return;
+		}
+		
+		FString AssignedSessionName = ResponseJsonObject->GetStringField(UArenasNetFunctionLibrary::GetSessionNameKey().ToString());
+		FString AssignedSessionSearchId = ResponseJsonObject->GetStringField(UArenasNetFunctionLibrary::GetSessionSearchIdKey().ToString());
+		
+		// 传递字符串引用，避免不必要的复制
+		int AssignedPort = ResponseJsonObject->GetIntegerField(*(UArenasNetFunctionLibrary::GetSessionPortKey().ToString()));
+		
+		UE_LOG(LogTemp, Warning, TEXT("#### Session created response received: Name=%s, SearchId=%s, Port=%d"), *AssignedSessionName, *AssignedSessionSearchId, AssignedPort);
+		
+		StartFindCreatedSession(SessionSearchId);
+	
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("#### Session created response failed to connect to coordinator."));
 	}
+}
+
+void UArenasGameInstance::StartFindCreatedSession(const FGuid& SessionSearchId)
+{
+	if (!SessionSearchId.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Invalid SessionSearchId provided for finding created session."));
+		return;
+	}
+	
+	StopAllSessionFindings();
+	UE_LOG(LogTemp, Warning, TEXT("#### Starting to find created session with SearchId: %s"), *(SessionSearchId.ToString()));
+	
+	// 设置定时器，定期调用FindCreatedSession函数，每隔1s查找一次会话
+	GetWorld()->GetTimerManager().SetTimer(
+		FindCreatedSessionTimerHandle, 
+		FTimerDelegate::CreateUObject(this, &UArenasGameInstance::FindCreatedSession, SessionSearchId),
+		FindCreatedSessionInterval,
+		true, 0.0f);
+	
+	// 设置超时定时器，超过指定时间后调用FindCreatedSessionTimeout函数
+	GetWorld()->GetTimerManager().SetTimer(FindCreatedSessionTimeoutTimerHandle,
+		this,
+		&UArenasGameInstance::FindCreatedSessionTimeout,
+		FindCreatedSessionTimeoutDuration,
+		false);
+	
+}
+
+void UArenasGameInstance::StopAllSessionFindings()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Stopping all session findings."));
+	StopFindingCreatedSession();
+	StopGlobalSessionFindings();
+}
+
+void UArenasGameInstance::StopFindingCreatedSession()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Stopping finding created session."));
+}
+
+void UArenasGameInstance::StopGlobalSessionFindings()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Stopping global session findings."));
+}
+
+void UArenasGameInstance::FindCreatedSession(FGuid SessionSearchId)
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Finding created session."));
+}
+
+void UArenasGameInstance::FindCreatedSessionTimeout()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Finding created session timeout."));
 }
 
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)

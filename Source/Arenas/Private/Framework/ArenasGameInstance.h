@@ -48,7 +48,23 @@ public:
 	
 private:
 	void OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId);
-
+	void StartFindCreatedSession(const FGuid& SessionSearchId);		// 开始查找已创建的会话
+	void StopAllSessionFindings();		// 停止所有会话查找
+	void StopFindingCreatedSession();		// 停止查找已创建的会话
+	void StopGlobalSessionFindings();		// 停止全局会话查找
+	
+	FTimerHandle FindCreatedSessionTimerHandle;				// 查找已创建会话定时器句柄（用于规定间隔多久执行一次定期会话查找）
+	FTimerHandle FindCreatedSessionTimeoutTimerHandle;		// 查找已创建会话超时定时器句柄（用于规定查找已创建会话的总时长）
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float FindCreatedSessionInterval = 1.f;			// 查找已创建会话间隔时长（秒）
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float FindCreatedSessionTimeoutDuration = 60.f;			// 查找已创建会话超时时长（秒）
+	
+	void FindCreatedSession(FGuid SessionSearchId);
+	void FindCreatedSessionTimeout();
+	
 private:
 	/********************************************************/
 	/*					Session Server						*/
@@ -87,3 +103,4 @@ private:
 	void LoadLevelAndListen(const TSoftObjectPtr<UWorld>& LevelToLoad);
 	
 };
+
