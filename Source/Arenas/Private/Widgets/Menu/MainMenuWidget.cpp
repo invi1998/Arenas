@@ -141,8 +141,10 @@ void UMainMenuWidget::OnJoinSessionButtonClicked()
 	// 尝试加入所选会话
 	if (!CurrentSelectedSessionIDStr.IsEmpty() && OwnerArenasGameInstance && OwnerArenasGameInstance->IsLoggedIn())
 	{
-		// OwnerArenasGameInstance->RequestJoinSession(CurrentSelectedSessionIDStr);
-		SwitchToWaitWidget(JoiningSessionText, false, true);
+		if (OwnerArenasGameInstance->JoinSessionWithId(CurrentSelectedSessionIDStr))
+		{
+			SwitchToWaitWidget(JoiningSessionText, false, true);
+		}
 	}
 }
 

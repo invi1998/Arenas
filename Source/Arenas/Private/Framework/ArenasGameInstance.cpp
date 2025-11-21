@@ -190,6 +190,25 @@ void UArenasGameInstance::StartGlobalSessionSearch()
 	
 }
 
+bool UArenasGameInstance::JoinSessionWithId(const FString& SessionIdStr)
+{
+	if (CurrentSessionSearch.IsValid())
+	{
+		const FOnlineSessionSearchResult* FoundResult = CurrentSessionSearch->SearchResults.FindByPredicate(
+			[&](const FOnlineSessionSearchResult& SearchResult)
+			{
+				return SearchResult.Session.GetSessionIdStr() == SessionIdStr;
+			});
+		
+		if (FoundResult)
+		{
+			JoinSessionWithSearchResult(*FoundResult);
+			return true;
+		}
+	}
+	return false;
+}
+
 void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
 {
 	if (bConnectedSuccessful)

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Widgets/Menu/MainMenuWidget.h"
 #include "ArenasGameInstance.generated.h"
 
 class FOnlineSessionSearch;
@@ -51,6 +52,7 @@ public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName);		// 请求创建并加入会话
 	void CancelCreateSession();		// 取消创建
 	void StartGlobalSessionSearch();	// 开始全局会话搜索
+	bool JoinSessionWithId(const FString& SessionIdStr);		// 使用会话ID加入会话
 	
 	FOnJoinSessionFailedDelegate JoinSessionFailedDelegate;		// 加入会话失败委托
 	FOnGlobalSessionSearchCompletedDelegate GlobalSessionSearchCompletedDelegate;		// 全局会话搜索完成委托
