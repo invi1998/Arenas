@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "ArenasGameInstance.generated.h"
 
 class FOnlineSessionSearch;
@@ -12,6 +13,7 @@ class IHttpRequest;
 class FOnlineSessionSearchResult;
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*Error*/);
+DECLARE_MULTICAST_DELEGATE(FOnJoinSessionFailedDelegate);
 
 /**
  * 
@@ -49,6 +51,8 @@ public:
 	void CancelCreateSession();		// 取消创建
 	void StartGlobalSessionSearch();	// 开始全局会话搜索
 	
+	FOnJoinSessionFailedDelegate OnJoinSessionFailedDelegate;		// 加入会话失败委托
+	
 private:
 	void OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId);
 	void StartFindCreatedSession(const FGuid& SessionSearchId);		// 开始查找已创建的会话
@@ -68,6 +72,7 @@ private:
 	void FindCreatedSessionComplete(bool bWasSuccessful);		// 查找已创建会话完成回调
 	void FindCreatedSession(FGuid SessionSearchId);
 	void FindCreatedSessionTimeout();
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type JoinSessionResult, int Port);		// 加入会话完成回调
 	void JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult);		// 使用搜索结果加入会话
 	
 	TSharedPtr<FOnlineSessionSearch> CurrentSessionSearch;		// 当前会话搜索对象指针

@@ -328,6 +328,46 @@ void UArenasGameInstance::FindCreatedSessionTimeout()
 	UE_LOG(LogTemp, Warning, TEXT("#### Finding created session timeout."));
 }
 
+void UArenasGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type JoinSessionResult, int Port)
+{
+	IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
+		OnJoinSessionFailedDelegate.Broadcast();
+		return;
+	}
+	
+	if (JoinSessionResult == EOnJoinSessionCompleteResult::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### Joined session successfully: %s"), *SessionName.ToString());
+		StopAllSessionFindings();
+		
+		FString TravelURL = "";
+		SessionPtr->GetResolvedConnectString(SessionName, TravelURL);
+		
+		FString TestingURL = UArenasNetFunctionLibrary::GetTestingURL();
+		if (!TestingURL.IsEmpty())
+		{
+			TravelURL = TestingURL;
+		}
+		
+		UArenasNetFunctionLibrary::ReplacePortInURL(TravelURL, Port);
+		UE_LOG(LogTemp, Warning, TEXT("#### Traveling to session at URL: %s"), *TravelURL);
+		
+		GetFirstLocalPlayerController(GetWorld())->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to join session: %s with result: %d"), *SessionName.ToString(), static_cast<int>(JoinSessionResult));
+		OnJoinSessionFailedDelegate.Broadcast();
+	}
+	
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	
+}
+
 void UArenasGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Joining session with search result."));
@@ -350,6 +390,16 @@ void UArenasGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearch
 	
 	UE_LOG(LogTemp, Warning, TEXT("#### Joining Session: %s on Port: %lld"), *SessionName, Port);
 	
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &UArenasGameInstance::OnJoinSessionComplete, static_cast<int>(Port));
+	
+	if (!SessionPtr->JoinSession(0, FName(*SessionName), SearchResult))
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to initiate join session: %s"), *SessionName);
+		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+		OnJoinSessionFailedDelegate.Broadcast();
+		return;
+	}
 	
 }
 

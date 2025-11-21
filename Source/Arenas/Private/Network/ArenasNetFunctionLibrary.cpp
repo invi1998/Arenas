@@ -143,3 +143,24 @@ FString UArenasNetFunctionLibrary::GetDefaultCoordinatorURL()
 	return CoordinatorURL;
 }
 
+FString UArenasNetFunctionLibrary::GetTestingURL()
+{
+	FString TestingURL = GetCommandlineAreAsString(GetTestingURLKey());
+	UE_LOG(LogTemp, Warning, TEXT("Testing: %s"), *TestingURL);
+	return TestingURL;
+}
+
+FName UArenasNetFunctionLibrary::GetTestingURLKey()
+{
+	return FName("TESTING_URL");
+}
+
+void UArenasNetFunctionLibrary::ReplacePortInURL(FString& InOutURL, int NewPort)
+{
+	// 使用FURL类来解析和修改URL，ETravelType设置为Absolute是因为我们要连接到一台远程机器，它将会是一个绝对ip地址
+	FURL Url(nullptr, *InOutURL, TRAVEL_Absolute);
+	Url.Port = NewPort; // 设置新的端口号
+	InOutURL = Url.ToString(); // 将修改后的URL转换回字符串形式
+	
+}
+

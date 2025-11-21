@@ -45,4 +45,9 @@ public:
 	static FString GetCoordinatorURL();				// 获取协调器URL字符串值
 	static FString GetDefaultCoordinatorURL();		// 获取默认协调器URL字符串值
 	
+	static FString GetTestingURL();				// 获取测试URL字符串值
+	static FName GetTestingURLKey();			// 获取测试URL键
+	
+	static void ReplacePortInURL(FString& InOutURL, int NewPort);		// 替换URL中的端口号
+	
 };
