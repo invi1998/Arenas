@@ -6,10 +6,12 @@
 #include "Engine/GameInstance.h"
 #include "ArenasGameInstance.generated.h"
 
+class FOnlineSessionSearch;
 class IHttpResponse;
 class IHttpRequest;
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/,
-                                       const FString& /*PlayerNickName*/, const FString& /*Error*/);
+class FOnlineSessionSearchResult;
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*Error*/);
 
 /**
  * 
@@ -61,9 +63,13 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Session")
 	float FindCreatedSessionTimeoutDuration = 60.f;			// 查找已创建会话超时时长（秒）
-	
+
+	void FindCreatedSessionComplete(bool bWasSuccessful);		// 查找已创建会话完成回调
 	void FindCreatedSession(FGuid SessionSearchId);
 	void FindCreatedSessionTimeout();
+	void JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult);		// 使用搜索结果加入会话
+	
+	TSharedPtr<FOnlineSessionSearch> CurrentSessionSearch;		// 当前会话搜索对象指针
 	
 private:
 	/********************************************************/

@@ -251,14 +251,64 @@ void UArenasGameInstance::StopGlobalSessionFindings()
 	UE_LOG(LogTemp, Warning, TEXT("#### Stopping global session findings."));
 }
 
+void UArenasGameInstance::FindCreatedSessionComplete(bool bWasSuccessful)
+{
+	if (!bWasSuccessful || !CurrentSessionSearch.IsValid() || CurrentSessionSearch->SearchResults.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### No created session found yet."));
+		return;
+	}
+	
+	StopFindingCreatedSession();
+	
+	JoinSessionWithSearchResult(CurrentSessionSearch->SearchResults[0]);
+	
+}
+
 void UArenasGameInstance::FindCreatedSession(FGuid SessionSearchId)
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Finding created session."));
+	
+	IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
+		return;
+	}
+	
+	CurrentSessionSearch = MakeShareable(new FOnlineSessionSearch());
+	if (!CurrentSessionSearch)
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
+		return;
+	}
+	
+	// 设置搜索参数
+	CurrentSessionSearch->MaxSearchResults = 1;
+	CurrentSessionSearch->bIsLanQuery = false;		// 非局域网查询
+	// 根据会话搜索ID进行过滤
+	CurrentSessionSearch->QuerySettings.Set(UArenasNetFunctionLibrary::GetSessionSearchIdKey(), SessionSearchId.ToString(), EOnlineComparisonOp::Equals);
+	
+	SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UArenasGameInstance::FindCreatedSessionComplete);
+	if (!SessionPtr->FindSessions(0, CurrentSessionSearch.ToSharedRef()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to initiate find sessions."));
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+		return;
+	}
+	
 }
 
 void UArenasGameInstance::FindCreatedSessionTimeout()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Finding created session timeout."));
+}
+
+void UArenasGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Joining session with search result."));
+	
 }
 
 void UArenasGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
