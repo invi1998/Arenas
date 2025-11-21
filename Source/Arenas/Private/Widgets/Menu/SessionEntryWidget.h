@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "OnlineSessionSettings.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "SessionEntryWidget.generated.h"
 
 /**
@@ -23,9 +24,10 @@ class ARENAS_API USessionEntryWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	
 	FOnSesionEntrySelectedDelegate OnSessionEntrySelectedDelegate;
-	
+
 	void InitializeEntry(const FString& InSessionName, const FString& InSessionIDString, const FOnlineSessionSearchResult& InSessionSearchResult);
 	
 	FORCEINLINE FString GetCachedSessionIDString() const { return CachedSessionIDString; }
@@ -33,6 +35,9 @@ public:
 private:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* SessionNameText;
+	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* PlayerAmount;
 	
 	UPROPERTY(meta=(BindWidget))
 	UButton* SessionButton;
@@ -43,5 +48,12 @@ private:
 	void OnSessionButtonClicked();
 	
 	FOnlineSessionSearchResult CachedSessionSearchResult;
+	
+	void OnSessionUpdated(FName SessionName, bool bWasSuccessful);
+	
+	void OnSessionParticipantJoin(FName SessionName, const FUniqueNetId& NetId);
+	void OnSessionParticipantLeft(FName SessionName, const FUniqueNetId& NetId, EOnSessionParticipantLeftReason OnSessionParticipantLeftReason);
+	
+	void UpdatePlayerCountDisplay();
 	
 };
