@@ -186,7 +186,7 @@ void UArenasGameInstance::StartGlobalSessionSearch()
 	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchTimerHandle, 
 		FTimerDelegate::CreateUObject(this, &UArenasGameInstance::PerformGlobalSessionSearch),
 		GlobalSessionSearchInterval,
-		true, 0.0f);)
+		true, 0.0f);
 	
 }
 
