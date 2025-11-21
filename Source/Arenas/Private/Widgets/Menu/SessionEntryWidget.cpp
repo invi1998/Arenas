@@ -13,10 +13,11 @@ void USessionEntryWidget::NativeConstruct()
 	SessionButton->OnClicked.AddDynamic(this, &USessionEntryWidget::OnSessionButtonClicked);
 }
 
-void USessionEntryWidget::InitializeEntry(const FString& InSessionName, const FString& InSessionIDString)
+void USessionEntryWidget::InitializeEntry(const FString& InSessionName, const FString& InSessionIDString, const FOnlineSessionSearchResult& InSessionSearchResult)
 {
 	SessionNameText->SetText(FText::FromString(InSessionName));
 	CachedSessionIDString = InSessionIDString;
+	CachedSessionSearchResult = InSessionSearchResult;
 }
 
 void USessionEntryWidget::OnSessionButtonClicked()

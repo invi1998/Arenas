@@ -7,6 +7,8 @@
 #include "Components/Button.h"
 #include "MainMenuWidget.generated.h"
 
+class USessionEntryWidget;
+class UScrollBox;
 class UEditableText;
 class UWaitWidget;
 class AMainMenuPlayerController;
@@ -55,6 +57,24 @@ private:
 	
 	UFUNCTION()
 	void OnNewSessionNameTextChanged(const FText& InText);
+	
+	void JoinSessionFailed();
+	void SessionEntrySelected(const FString& InSessionIDStr);
+	void UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& InOnlineSessionSearchResults);	// 更新大厅列表
+	
+	UPROPERTY(meta=(BindWidget))
+	UScrollBox* LobbySessionListScrollBox;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Session")
+	TSubclassOf<USessionEntryWidget> SessionEntryWidgetClass;
+	
+	FString CurrentSelectedSessionIDStr;
+	
+	UPROPERTY(meta=(BindWidget))
+	UArenasButton* JoinSessionButton;
+	
+	UFUNCTION()
+	void OnJoinSessionButtonClicked();
 		
 	/* Login */
 	UPROPERTY(meta=(BindWidget))

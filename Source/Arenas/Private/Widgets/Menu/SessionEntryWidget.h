@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSessionSettings.h"
 #include "Blueprint/UserWidget.h"
 #include "SessionEntryWidget.generated.h"
 
@@ -25,7 +26,7 @@ public:
 	
 	FOnSesionEntrySelectedDelegate OnSessionEntrySelectedDelegate;
 	
-	void InitializeEntry(const FString& InSessionName, const FString& InSessionIDString);
+	void InitializeEntry(const FString& InSessionName, const FString& InSessionIDString, const FOnlineSessionSearchResult& InSessionSearchResult);
 	
 	FORCEINLINE FString GetCachedSessionIDString() const { return CachedSessionIDString; }
 	
@@ -40,5 +41,7 @@ private:
 	
 	UFUNCTION()
 	void OnSessionButtonClicked();
+	
+	FOnlineSessionSearchResult CachedSessionSearchResult;
 	
 };

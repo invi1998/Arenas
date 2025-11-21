@@ -6,15 +6,19 @@
 #include "CineCameraActor.h"
 #include "WaitWidget.h"
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
 #include "Components/WidgetSwitcher.h"
 #include "Widgets/Component/ArenasButton.h"
+#include "SessionEntryWidget.h"
 #include "Framework/ArenasGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Network/ArenasNetFunctionLibrary.h"
 #include "player/MainMenuPlayerController.h"
 
 #define LOCTEXT_NAMESPACE "MainMenuWidget"
 FText LoggingInText = LOCTEXT("LoggingInText", "正在登录");
 FText CreatingSessionText = LOCTEXT("CreatingSessionText", "正在创建会话");
+FText JoiningSessionText = LOCTEXT("JoiningSessionText", "正在加入会话");
 #undef LOCTEXT_NAMESPACE
 
 void UMainMenuWidget::NativeConstruct()
@@ -35,6 +39,10 @@ void UMainMenuWidget::NativeConstruct()
 		{
 			SwitchToLoginWidget();
 		}
+		
+		OwnerArenasGameInstance->JoinSessionFailedDelegate.AddUObject(this, &UMainMenuWidget::JoinSessionFailed);
+		OwnerArenasGameInstance->GlobalSessionSearchCompletedDelegate.AddUObject(this, &UMainMenuWidget::UpdateLobbyList);
+		OwnerArenasGameInstance->StartGlobalSessionSearch();
 	}
 	
 	LoginButton->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnLoginButtonClicked);
@@ -43,6 +51,9 @@ void UMainMenuWidget::NativeConstruct()
 	CreateSessionButton->SetIsEnabled(false);
 	
 	NewSessionNameText->OnTextChanged.AddDynamic(this, &UMainMenuWidget::OnNewSessionNameTextChanged);
+	
+	JoinSessionButton->SetIsEnabled(false);
+	JoinSessionButton->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnJoinSessionButtonClicked);
 }
 
 void UMainMenuWidget::SwitchToMainWidget()
@@ -81,6 +92,57 @@ void UMainMenuWidget::OnNewSessionNameTextChanged(const FText& InText)
 	else
 	{
 		CreateSessionButton->SetIsEnabled(true);
+	}
+}
+
+void UMainMenuWidget::JoinSessionFailed()
+{
+	SwitchToMainWidget();
+}
+
+void UMainMenuWidget::SessionEntrySelected(const FString& InSessionIDStr)
+{
+	CurrentSelectedSessionIDStr = InSessionIDStr;
+	JoinSessionButton->SetIsEnabled(true);
+}
+
+void UMainMenuWidget::UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& InOnlineSessionSearchResults)
+{
+	LobbySessionListScrollBox->ClearChildren();
+	bool bCurrentSelectedSessionStillValid = false;
+	for (const FOnlineSessionSearchResult& SearchResult : InOnlineSessionSearchResults)
+	{
+		USessionEntryWidget* NewEntryWidget = CreateWidget<USessionEntryWidget>(GetOwningPlayer(), SessionEntryWidgetClass);
+		if (NewEntryWidget)
+		{
+			FString SessionName = "";
+			SearchResult.Session.SessionSettings.Get(UArenasNetFunctionLibrary::GetSessionNameKey(), SessionName);
+			FString SessionIDStr = SearchResult.Session.GetSessionIdStr();
+			
+			NewEntryWidget->InitializeEntry(SessionName, SessionIDStr, SearchResult);
+			
+			NewEntryWidget->OnSessionEntrySelectedDelegate.AddUObject(this, &UMainMenuWidget::SessionEntrySelected);
+			
+			LobbySessionListScrollBox->AddChild(NewEntryWidget);
+			
+			if (CurrentSelectedSessionIDStr == SessionIDStr)
+			{
+				bCurrentSelectedSessionStillValid = true;
+			}
+		}
+	}
+	
+	CurrentSelectedSessionIDStr = bCurrentSelectedSessionStillValid ? CurrentSelectedSessionIDStr : "";
+	JoinSessionButton->SetIsEnabled(bCurrentSelectedSessionStillValid);
+}
+
+void UMainMenuWidget::OnJoinSessionButtonClicked()
+{
+	// 尝试加入所选会话
+	if (!CurrentSelectedSessionIDStr.IsEmpty() && OwnerArenasGameInstance && OwnerArenasGameInstance->IsLoggedIn())
+	{
+		// OwnerArenasGameInstance->RequestJoinSession(CurrentSelectedSessionIDStr);
+		SwitchToWaitWidget(JoiningSessionText, false, true);
 	}
 }
 
