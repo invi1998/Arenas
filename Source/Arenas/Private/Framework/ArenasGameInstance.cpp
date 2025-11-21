@@ -168,6 +168,21 @@ void UArenasGameInstance::RequestCreateAndJoinSession(const FName& NewSessionNam
 void UArenasGameInstance::CancelCreateSession()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Cancel create session request received."));
+	StopAllSessionFindings();
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	}
+	
+	StartGlobalSessionSearch();
+	
+}
+
+void UArenasGameInstance::StartGlobalSessionSearch()
+{
+	UE_LOG(LogTemp, Warning, TEXT("#### Starting global session search."));
+	
 }
 
 void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
@@ -244,6 +259,14 @@ void UArenasGameInstance::StopAllSessionFindings()
 void UArenasGameInstance::StopFindingCreatedSession()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Stopping finding created session."));
+	GetWorld()->GetTimerManager().ClearTimer(FindCreatedSessionTimeoutTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(FindCreatedSessionTimerHandle);
+	
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	}
 }
 
 void UArenasGameInstance::StopGlobalSessionFindings()
@@ -308,6 +331,25 @@ void UArenasGameInstance::FindCreatedSessionTimeout()
 void UArenasGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Joining session with search result."));
+	IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
+		return;
+	}
+	
+	// 获取会话名称
+	FString SessionName = "";
+	SearchResult.Session.SessionSettings.Get(UArenasNetFunctionLibrary::GetSessionNameKey(), SessionName);
+	// 获取会话端口
+	int64 Port = 7777;		// 默认端口
+	if (const FOnlineSessionSetting* PortSetting = SearchResult.Session.SessionSettings.Settings.Find(UArenasNetFunctionLibrary::GetSessionPortKey()))
+	{
+		 PortSetting->Data.GetValue(Port);
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("#### Joining Session: %s on Port: %lld"), *SessionName, Port);
+	
 	
 }
 

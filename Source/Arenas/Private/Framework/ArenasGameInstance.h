@@ -47,6 +47,7 @@ public:
 	/********************************************************/
 	void RequestCreateAndJoinSession(const FName& NewSessionName);		// 请求创建并加入会话
 	void CancelCreateSession();		// 取消创建
+	void StartGlobalSessionSearch();	// 开始全局会话搜索
 	
 private:
 	void OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId);
