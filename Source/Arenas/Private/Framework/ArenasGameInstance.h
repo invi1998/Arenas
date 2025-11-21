@@ -14,6 +14,7 @@ class FOnlineSessionSearchResult;
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompletedDelegate, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*Error*/);
 DECLARE_MULTICAST_DELEGATE(FOnJoinSessionFailedDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalSessionSearchCompletedDelegate, const TArray<FOnlineSessionSearchResult>& /*SearchResults*/);
 
 /**
  * 
@@ -51,7 +52,8 @@ public:
 	void CancelCreateSession();		// 取消创建
 	void StartGlobalSessionSearch();	// 开始全局会话搜索
 	
-	FOnJoinSessionFailedDelegate OnJoinSessionFailedDelegate;		// 加入会话失败委托
+	FOnJoinSessionFailedDelegate JoinSessionFailedDelegate;		// 加入会话失败委托
+	FOnGlobalSessionSearchCompletedDelegate GlobalSessionSearchCompletedDelegate;		// 全局会话搜索完成委托
 	
 private:
 	void OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId);
@@ -59,15 +61,22 @@ private:
 	void StopAllSessionFindings();		// 停止所有会话查找
 	void StopFindingCreatedSession();		// 停止查找已创建的会话
 	void StopGlobalSessionFindings();		// 停止全局会话查找
+
+	void OnGlobalSessionSearchCompleted(bool bWasSuccessful);		// 全局会话搜索完成回调
+	void PerformGlobalSessionSearch();		// 执行全局会话搜索
 	
 	FTimerHandle FindCreatedSessionTimerHandle;				// 查找已创建会话定时器句柄（用于规定间隔多久执行一次定期会话查找）
 	FTimerHandle FindCreatedSessionTimeoutTimerHandle;		// 查找已创建会话超时定时器句柄（用于规定查找已创建会话的总时长）
+	FTimerHandle GlobalSessionSearchTimerHandle;			// 全局会话搜索定时器句柄
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Session")
 	float FindCreatedSessionInterval = 1.f;			// 查找已创建会话间隔时长（秒）
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Session")
 	float FindCreatedSessionTimeoutDuration = 60.f;			// 查找已创建会话超时时长（秒）
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float GlobalSessionSearchInterval = 2.f;			// 全局会话搜索间隔时长（秒）
 
 	void FindCreatedSessionComplete(bool bWasSuccessful);		// 查找已创建会话完成回调
 	void FindCreatedSession(FGuid SessionSearchId);

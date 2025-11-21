@@ -183,6 +183,11 @@ void UArenasGameInstance::StartGlobalSessionSearch()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Starting global session search."));
 	
+	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchTimerHandle, 
+		FTimerDelegate::CreateUObject(this, &UArenasGameInstance::PerformGlobalSessionSearch),
+		GlobalSessionSearchInterval,
+		true, 0.0f);)
+	
 }
 
 void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
@@ -272,6 +277,69 @@ void UArenasGameInstance::StopFindingCreatedSession()
 void UArenasGameInstance::StopGlobalSessionFindings()
 {
 	UE_LOG(LogTemp, Warning, TEXT("#### Stopping global session findings."));
+	if (GlobalSessionSearchTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(GlobalSessionSearchTimerHandle);
+	}
+	
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
+}
+
+void UArenasGameInstance::OnGlobalSessionSearchCompleted(bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		if (CurrentSessionSearch.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("#### Global session search found %d sessions."), CurrentSessionSearch->SearchResults.Num());
+			// 这里可以处理搜索结果，例如显示在UI上供玩家选择加入
+			GlobalSessionSearchCompletedDelegate.Broadcast(CurrentSessionSearch->SearchResults);
+			
+			for (const FOnlineSessionSearchResult& SearchResult : CurrentSessionSearch->SearchResults)
+			{
+				FString FoundSessionName = "";
+				SearchResult.Session.SessionSettings.Get(UArenasNetFunctionLibrary::GetSessionNameKey(), FoundSessionName);
+				UE_LOG(LogTemp, Warning, TEXT("#### Found Session: %s"), *FoundSessionName);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### Global session search Completed with failure."));
+	}
+
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
+	
+	
+}
+
+void UArenasGameInstance::PerformGlobalSessionSearch()
+{
+	UE_LOG(LogTemp, Warning, TEXT("####  -------- Performing global session search. ---------"));
+	IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
+		return;
+	}
+	CurrentSessionSearch = MakeShareable(new FOnlineSessionSearch());
+	CurrentSessionSearch->MaxSearchResults = 20;
+	CurrentSessionSearch->bIsLanQuery = false;		// 非局域网查询
+	
+	SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UArenasGameInstance::OnGlobalSessionSearchCompleted);
+	if (!SessionPtr->FindSessions(0, CurrentSessionSearch.ToSharedRef()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("#### Failed to find sessions."));
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
+	
 }
 
 void UArenasGameInstance::FindCreatedSessionComplete(bool bWasSuccessful)
@@ -334,7 +402,7 @@ void UArenasGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessio
 	if (!SessionPtr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("#### Failed to get session ptr."));
-		OnJoinSessionFailedDelegate.Broadcast();
+		JoinSessionFailedDelegate.Broadcast();
 		return;
 	}
 	
@@ -361,7 +429,7 @@ void UArenasGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessio
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("#### Failed to join session: %s with result: %d"), *SessionName.ToString(), static_cast<int>(JoinSessionResult));
-		OnJoinSessionFailedDelegate.Broadcast();
+		JoinSessionFailedDelegate.Broadcast();
 	}
 	
 	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
@@ -397,7 +465,7 @@ void UArenasGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearch
 	{
 		UE_LOG(LogTemp, Error, TEXT("#### Failed to initiate join session: %s"), *SessionName);
 		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
-		OnJoinSessionFailedDelegate.Broadcast();
+		JoinSessionFailedDelegate.Broadcast();
 		return;
 	}
 	
