@@ -112,12 +112,13 @@ void UMainMenuWidget::UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& 
 	bool bCurrentSelectedSessionStillValid = false;
 	for (const FOnlineSessionSearchResult& SearchResult : InOnlineSessionSearchResults)
 	{
-		USessionEntryWidget* NewEntryWidget = CreateWidget<USessionEntryWidget>(GetOwningPlayer(), SessionEntryWidgetClass);
-		if (NewEntryWidget)
+		if (USessionEntryWidget* NewEntryWidget = CreateWidget<USessionEntryWidget>(GetOwningPlayer(), SessionEntryWidgetClass))
 		{
 			FString SessionName = "";
 			SearchResult.Session.SessionSettings.Get(UArenasNetFunctionLibrary::GetSessionNameKey(), SessionName);
 			FString SessionIDStr = SearchResult.Session.GetSessionIdStr();
+			
+			UE_LOG(LogTemp, Warning, TEXT("#### Found Session: %s, ID: %s"), *SessionName, *SessionIDStr);
 			
 			NewEntryWidget->InitializeEntry(SessionName, SessionIDStr, SearchResult);
 			

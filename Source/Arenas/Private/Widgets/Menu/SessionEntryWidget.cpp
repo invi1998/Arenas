@@ -38,6 +38,8 @@ void USessionEntryWidget::InitializeEntry(const FString& InSessionName, const FS
 	CachedSessionIDString = InSessionIDString;
 	CachedSessionSearchResult = InSessionSearchResult;
 	
+	UpdatePlayerCountDisplay();
+	
 	// 监听会话里的玩家数量，以及最大玩家数量
 	
 	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
@@ -78,8 +80,11 @@ void USessionEntryWidget::UpdatePlayerCountDisplay()
 	{
 		// 更安全的计算方式
 		int32 MaxPlayers = CachedSessionSearchResult.Session.SessionSettings.NumPublicConnections;
+		// return Result.OnlineResult.Session.SessionSettings.NumPublicConnections - Result.OnlineResult.Session.NumOpenPublicConnections;
 		int32 CurrentPlayers = FMath::Max(0, MaxPlayers - CachedSessionSearchResult.Session.NumOpenPublicConnections);
 
+		UE_LOG(LogTemp, Warning, TEXT("#### Session %s Player Count: %d/%d"), *CachedSessionIDString, CurrentPlayers, MaxPlayers);
+		
 		// 添加边界检查
 		CurrentPlayers = FMath::Clamp(CurrentPlayers, 0, MaxPlayers);
 		PlayerAmount->SetText(FText::Format(NSLOCTEXT("Game", "PlayerCount", "{0}/{1} 玩家"), CurrentPlayers, MaxPlayers));
