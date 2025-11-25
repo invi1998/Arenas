@@ -33,13 +33,13 @@ float UMMC_AttackDamagePRBase::CalculateBaseMagnitude_Implementation(const FGame
 	* 如果是智力英雄：每一点智力额外增加1点攻击力
 	* 如果全才英雄：每一点敏捷、力量、智力额外增加0.45点攻击力
 	 */
-	if (HeroType == 1)	// 敏捷英雄
-	{
-		return Agility;
-	}
-	else if (HeroType == 2)	// 力量英雄
+	if (HeroType == 1)	// 力量英雄
 	{
 		return Strength;
+	}
+	else if (HeroType == 2)	// 敏捷英雄
+	{
+		return Agility;
 	}
 	else if (HeroType == 3)	// 智力英雄
 	{
