@@ -200,7 +200,7 @@ FGenericTeamId UArenasGameplayAbility::GetOwningTeamId() const
 	return FGenericTeamId::NoTeam;
 }
 
-void UArenasGameplayAbility::ApplyAbilityMagicGameplayEffectToTarget(FGameplayAbilityTargetDataHandle TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel)
+void UArenasGameplayAbility::ApplyAbilityMagicGameplayEffectToTarget(const FGameplayAbilityTargetDataHandle& TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel)
 {
 	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectClass, GameplayEffectLevel);
 	float MagicDamageValue = MagicDamage.GetValueAtLevel(GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));

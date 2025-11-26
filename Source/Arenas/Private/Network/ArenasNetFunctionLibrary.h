@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineServices.h"
 
 #include "ArenasNetFunctionLibrary.generated.h"
 
@@ -20,6 +21,7 @@ class ARENAS_API UArenasNetFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	static IOnlineSessionPtr GetSessionPtr();		// 获取在线会话对象指针
 	static IOnlineIdentityPtr GetIdentityPtr();	// 获取在线身份对象指针
+	static UE::Online::IOnlineServicesPtr GetOnlineServicesPtr(); // 获取在线服务对象指针
 	
 	// 生成在线会话设置
 	static FOnlineSessionSettings GenerateOnlineSessionSettings(const FName& SessionName, int Port, const FString& SessionSearchId);

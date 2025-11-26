@@ -9,6 +9,8 @@
 #include "Network/ArenasNetFunctionLibrary.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
+#include "Online/OnlineServicesEngineUtils.h"
+#include "Online/Sessions.h"
 
 void UArenasGameInstance::StartMatch()
 {
@@ -209,6 +211,33 @@ bool UArenasGameInstance::JoinSessionWithId(const FString& SessionIdStr)
 	return false;
 }
 
+void UArenasGameInstance::LeaveCurrentSessionAndReturnToMainMenu()
+{
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		
+		if (SessionPtr->GetNamedSession(CurrentPlayerJoinedSessionName))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("#### Destroying local session copy: %s"), *CurrentPlayerJoinedSessionName.ToString());
+			
+			SessionPtr->OnDestroySessionCompleteDelegates.AddUObject(this, &UArenasGameInstance::OnLeaveSessionComplete);
+			
+			// 离开当前会话（DestroySession销毁的是本地会话实例，不会销毁服务器端会话）
+			SessionPtr->DestroySession(CurrentPlayerJoinedSessionName);
+		}
+		else
+		{
+			// 如果没有找到命名的会话，尝试结束当前会话
+			UE_LOG(LogTemp, Warning, TEXT("#### No named session found, ending current session."));
+			SessionPtr->EndSession(NAME_None);
+		}
+		
+	}
+	
+	ReturnToMainMenuDirectly();
+	
+}
+
 void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
 {
 	if (bConnectedSuccessful)
@@ -361,6 +390,24 @@ void UArenasGameInstance::PerformGlobalSessionSearch()
 	
 }
 
+void UArenasGameInstance::OnLeaveSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+}
+
+void UArenasGameInstance::ReturnToMainMenuDirectly()
+{
+	const FName LevelURL = FName(FPackageName::ObjectPathToPackageName(MainMenuMap.ToString()));
+	if (!LevelURL.IsNone())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("#### Returning to main menu: %s"), *LevelURL.ToString());
+		GetFirstLocalPlayerController(GetWorld())->ClientTravel(LevelURL.ToString(), ETravelType::TRAVEL_Absolute);
+	}
+}
+
+void UArenasGameInstance::CleanupSessionState()
+{
+}
+
 void UArenasGameInstance::FindCreatedSessionComplete(bool bWasSuccessful)
 {
 	if (!bWasSuccessful || !CurrentSessionSearch.IsValid() || CurrentSessionSearch->SearchResults.Num() == 0)
@@ -441,6 +488,9 @@ void UArenasGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessio
 		
 		UArenasNetFunctionLibrary::ReplacePortInURL(TravelURL, Port);
 		UE_LOG(LogTemp, Warning, TEXT("#### Traveling to session at URL: %s"), *TravelURL);
+		
+		// CurrentPlayerJoinedSessionId = SessionPtr->GetSessionIdStr(SessionName);
+		CurrentPlayerJoinedSessionName = SessionName;
 		
 		GetFirstLocalPlayerController(GetWorld())->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
 		

@@ -53,6 +53,7 @@ public:
 	void CancelCreateSession();		// 取消创建
 	void StartGlobalSessionSearch();	// 开始全局会话搜索
 	bool JoinSessionWithId(const FString& SessionIdStr);		// 使用会话ID加入会话
+	void LeaveCurrentSessionAndReturnToMainMenu();			// 终止客户端会话并返回主菜单
 	
 	FOnJoinSessionFailedDelegate JoinSessionFailedDelegate;		// 加入会话失败委托
 	FOnGlobalSessionSearchCompletedDelegate GlobalSessionSearchCompletedDelegate;		// 全局会话搜索完成委托
@@ -66,6 +67,10 @@ private:
 
 	void OnGlobalSessionSearchCompleted(bool bWasSuccessful);		// 全局会话搜索完成回调
 	void PerformGlobalSessionSearch();		// 执行全局会话搜索
+	
+	void OnLeaveSessionComplete(FName SessionName, bool bWasSuccessful);
+	void ReturnToMainMenuDirectly();
+	void CleanupSessionState();
 	
 	FTimerHandle FindCreatedSessionTimerHandle;				// 查找已创建会话定时器句柄（用于规定间隔多久执行一次定期会话查找）
 	FTimerHandle FindCreatedSessionTimeoutTimerHandle;		// 查找已创建会话超时定时器句柄（用于规定查找已创建会话的总时长）
@@ -87,6 +92,8 @@ private:
 	void JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult);		// 使用搜索结果加入会话
 	
 	TSharedPtr<FOnlineSessionSearch> CurrentSessionSearch;		// 当前会话搜索对象指针
+	FString CurrentPlayerJoinedSessionId;		// 当前玩家已加入的会话ID
+	FName CurrentPlayerJoinedSessionName;		// 当前玩家已加入的会话名称
 	
 private:
 	/********************************************************/

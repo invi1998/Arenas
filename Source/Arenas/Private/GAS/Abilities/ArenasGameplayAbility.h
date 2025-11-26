@@ -57,7 +57,7 @@ protected:
 
 	FGenericTeamId GetOwningTeamId() const;
 
-	void ApplyAbilityMagicGameplayEffectToTarget(FGameplayAbilityTargetDataHandle TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel = 1);
+	void ApplyAbilityMagicGameplayEffectToTarget(const FGameplayAbilityTargetDataHandle& TargetData, TSubclassOf<UGameplayEffect> GameplayEffectClass, int32 GameplayEffectLevel = 1);
 
 private:
 	UPROPERTY()

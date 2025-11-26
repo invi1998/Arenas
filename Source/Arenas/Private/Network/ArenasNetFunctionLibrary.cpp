@@ -17,8 +17,14 @@ IOnlineIdentityPtr UArenasNetFunctionLibrary::GetIdentityPtr()
 	return Subsystem->GetIdentityInterface();
 }
 
+UE::Online::IOnlineServicesPtr UArenasNetFunctionLibrary::GetOnlineServicesPtr()
+{
+	UE::Online::IOnlineServicesPtr Services = UE::Online::GetServices(UE::Online::EOnlineServices::Null, NAME_None);
+	return Services;
+}
+
 FOnlineSessionSettings UArenasNetFunctionLibrary::GenerateOnlineSessionSettings(const FName& SessionName, int Port,
-	const FString& SessionSearchId)
+                                                                                const FString& SessionSearchId)
 {
 	int NumPublicConnections = GetPlayerCounterPerTeam() * 2; // 每队玩家数量乘以2作为公共连接数
 	

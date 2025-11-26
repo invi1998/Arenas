@@ -57,6 +57,10 @@
 		{
 			"Name": "SocketSubsystemEOS",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesNull",
+			"Enabled": true
 		}
 	]
 }
