@@ -234,8 +234,6 @@ void UArenasGameInstance::LeaveCurrentSessionAndReturnToMainMenu()
 		
 	}
 	
-	ReturnToMainMenuDirectly();
-	
 }
 
 void UArenasGameInstance::OnCreateAndJoinSessionResponseReceived(TSharedPtr<IHttpRequest> HttpRequest, TSharedPtr<IHttpResponse> HttpResponse, bool bConnectedSuccessful, FName SessionName, FGuid SessionSearchId)
@@ -392,6 +390,7 @@ void UArenasGameInstance::PerformGlobalSessionSearch()
 
 void UArenasGameInstance::OnLeaveSessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	ReturnToMainMenuDirectly();
 }
 
 void UArenasGameInstance::ReturnToMainMenuDirectly()

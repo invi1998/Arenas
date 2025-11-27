@@ -56,6 +56,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UArenasButton* StartMatchButton;
+	
+	UPROPERTY(meta=(BindWidget))
+	UArenasButton* ReturnMainMenuButton;
 
 	UPROPERTY(EditDefaultsOnly, Category="TeamSelection")
 	TSubclassOf<UTeamSelectionWidget> TeamSelectionWidgetClass;
@@ -100,5 +103,8 @@ private:
 
 	UFUNCTION()
 	void OnStartMatchClicked();
+	
+	UFUNCTION()
+	void OnReturnMainMenuClicked();
 	
 };

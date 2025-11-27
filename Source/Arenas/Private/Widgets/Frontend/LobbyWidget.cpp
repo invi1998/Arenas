@@ -14,6 +14,7 @@
 #include "Components/UniformGridSlot.h"
 #include "Components/WidgetSwitcher.h"
 #include "Framework/ArenasAssetManager.h"
+#include "Framework/ArenasGameInstance.h"
 #include "Framework/ArenasGameState.h"
 #include "GameFramework/PlayerStart.h"
 #include "GAS/ArenasAbilitySystemComponent.h"
@@ -46,6 +47,8 @@ void ULobbyWidget::NativeConstruct()
 	StartHeroSelectionButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartHeroSelectionClicked);
 	StartMatchButton->ButtonArea->SetIsEnabled(false);
 	StartMatchButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartMatchClicked);
+	ReturnMainMenuButton->ButtonArea->SetIsEnabled(true);
+	ReturnMainMenuButton->ButtonArea->OnClicked.AddDynamic(this, &ULobbyWidget::OnReturnMainMenuClicked);
 	// 加载角色PA
 	UArenasAssetManager::Get().LoadCharacterDefinitions(FStreamableDelegate::CreateUObject(this, &ULobbyWidget::OnLoadCharacterDefinitions));
 
@@ -237,5 +240,14 @@ void ULobbyWidget::OnStartMatchClicked()
 	if (LobbyPlayerController)
 	{
 		LobbyPlayerController->Server_RequestStartMatch();
+	}
+}
+
+void ULobbyWidget::OnReturnMainMenuClicked()
+{
+	if (UArenasGameInstance* GameInstance = Cast<UArenasGameInstance>(GetGameInstance()))
+	{
+		ReturnMainMenuButton->ButtonArea->SetIsEnabled(false);
+		GameInstance->LeaveCurrentSessionAndReturnToMainMenu();
 	}
 }
