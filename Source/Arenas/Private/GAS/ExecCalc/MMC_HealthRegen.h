@@ -16,8 +16,8 @@ struct FArenasHealthRegenCalculationData
 
 	FArenasHealthRegenCalculationData()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Strength, Source, true);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, HealthRegen, Source, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Strength, Source, false);		// true表示拍摄快照（即：计算时使用的值是效果应用时的值，而不是当前值）， false表示实时获取
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, HealthRegen, Source, false);
 	}
 	
 };

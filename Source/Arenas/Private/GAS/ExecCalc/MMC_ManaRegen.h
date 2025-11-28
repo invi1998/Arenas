@@ -20,8 +20,8 @@ struct FArenasManaRegenCalculationData
 
 	FArenasManaRegenCalculationData()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Intelligence, Source, true);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, ManaRegen, Source, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasHeroAttributeSet, Intelligence, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UArenasAttributeSet, ManaRegen, Source, false);
 	}
 	
 };
