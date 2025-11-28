@@ -54,6 +54,9 @@ void UMainMenuWidget::NativeConstruct()
 	
 	JoinSessionButton->SetIsEnabled(false);
 	JoinSessionButton->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnJoinSessionButtonClicked);
+	
+	ExitGameButton_Main->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnExitGameButtonMainClicked);
+	ExitGameButton_Login->ButtonArea->OnClicked.AddDynamic(this, &UMainMenuWidget::OnExitGameButtonMainClicked);
 }
 
 void UMainMenuWidget::SwitchToMainWidget()
@@ -147,6 +150,11 @@ void UMainMenuWidget::OnJoinSessionButtonClicked()
 			SwitchToWaitWidget(JoiningSessionText, false, true);
 		}
 	}
+}
+
+void UMainMenuWidget::OnExitGameButtonMainClicked()
+{
+	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, true);
 }
 
 void UMainMenuWidget::SwitchToLoginWidget()

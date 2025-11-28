@@ -73,8 +73,14 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UArenasButton* JoinSessionButton;
 	
+	UPROPERTY(meta=(BindWidget))
+	UArenasButton* ExitGameButton_Main;
+	
 	UFUNCTION()
 	void OnJoinSessionButtonClicked();
+	
+	UFUNCTION()
+	void OnExitGameButtonMainClicked();
 		
 	/* Login */
 	UPROPERTY(meta=(BindWidget))
@@ -82,6 +88,9 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	UArenasButton* LoginButton;
+	
+	UPROPERTY(meta=(BindWidget))
+	UArenasButton* ExitGameButton_Login;
 	
 	void SwitchToLoginWidget();
 	
