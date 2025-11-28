@@ -134,10 +134,6 @@ void AArenasAIController::BeginPlay()
 		// 设置人群避让半径
 		CrowdFollowingComp->SetCrowdCollisionQueryRange(CollisionQueryRange);
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AArenasAIController::BeginPlay: CrowdFollowingComponent is null!"));
-	}
 }
 
 void AArenasAIController::OnTargetPerceptionUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
