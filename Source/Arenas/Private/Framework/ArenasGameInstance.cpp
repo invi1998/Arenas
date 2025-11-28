@@ -390,6 +390,12 @@ void UArenasGameInstance::PerformGlobalSessionSearch()
 
 void UArenasGameInstance::OnLeaveSessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	UE_LOG(LogTemp, Warning, TEXT("#### Left session: %s, Success: %s"), *SessionName.ToString(), bWasSuccessful ? TEXT("True") : TEXT("False"));
+	
+	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
+	{
+		SessionPtr->OnDestroySessionCompleteDelegates.RemoveAll(this);
+	}
 	ReturnToMainMenuDirectly();
 }
 
@@ -611,6 +617,9 @@ void UArenasGameInstance::OnEndSessionComplete(FName SessionName, bool bWasSucce
 
 void UArenasGameInstance::TerminateSessionServer()
 {
+	// 获取会话里的所有玩家，将其全部Travel到主菜单
+	
+	
 	if (IOnlineSessionPtr SessionPtr = UArenasNetFunctionLibrary::GetSessionPtr())
 	{
 		SessionPtr->OnEndSessionCompleteDelegates.RemoveAll(this);

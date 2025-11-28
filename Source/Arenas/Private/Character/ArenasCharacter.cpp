@@ -409,7 +409,7 @@ void AArenasCharacter::Respawn()
 	
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	SetStatusGaugeEnabled(true);
+	SetStatusGaugeEnabled(true);		// 重新启用头顶UI
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.0f);
 
 	if (HasAuthority() && GetController())

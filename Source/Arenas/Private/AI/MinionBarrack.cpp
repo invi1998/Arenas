@@ -197,6 +197,7 @@ void AMinionBarrack::SpawnOrFindOneMinion()
 	{
 		MinionToSpawn->SetActorTransform(SpawnPointTransform);
 		MinionToSpawn->RespawnImmediately();
+		MinionToSpawn->SetGoal(GetCurrentMinionGoal());
 	}
 	else
 	{
@@ -230,8 +231,6 @@ void AMinionBarrack::SpawnMinionGroup()
 			},
 			SpawnMinionInterval,
 			true);
-		
-		
 	}
 }
 

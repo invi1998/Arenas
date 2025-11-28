@@ -235,6 +235,7 @@ void AArenasAIController::OnOwnerDeadTagChanged(FGameplayTag GameplayTag, int Co
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("AArenasAIController::OnOwnerDeadTagChanged: Owner Revived ------------------- "));
 		GetBrainComponent()->StartLogic();
 		EnableAllPerception(); // 如果角色重生，启用所有感知
 		bIsPawnDead = false;
