@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LobbyWidget.generated.h"
 
+class AArenasGameSession;
 class UPlayerTeamLayoutWidget;
 class UAbilityListView;
 class ACharacterDisplay;

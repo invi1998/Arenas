@@ -245,6 +245,11 @@ void ULobbyWidget::OnStartMatchClicked()
 
 void ULobbyWidget::OnReturnMainMenuClicked()
 {
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_RequestReturnMainMenu();
+	}
+	
 	if (UArenasGameInstance* GameInstance = Cast<UArenasGameInstance>(GetGameInstance()))
 	{
 		ReturnMainMenuButton->ButtonArea->SetIsEnabled(false);

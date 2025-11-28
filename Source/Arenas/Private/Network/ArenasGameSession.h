@@ -6,6 +6,9 @@
 #include "GameFramework/GameSession.h"
 #include "ArenasGameSession.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerJoinSessionDelegate, const FUniqueNetIdRepl& /*UniqueId*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerLeaveSessionDelegate, const FUniqueNetIdRepl& /*UniqueId*/);
+
 UCLASS()
 class ARENAS_API AArenasGameSession : public AGameSession
 {
@@ -14,6 +17,9 @@ class ARENAS_API AArenasGameSession : public AGameSession
 public:
 	// Sets default values for this actor's properties
 	AArenasGameSession();
+	
+	FOnPlayerJoinSessionDelegate OnPlayerJoinSessionDelegate;					// 玩家加入会话委托
+	FOnPlayerLeaveSessionDelegate OnPlayerLeaveSessionDelegate;					// 玩家离开会话委托
 	
 	virtual bool ProcessAutoLogin() override;		// 处理自动登录
 	

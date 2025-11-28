@@ -21,6 +21,9 @@ public:
 	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestChangeSlotSelection(uint8 InRequestedSlotID);		// 向服务端请求改变队列插槽
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RequestReturnMainMenu();		// 向服务端请求返回主菜单
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_StartHeroSelection();

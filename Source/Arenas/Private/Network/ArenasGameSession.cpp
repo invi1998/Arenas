@@ -20,6 +20,7 @@ bool AArenasGameSession::ProcessAutoLogin()
 void AArenasGameSession::RegisterPlayer(APlayerController* NewPlayer, const FUniqueNetIdRepl& UniqueId, bool bWasFromInvite)
 {
 	Super::RegisterPlayer(NewPlayer, UniqueId, bWasFromInvite);
+	OnPlayerJoinSessionDelegate.Broadcast(UniqueId);
 	if (UArenasGameInstance* ArenasGameInstance = GetGameInstance<UArenasGameInstance>())
 	{
 		// 玩家注册到会话后，清除等待玩家加入会话的超时定时器
@@ -30,6 +31,7 @@ void AArenasGameSession::RegisterPlayer(APlayerController* NewPlayer, const FUni
 void AArenasGameSession::UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId)
 {
 	Super::UnregisterPlayer(InSessionName, UniqueId);
+	OnPlayerLeaveSessionDelegate.Broadcast(UniqueId);
 	if (UArenasGameInstance* ArenasGameInstance = GetGameInstance<UArenasGameInstance>())
 	{
 		ArenasGameInstance->PlayerLeftSession(UniqueId);

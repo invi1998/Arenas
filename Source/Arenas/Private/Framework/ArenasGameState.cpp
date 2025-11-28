@@ -134,6 +134,21 @@ bool AArenasGameState::IsDefinitionSelected(const UPA_CharacterDefinition* InCha
 	return SelectionPtr != nullptr;
 }
 
+void AArenasGameState::RequestPlayerReturnToMainMenu(const APlayerState* InPlayerState)
+{
+	if (!HasAuthority()) return;
+	// 从选择数组中移除该玩家的选择数据
+	// RemoveAll 是更安全、简洁和高效的选择。它在一次遍历过程中就完成了所有符合条件的元素的查找与移除，避免了中间状态，也无需担心指针失效问题
+	PlayerSelectionArray.RemoveAll(
+	[&](const FPlayerSelection& SelectionData)
+	{
+		return SelectionData.IsForPlayer(InPlayerState);
+	});
+	
+	OnPlayerSelectionChangedSignature.Broadcast(PlayerSelectionArray);
+	
+}
+
 bool AArenasGameState::CanStartHeroSelection() const
 {
 	return PlayerSelectionArray.Num() == PlayerArray.Num();		// 所有玩家都已选择槽位

@@ -35,6 +35,8 @@ public:
 	bool IsSlotOccupied(uint8 InTeamSelectionSlotId) const;		// 是否有玩家占用了该槽位
 	bool IsDefinitionSelected(const UPA_CharacterDefinition* InCharacterDef) const;		// 该角色定义是否已被选择
 	const TArray<FPlayerSelection>& GetPlayerSelectionArray() const { return PlayerSelectionArray; }
+	
+	void RequestPlayerReturnToMainMenu(const APlayerState* InPlayerState);		// 请求玩家返回主菜单
 
 	bool CanStartHeroSelection() const;		// 是否可以开始英雄选择
 	

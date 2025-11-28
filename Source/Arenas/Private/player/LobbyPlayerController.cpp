@@ -12,6 +12,21 @@ ALobbyPlayerController::ALobbyPlayerController()
 	bAutoManageActiveCameraTarget = false;		// 禁用自动管理活动摄像机目标，因为在大厅界面，我们希望在玩家选择英雄后，才切换摄像机视角
 }
 
+void ALobbyPlayerController::Server_RequestReturnMainMenu_Implementation()
+{
+	if (!GetWorld()) return;
+
+	AArenasGameState* ArenasGameState = GetWorld()->GetGameState<AArenasGameState>();
+	if (!ArenasGameState) return;
+
+	ArenasGameState->RequestPlayerReturnToMainMenu(GetPlayerState<APlayerState>());
+}
+
+bool ALobbyPlayerController::Server_RequestReturnMainMenu_Validate()
+{
+	return true;
+}
+
 void ALobbyPlayerController::Server_RequestStartMatch_Implementation()
 {
 	if (UArenasGameInstance* ArenasGameInstance = GetGameInstance<UArenasGameInstance>())
