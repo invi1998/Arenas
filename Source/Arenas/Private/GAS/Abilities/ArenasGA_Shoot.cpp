@@ -64,6 +64,8 @@ void UArenasGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 		AimTargetASC->RegisterGameplayTagEvent(ArenasGameplayTags::Status_Dead).RemoveAll(this);
 		AimTargetASC = nullptr;
 	}
+	
+	AimTarget = nullptr;
 
 	OnStopShoot(FGameplayEventData());
 
