@@ -17,6 +17,7 @@ UArenasGA_Combo::UArenasGA_Combo() : ComboMontage(nullptr)
 	TempAbilityTags.AddTag(ArenasGameplayTags::Ability_BasicAttack);
 	SetAssetTags(TempAbilityTags);
 	BlockAbilitiesWithTag.AddTag(ArenasGameplayTags::Ability_BasicAttack);
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 FGameplayTag UArenasGA_Combo::GetComboChangeEventTag()
@@ -80,7 +81,7 @@ void UArenasGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		WaitComboDamageEventTask->ReadyForActivation();
 	}
 	
-
+	NextComboName = NAME_None;
 	SetupWaitComboInputPressTask();
 }
 
