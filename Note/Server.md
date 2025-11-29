@@ -158,3 +158,90 @@ if __name__ == '__main__':
 
 ```
 
+
+
+## Docker容器化
+
+安装linux
+
+```shell
+wsl --install -d Ubuntu
+```
+
+国内建议，直接安装到F盘
+
+```shell
+wsl --install --web-download --location F:\wsl
+```
+
+### 终端美化
+
+> 使用 Shell 命令：
+>
+> ```
+> curl -sS https://starship.rs/install.sh | sh
+> ```
+>
+> 安装 Starship
+
+### 安装Docker
+
+```shell
+sudo apt install docker.io
+```
+
+### 对sudo用户进行修改
+
+**将当前登录用户添加到名为 `docker` 的用户组中。**
+
+```shell
+sudo usermod -aG docker $USERE
+```
+
+### 查看docker运行状态
+
+```shell
+sudo systemctl status docker
+```
+
+### 安装docker compose
+
+.bashrc 下添加如下配置（环境变量）
+
+```shell
+export DOCKER_CONFIG="$HOME/.docker"
+```
+
+创建.docker文件夹，然后在它里面继续创建.cli-plugins文件夹
+
+```shell
+~
+❯ mkdir .docker
+
+~
+❯ cd .docker/
+
+~/.docker
+
+~/.docker
+❯ mkdir cli-plugins
+
+~/.docker
+❯ cd cli-plugins/
+
+~/.docker/cli-plugins
+❯
+```
+
+然后在这里下载Docker compose
+
+```she
+curl -SL https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-linux-x86_64 -o docker-compose
+```
+
+将下载后的文件改为可执行模式
+
+```shell
+chmod +x docker-compose
+```
+
