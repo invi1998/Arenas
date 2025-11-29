@@ -100,7 +100,6 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 					KillerASC->ExecuteGameplayCue(GetDropCoinGameplayCueTag(), CueParameters);
 				}
 
-				/*
 				// 延迟触发第二个Cue
 				FTimerHandle GetCoinTimerHandle;
 				FTimerDelegate GetCoinDelegate = FTimerDelegate::CreateLambda([KillerASC, this, Killer]()
