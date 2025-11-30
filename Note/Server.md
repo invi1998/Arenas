@@ -245,3 +245,51 @@ curl -SL https://github.com/docker/compose/releases/download/v2.40.3/docker-comp
 chmod +x docker-compose
 ```
 
+编译dockerfile
+
+```shell
+Arenas/ServerDeploy/coordinator on  main
+❯ docker build -t coordinator .
+```
+
+查看docker编译后的镜像
+
+```sh
+Arenas/ServerDeploy/coordinator on  main took 1m36s
+❯ docker images
+REPOSITORY    TAG         IMAGE ID       CREATED          SIZE
+coordinator   latest      6a8e653c6d8d   22 seconds ago   169MB
+<none>        <none>      aa96c07e393d   11 minutes ago   169MB
+python        3.12-slim   445121148b18   12 days ago      119MB
+```
+
+没问题就运行docker文件
+
+```shell
+Arenas/ServerDeploy/coordinator on  main
+❯ docker run --rm -p 80:80 coordinator
+```
+
+查看linux的ip
+
+```shell
+Arenas/ServerDeploy/coordinator on  main
+❯ ip addr show eth0
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1280 qdisc mq state UP group default qlen 1000
+    link/ether ...........
+    inet xxxxxxxxx/20 brd 172.29.127.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::215:5dff:fe64:d8ce/64 scope link
+       valid_lft forever preferred_lft forever
+```
+
+
+
+这样我们就在Linux下的docker容器里运行了一个协调程序（专门用来监听游戏客户端的连接并在服务器里启动一个游戏服务端）
+
+测试连接，找到打包好的项目游戏文件，用命令行携带参数的方法启动客户端
+
+```shell
+.\Arenas.exe -COORDINATOR_URL="1xxxxxx4" -TESTING_URL="17xxxxxxx:7777" -log
+```
+
