@@ -7,6 +7,17 @@ import re
 
 app = Flask(__name__)
 
+# 通过docker查询可用端口的函数
+def GetUesedPortS():
+    result = subprocess.run(['docker', 'ps', '--format', '{{.Ports}}'], capture_output=True, text=True)
+    output = result.stdout
+    print("Docker ps output:", output)
+
+
+def CreateServerImpl(sessionName, sessionSearchID):
+    port = GetUesedPortS()
+
+
 # TODO: 在后续接入Docker容器化后，此处应该被删除
 nextAvailablePort = 7777
 
@@ -44,5 +55,6 @@ def CreateSession():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    # app.run(host='0.0.0.0', port=80)
+    CreateServerImpl("TestSession", "TestSearchID")
 

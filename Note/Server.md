@@ -293,3 +293,7 @@ Arenas/ServerDeploy/coordinator on  main
 .\Arenas.exe -COORDINATOR_URL="1xxxxxx4" -TESTING_URL="17xxxxxxx:7777" -log
 ```
 
+
+
+## 通过 Docker 查询已占用的端口
+
