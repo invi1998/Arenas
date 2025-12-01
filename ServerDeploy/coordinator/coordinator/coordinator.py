@@ -8,7 +8,7 @@ import re
 app = Flask(__name__)
 
 # 通过docker查询可用端口的函数
-def GetUesedPortS():
+def GetUesedPorts():
     result = subprocess.run(['docker', 'ps', '--format', '{{.Ports}}'], capture_output=True, text=True)
     output = result.stdout
 
@@ -23,11 +23,11 @@ def GetUesedPortS():
 
 
 def FindNextAvailablePort(startPort=7777, endPort=8000):
-    usedPorts = GetUesedPortS()
+    usedPorts = GetUesedPorts()
     for port in range(startPort, endPort + 1):
         if port not in usedPorts:
             return port
-    raise Exception("No available ports found in the specified range.")
+    raise 0
 
 def CreateServerImpl(sessionName, sessionSearchID):
     port = FindNextAvailablePort()
@@ -36,10 +36,8 @@ def CreateServerImpl(sessionName, sessionSearchID):
             'docker',
             'run',
             '--rm',                         # 容器停止后自动删除
-            '-p',                           # 端口映射
-            f'{port}:{port}/tcp',           # 端口映射(TCP)
-            '-p',                           # 端口映射
-            f'{port}:{port}/udp',           # 端口映射(UDP)
+            '-p', f'{port}:{port}/tcp',           # 端口映射(TCP)
+            '-p', f'{port}:{port}/udp',           # 端口映射(UDP)
             'arenasserver',                 # 实际的Docker镜像名称
             '-server',                      # 启动服务器参数
             '-log',                         # 启动日志参数
