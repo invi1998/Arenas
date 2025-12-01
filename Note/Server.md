@@ -297,3 +297,24 @@ Arenas/ServerDeploy/coordinator on  main
 
 ## 通过 Docker 查询已占用的端口
 
+首先在Linux下准备好python环境，然后和Windows一样，我们也需要在文件夹里单独虚拟化python环境
+
+```shell
+❯ python3 -m venv .venv
+```
+
+然后激活启用虚拟环境
+
+```shell
+❯ source .venv/bin/activate
+```
+
+安装flask
+
+```shell
+> pip3 install flask
+```
+
+
+
+> 个人Linux环境问题（源），在构建coordinator镜像的时候使用国内网络构建，构建arenasserver镜像的时候需要挂载VPN

@@ -13,3 +13,5 @@ WORKDIR /coordinator
 RUN pip3 install flask
 
 ENTRYPOINT [ "python", "coordinator.py" ]
+
+

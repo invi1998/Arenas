@@ -22,11 +22,38 @@ def GetUesedPortS():
     return usedPorts
 
 
+def FindNextAvailablePort(startPort=7777, endPort=8000):
+    usedPorts = GetUesedPortS()
+    for port in range(startPort, endPort + 1):
+        if port not in usedPorts:
+            return port
+    raise Exception("No available ports found in the specified range.")
+
 def CreateServerImpl(sessionName, sessionSearchID):
-    port = GetUesedPortS()
+    port = FindNextAvailablePort()
+    subprocess.Popen(
+        [
+            'docker',
+            'run',
+            '--rm',                         # 容器停止后自动删除
+            '-p',                           # 端口映射
+            f'{port}:{port}/tcp',           # 端口映射(TCP)
+            '-p',                           # 端口映射
+            f'{port}:{port}/udp',           # 端口映射(UDP)
+            'arenasserver',                 # 实际的Docker镜像名称
+            '-server',                      # 启动服务器参数
+            '-log',                         # 启动日志参数
+            f'-epicapp="ServerClient"',     # 应用名称参数
+            f'-SESSION_NAME="{sessionName}"',  # 会话名称参数
+            f'-SESSION_SEARCH_ID="{sessionSearchID}"',  # 会话搜索ID参数
+            f'-PORT={port}'                 # 端口参数
+       ]
+    )
+    return port
 
 
-# TODO: 在后续接入Docker容器化后，此处应该被删除
+
+# TODO: 在后续接入Docker容器化后，此处应该被删除（因为不再需要本地启动服务器）
 nextAvailablePort = 7777
 
 def CreateServerLocalTest(sessionName, sessionSearchID):
@@ -54,15 +81,12 @@ def CreateSession():
     sessionName = request.json.get(SESSION_NAME_KEY)
     sessionSearchID = request.json.get(SESSION_SEARCH_ID_KEY)
 
-    port = CreateServerLocalTest(
-        sessionName,
-        sessionSearchID,
-    )
+    # port = CreateServerLocalTest(sessionName, sessionSearchID)
+    port = CreateServerImpl(sessionName, sessionSearchID)
 
     return jsonify({"status": "Session created successfully", PORT_KEY: port}), 200
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=80)
-    CreateServerImpl("TestSession", "TestSearchID")
+    app.run(host='0.0.0.0', port=80)
 
