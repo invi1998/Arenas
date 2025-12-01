@@ -11,7 +11,15 @@ app = Flask(__name__)
 def GetUesedPortS():
     result = subprocess.run(['docker', 'ps', '--format', '{{.Ports}}'], capture_output=True, text=True)
     output = result.stdout
-    print("Docker ps output:", output)
+
+    usedPorts = set()
+
+    for line in output.strip().split('\n'):
+        matches = re.findall(r'0\.0\.0\.0:(\d+)->', line)
+        # 提取端口号并添加到集合中
+        usedPorts.update(map(int, matches))
+
+    return usedPorts
 
 
 def CreateServerImpl(sessionName, sessionSearchID):
