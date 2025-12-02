@@ -8,7 +8,10 @@ import re
 app = Flask(__name__)
 
 # 通过docker查询可用端口的函数
+import socket
+
 def GetUesedPorts():
+    # 首先获取Docker容器使用的端口
     result = subprocess.run(['docker', 'ps', '--format', '{{.Ports}}'], capture_output=True, text=True)
     output = result.stdout
 
@@ -16,18 +19,48 @@ def GetUesedPorts():
 
     for line in output.strip().split('\n'):
         matches = re.findall(r'0\.0\.0\.0:(\d+)->', line)
-        # 提取端口号并添加到集合中
         usedPorts.update(map(int, matches))
+
+    # 再检查系统上所有监听的端口
+    try:
+        # 使用netstat或ss命令检查所有监听端口
+        result = subprocess.run(['ss', '-tln', '--numeric'], capture_output=True, text=True)
+        if result.returncode == 0:
+            for line in result.stdout.strip().split('\n'):
+                if 'LISTEN' in line:
+                    parts = line.split()
+                    if len(parts) >= 4:
+                        address = parts[3]
+                        if ':' in address:
+                            port_str = address.split(':')[-1]
+                            if port_str.isdigit():
+                                usedPorts.add(int(port_str))
+    except:
+        # 如果ss命令不可用，尝试netstat
+        try:
+            result = subprocess.run(['netstat', '-tln', '--numeric'], capture_output=True, text=True)
+            if result.returncode == 0:
+                for line in result.stdout.strip().split('\n'):
+                    if 'LISTEN' in line:
+                        parts = line.split()
+                        if len(parts) >= 4:
+                            address = parts[3]
+                            if ':' in address:
+                                port_str = address.split(':')[-1]
+                                if port_str.isdigit():
+                                    usedPorts.add(int(port_str))
+        except:
+            pass
 
     return usedPorts
 
 
-def FindNextAvailablePort(startPort=7777, endPort=8000):
+def FindNextAvailablePort(startPort=7787, endPort=8100):
     usedPorts = GetUesedPorts()
     for port in range(startPort, endPort + 1):
         if port not in usedPorts:
             return port
-    raise 0
+    return 0
 
 def CreateServerImpl(sessionName, sessionSearchID):
     port = FindNextAvailablePort()
@@ -38,7 +71,7 @@ def CreateServerImpl(sessionName, sessionSearchID):
             '--rm',                         # 容器停止后自动删除
             '-p', f'{port}:{port}/tcp',           # 端口映射(TCP)
             '-p', f'{port}:{port}/udp',           # 端口映射(UDP)
-            'arenasserver',                 # 实际的Docker镜像名称
+            'server',                 # 实际的Docker镜像名称
             '-server',                      # 启动服务器参数
             '-log',                         # 启动日志参数
             f'-epicapp="ServerClient"',     # 应用名称参数
@@ -50,28 +83,6 @@ def CreateServerImpl(sessionName, sessionSearchID):
     return port
 
 
-
-# TODO: 在后续接入Docker容器化后，此处应该被删除（因为不再需要本地启动服务器）
-nextAvailablePort = 7777
-
-def CreateServerLocalTest(sessionName, sessionSearchID):
-    global nextAvailablePort
-    subprocess.Popen(
-        [
-            'F:/UE_Source/UnrealEngine/Engine/Binaries/Win64/UnrealEditor.exe',
-            'F:/study/Arenas/Arenas.uproject',
-            '-server',
-            '-log',
-            '-epicapp="ServerClient"',
-            f'-SESSION_NAME="{sessionName}"',
-            f'-SESSION_SEARCH_ID="{sessionSearchID}"',
-            f'-PORT={nextAvailablePort}',
-        ]
-    )
-    usedPort = nextAvailablePort
-    nextAvailablePort += 1
-    return usedPort
-
 @app.route('/Session', methods=['POST'])
 def CreateSession():
     print("CreateSession called, request data:", request.json)
@@ -79,7 +90,6 @@ def CreateSession():
     sessionName = request.json.get(SESSION_NAME_KEY)
     sessionSearchID = request.json.get(SESSION_SEARCH_ID_KEY)
 
-    # port = CreateServerLocalTest(sessionName, sessionSearchID)
     port = CreateServerImpl(sessionName, sessionSearchID)
 
     return jsonify({"status": "Session created successfully", PORT_KEY: port}), 200
@@ -87,4 +97,5 @@ def CreateSession():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+
 

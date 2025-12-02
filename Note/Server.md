@@ -318,3 +318,46 @@ Arenas/ServerDeploy/coordinator on  main
 
 
 > 个人Linux环境问题（源），在构建coordinator镜像的时候使用国内网络构建，构建arenasserver镜像的时候需要挂载VPN
+
+## 启动协调程序容器
+
+我们在运行`coordinator`容器时使用了`-v /var/run/docker.sock:/var/run/docker.sock`，这会将宿主机的Docker套接字挂载到容器内，这样容器内就可以与宿主机的Docker守护进程通信。但是，这并不代表容器内安装了Docker客户端。
+
+```shell
+docker run --rm -p 80:80 -v /var/run/docker.sock:/var/run/docker.sock coordinator
+```
+
+
+
+## 使用 Docker Compose 定义和构建我们的镜像
+
+首先移除docker现有的镜像
+
+```shell
+❯ docker rmi -f $(docker images -q)
+```
+
+创建docker_compose.yaml文件
+
+```yaml
+services:
+  server:
+    build: ./server
+    image: server
+
+  coordinator:
+    build: ./coordinator
+    image: coordinator
+    container_name: servercoordinator
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+```
+
+然后构建compose
+
+```shell
+docker compose build
+```
+
